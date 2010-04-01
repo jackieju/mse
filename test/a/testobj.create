@@ -1,0 +1,86 @@
+************************command table*********************
+index   mode   line   code    op1   op2   op3
+0000: mode=8180 line=001a opcode = 1010     mov(0000,  0000)
+0001: mode=8180 line=001b opcode = 1010     mov(0000,  1e240)
+0002: mode=8080 line=001c opcode = 10a3     callpub(10001020)
+0003: mode=8100 line=001c opcode = 10a4     parampub(0000)
+0004: mode=0000 line=001c opcode = 10a5     endcallpub()
+0005: mode=8182 line=001c opcode = 1010     mov(000c,  0001)
+0006: mode=8080 line=001d opcode = 10a3     callpub(10001020)
+0007: mode=8000 line=001d opcode = 10a4     parampub(0144)
+0008: mode=0000 line=001d opcode = 10a5     endcallpub()
+0009: mode=8182 line=001d opcode = 1010     mov(0010,  0001)
+000a: mode=8080 line=001e opcode = 10a3     callpub(10001000)
+000b: mode=8183 line=001e opcode = 10f4     ea(0014,  0000)
+000c: mode=8100 line=001e opcode = 10a4     parampub(0014)
+000d: mode=0000 line=001e opcode = 10a5     endcallpub()
+000e: mode=8182 line=001e opcode = 1010     mov(0018,  0001)
+000f: mode=8080 line=001f opcode = 10a3     callpub(10001000)
+0010: mode=8183 line=001f opcode = 10f4     ea(001c,  0004)
+0011: mode=8100 line=001f opcode = 10a4     parampub(001c)
+0012: mode=0000 line=001f opcode = 10a5     endcallpub()
+0013: mode=8182 line=001f opcode = 1010     mov(0020,  0001)
+0014: mode=8080 line=0020 opcode = 10a6     (b5ce20)
+0015: mode=8183 line=0020 opcode = 10f4     ea(0024,  000c)
+0016: mode=8100 line=0020 opcode = 10a7     (0024)
+0017: mode=8183 line=0020 opcode = 10f4     ea(0028,  0014)
+0018: mode=8100 line=0020 opcode = 10a7     (0028)
+0019: mode=0000 line=0020 opcode = 10a8     ()
+001a: mode=8182 line=0020 opcode = 1010     mov(002c,  0001)
+001b: mode=8080 line=0028 opcode = 10a6     (b5ce20)
+001c: mode=8183 line=0028 opcode = 10f4     ea(0030,  001c)
+001d: mode=8100 line=0028 opcode = 10a7     (0030)
+001e: mode=8183 line=0028 opcode = 10f4     ea(0034,  0028)
+001f: mode=8100 line=0028 opcode = 10a7     (0034)
+0020: mode=0000 line=0028 opcode = 10a8     ()
+0021: mode=8182 line=0028 opcode = 1010     mov(0038,  0001)
+0022: mode=8080 line=002d opcode = 10a6     (b5ce20)
+0023: mode=8183 line=002d opcode = 10f4     ea(003c,  0030)
+0024: mode=8100 line=002d opcode = 10a7     (003c)
+0025: mode=8183 line=002e opcode = 10f4     ea(0040,  0038)
+0026: mode=8183 line=002f opcode = 10f4     ea(0044,  004c)
+0027: mode=8183 line=0030 opcode = 10f4     ea(0048,  005c)
+0028: mode=8183 line=0031 opcode = 10f4     ea(004c,  0068)
+0029: mode=8100 line=0032 opcode = 10a7     (004c)
+002a: mode=0000 line=0032 opcode = 10a8     ()
+002b: mode=8182 line=0032 opcode = 1010     mov(0050,  0001)
+002c: mode=8080 line=0034 opcode = 10a6     (b5ce20)
+002d: mode=8183 line=0034 opcode = 10f4     ea(0054,  0074)
+002e: mode=8100 line=0034 opcode = 10a7     (0054)
+002f: mode=8000 line=0038 opcode = 10a7     (0001)
+0030: mode=0000 line=0038 opcode = 10a8     ()
+0031: mode=8182 line=0038 opcode = 1010     mov(0058,  0001)
+0032: mode=8080 line=003a opcode = 10a6     (b5ce20)
+0033: mode=8183 line=003a opcode = 10f4     ea(005c,  0080)
+0034: mode=8100 line=003a opcode = 10a7     (005c)
+0035: mode=8000 line=003a opcode = 10a7     (0001)
+0036: mode=0000 line=003a opcode = 10a8     ()
+0037: mode=8182 line=003a opcode = 1010     mov(0060,  0001)
+0038: mode=0000 line=003c opcode = 10f3     ret()
+************************segment*********************
+index offset size name
+0000: 0000,    4,    l
+0001: 0004,    4,    
+0002: 0008,    4,    
+0003: 0012,    4,    
+0004: 0016,    4,    
+0005: 0020,    4,    
+0006: 0024,    4,    
+0007: 0028,    4,    
+0008: 0032,    4,    
+0009: 0036,    4,    
+000a: 0040,    4,    
+000b: 0044,    4,    
+000c: 0048,    4,    
+000d: 0052,    4,    
+000e: 0056,    4,    
+000f: 0060,    4,    
+0010: 0064,    4,    
+0011: 0068,    4,    
+0012: 0072,    4,    
+0013: 0076,    4,    
+0014: 0080,    4,    
+0015: 0084,    4,    
+0016: 0088,    4,    
+0017: 0092,    4,    
+0018: 0096,    4,    

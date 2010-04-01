@@ -1,0 +1,2426 @@
+Listing:
+
+    1  COMPILER C
+    2  
+    3  /* An attempt to describe a subset of C */
+    4  
+    5  /////////////////////////////////
+    6  // add by jackie juju
+    7  #include "clib.h"
+    8  #include <string.h>
+    9  #include <vector>
+   10  #include <string>
+   11  #include "datatype.h"
+   12  #include "LoopTree.h"
+   13  #include "opcode.h"
+   14  #include "os/CSS_LOCKEX.h"
+   15  #include "ScriptFuncTable.h"
+   16  #include "log.h"
+   17  #include "PubFuncTable.h"
+   18  #include "ClassDes.h"
+   19  #include "compiler.h"
+   20  #include "utility.h"
+   21  
+   22  #define CAST Cast(op1, type1, dt1, op2, type2, dt2);
+   23  
+   24  extern int typesize(int type);
+   25  
+   26  int log2(int x);
+   27  
+   28  
+   29  // add by jackie juju
+   30  /////////////////////////////////
+   31  
+   32  CHARACTERS
+   33    letter   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+   34    digit    = "0123456789" .
+   35    hexdigit = digit + "ABCDEFabcdef" .
+   36    tab      = CHR(9) .
+   37    eol      = CHR(10) .
+   38    files    = letter + digit + ":\." .
+   39    chars    = CHR(32) .. CHR(255) - "'" .
+   40    strings  = CHR(32) .. CHR(255) - '"'.
+   41    macros   = ANY - eol .
+   42  
+   43  COMMENTS FROM "/*" TO "*/"
+   44  COMMENTS FROM "//" TO eol
+   45  
+   46  IGNORE
+   47    tab + eol + CHR(13)
+   48  
+   49  TOKENS
+   50    identifier = ( "_" | letter) { "_" | letter | digit } .
+   51    number     = digit { digit } [ "." { digit }] [ "U" | "u" | "L" | "l" ] .
+   52    hexnumber  = "0" ( "x" | "X" ) hexdigit { hexdigit } [ "U" | "u" | "L" | "l" ] .
+   53    string1     = '"' { strings } '"' .
+   54    char1       = "'" [ "\\" ] chars "'" .
+   55    library    = "<" files { files } ">" .
+   56  
+   57  PRAGMAS
+   58  
+   59    PreProcessor = "#" ( letter ) .
+   60                      (.
+   61                          // process #include                                 
+   62                  char str[256];
+   63                  Scanner->GetName(&Scanner->NextSym, str, 255);
+   64                  // get directive
+   65                  char* p = strchr(str, ' ');
+   66                  char* directive = NULL;
+   67                  char* content = NULL;
+   68                  if ( p != NULL ){
+   69                          *p=0; 
+   70                          directive = str + sizeof(char);
+   71                          // proce include 
+   72                          if (strcmp(str, "include") == 0){
+   73                                  // get content
+   74                                  p += sizeof(char);
+   75                                  while ( (*p == ' ' || *p == '\t' ) && *p != '\0' ){
+   76                                          p += sizeof(char);              
+   77                                  }
+   78                                  if ( *p != '\0' )
+   79                                          content = p;
+   80                          }
+   81  
+   82                  }
+   83                          
+   84                           .)
+   85  
+   86  
+   87  
+   88  
+   89  
+   90  PRODUCTIONS
+   91  
+   92      C                    =      (. 
+   93          
+   94           m_pCurClassDes = new CClassDes(this);
+   95           std::string className = JUJU::getFileName(curFileName);
+   96           m_pCurClassDes->SetName((char*)className.c_str());
+   97           m_classTable->addClass(m_pCurClassDes);
+   98      
+   99      .)
+  100     { Import | LoadLib } [ Inheritance ]
+  101  
+  102      { Definition } EOF (. 
+  103          std::string name = m_pCurClassDes->GetFullName();
+  104          name += ".class";
+  105          FILE* file = fopen(name.c_str(), "w");
+  106          std::string *s = m_pCurClassDes->output();
+  107          fprintf(file, "%s", s->c_str());
+  108          SAFEDELETE(s);
+  109          fclose(file);
+  110  
+  111      .).
+  112  
+  113    Import = "use"(.char szName[_MAX_PATH]= ""; .) ClassFullName<szName>
+  114    (.
+  115          
+  116          CClassDes* cd = this->m_classTable->getClass(szName);
+  117          if (cd == NULL){
+  118                  strcat(szName, ".c");
+  119                                                  CCompiler cc;
+  120                          //      std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+  121                                  cc.Compile(szName);
+  122          }
+  123    .)";" .
+  124    
+  125    LoadLib = "load" identifier 
+  126    (.
+  127          // load external library 
+  128          std::string lib = GetCurrSym();
+  129          std::string libfile = lib+".dll";
+  130          std::string libintfile = lib+".int";
+  131  #ifdef WIN32
+  132                  m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
+  133  #else
+  134          m_PubFuncTable->LoadLib(lib+".so", lib+".int");
+  135  #endif
+  136  /* for the further if VM run in another process than compiler run
+  137          int address = m_pMainFunction->AddStaticData(lib.size()+1, (BYTE*)lib.c_str());
+  138          ADDCOMMAND1(__loadlib, DS, address);
+  139  */
+  140    .)
+  141     ";" .
+  142    
+  143  /* Variable and Type Definitions */
+  144          
+  145   
+  146    Definition           =
+  147     (
+  148     [ StorageClass ] (. PTYPEDES type = new TYPEDES; .) 
+  149     [ Type<type> ]
+  150     
+  151     /*{ "*" } 
+  152  (. 
+  153                  if (type->type < dtFirstType  || type->type > dtLastType)
+  154                  {
+  155                          GenError(99);
+  156                  }
+  157                  
+  158                  //÷∏’Î¿‡–Õ
+  159                  while (Sym == StarSym) 
+  160                  {
+  161                          type->refLevel++;
+  162                          Get();
+  163                  }
+  164  .)
+  165     */
+  166     identifier
+  167  (.
+  168          char szName[MAX_IDENTIFIER_LENGTH];
+  169          memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+  170          Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+  171  .)
+  172  (
+  173     (
+  174                  FunctionDefinition (.this->m_pCurClassDes->AddMember(szName, *type);.)
+  175             /*| (VarList< type,  szName> ";")*/
+  176          )
+  177          |
+  178          ( /* this is bug of cocor, you have to keep number of OR factor less than 2, otherwise it generate switch-case with multi-"default"*/
+  179             ("=" (.this->m_pCurClassDes->AddMember(szName, *type);.)Expression (./*TODO*/.)";")
+  180             | ";" (.this->m_pCurClassDes->AddMember(szName, *type);.) 
+  181      ) 
+  182     )
+  183     ) 
+  184     
+  185     | ClassDef  .
+  186                              
+  187    /* PreProcess = Define | Include .
+  188    
+  189   Define = "#define" identifier macros .
+  190    
+  191    Include = "#include" files .*/
+  192    
+  193    Inheritance              = "inherit" identifier 
+  194    (.
+  195    
+  196     // TODO get full name in current imported classes, should not need to provide full name here
+  197          char* szName = GetCurrSym();
+  198          CClassDes* cd = this->m_classTable->getClass(szName);
+  199          if (cd == NULL){
+  200                  std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+  201                  strcpy(szName, s.c_str());
+  202                  cd = this->m_classTable->getClass(szName);
+  203                  if (cd == NULL){
+  204                                  strcat(szName, ".c");
+  205                                  CCompiler cc;                         
+  206                      cc.Compile(szName);
+  207              }
+  208          }
+  209          this->m_pCurClassDes->setParent(szName);
+  210    .) ";" .
+  211    
+  212  
+  213          ClassDef                        = "class" identifier  
+  214  (.
+  215          // get name
+  216          char *szName = new char[MAX_IDENTIFIER_LENGTH];
+  217          memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+  218          Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+  219  .)
+  220  ClassBody       ";" .
+  221          ClassBody                        = 
+  222          (.
+  223          // ¿˚”√CFunction¿¥¥Ê∑≈¿‡≥…‘±
+  224          CFunction* pSaved = this->m_pMainFunction;      // save current function
+  225          CFunction function;
+  226          function.m_SymbolTable.m_pParser = this;
+  227          this->m_pMainFunction = &function;
+  228          
+  229          .)
+  230  
+  231          "{" { Definition} "}" 
+  232          
+  233          (.
+  234          /*
+  235          //ÃÌº”class
+  236          if (!Error->Errors)
+  237          {
+  238                  CObjDes* pClass = new CObjDes(this);
+  239                  pClass->SetName(szName);
+  240                  if (!pClass)
+  241                  {
+  242                          REPORT_MEM_ERROR("Allcotion memory failed")
+  243                  }
+  244                  else
+  245                  {
+  246                          for (int i = 0; i < function.m_SymbolTable.m_nSymbolCount; i++)
+  247                          {
+  248                                  if (!pClass->AddMember(function.m_SymbolTable.tableEntry[i].szName, 
+  249                                          function.m_SymbolTable.tableEntry[i].type))
+  250                                  {
+  251                                          if (pClass)
+  252                                          {
+  253                                                  delete pClass;
+  254                                                  pClass = NULL;
+  255                                          }
+  256                                          GenError(118);                                  
+  257                                          break;
+  258                                  }
+  259                          }
+  260                  }
+  261                  if (!this->AddObj(*pClass))
+  262                  {
+  263                          GenError(119);                          
+  264                          if (pClass)
+  265                          {
+  266                                  delete pClass;
+  267                                  pClass = NULL;
+  268                          }
+  269                  }
+  270          }
+  271                          */
+  272          .)
+  273          .
+  274  
+  275  
+  276    StorageClass         = /*"auto" | "extern" | "register" |*/
+  277     "static" 
+  278     | "my" /* member variable*/
+  279     | "function"
+  280     .
+  281  
+  282    Type<PTYPEDES type>                 = 
+  283  /*(.
+  284          type = new TYPEDES;
+  285          memset(type, 0, sizeof(TYPEDES));       
+  286  .)*/
+  287  
+  288  ( "var" | "mixed" )
+  289  (.
+  290                  /*      #ifdef __SUPPORT_OBJ
+  291                          char szName[MAX_IDENTIFIER_LENGTH];
+  292                          memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+  293                          Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆                         
+  294                          type->type = dtGeneral;
+  295                          type->objID = GetObjIDByName(szName); 
+  296                          if (type->objID == 0)
+  297                                  GenError(120);
+  298                          #else
+  299                          // TODO
+  300                                  GenError(120);
+  301                          #endif
+  302  */
+  303          type->type = dtGeneral; type->refLevel = 0;
+  304  .)
+  305          |
+  306           "short" [ "int" ]
+  307  (.                       type->type = dtShort; type->refLevel = 0;      .)
+  308      | "long"  [ "int" | "float" ]
+  309   (.                      type->type = dtLong; type->refLevel = 0; .)
+  310          | "unsigned" [ "char" | "int" | "long" ]
+  311          | "char"
+  312  (.                      type->type = dtChar;                    type->refLevel = 0; .)
+  313          | "int" 
+  314  (.                       type->type = dtInt; type->refLevel = 0; .)     
+  315          | "float"               
+  316  (.                      type->type = dtFloat;                   type->refLevel = 0; .)
+  317  
+  318          | "double" | "void"  | "string"
+  319  (. type->type =  dtStr;            type->refLevel = 0;.)
+  320          .
+  321  
+  322    VarList<PTYPEDES type, char* szFirstName>   = 
+  323    ArraySize
+  324  (.
+  325          doVarDecl(type, szFirstName);
+  326          char szName[MAX_IDENTIFIER_LENGTH];
+  327  .)    [ "=" Expression (. doAssign(); .)] 
+  328  { ","  identifier
+  329  (.
+  330                  memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
+  331                  Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
+  332                  
+  333  
+  334  .)
+  335  
+  336  ArraySize
+  337  (.
+  338                   doVarDecl(type, szName);
+  339  .)
+  340   [  "=" Expression (.   doAssign(); .)] 
+  341    } .
+  342  
+  343    ArraySize            = { "[" [ ConstExpression ] "]" } .
+  344  
+  345  /* Function Definitions */
+  346  
+  347    FunctionDefinition   = 
+  348    (.
+  349          this->m_pMainFunction = new CFunction;
+  350          //for test
+  351          long t = sizeof(CFunction);
+  352          m_pMainFunction->m_SymbolTable.m_pParser = this;
+  353          this->m_LoopTree->m_pFunc = m_pMainFunction;
+  354          
+  355          char szName[MAX_IDENTIFIER_LENGTH];
+  356          memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+  357          Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+  358  
+  359          if (strlen(szName) > 20)
+  360                  GenError(105);
+  361          else
+  362                  strcpy(m_pMainFunction->m_szName, szName);
+  363                  
+  364                  
+  365    .)
+  366    FunctionHeader FunctionBody  
+  367    (.
+  368          if (!this->Error->Errors)
+  369          {
+  370                     char path[_MAX_PATH];
+  371                                  if (strlen(m_szByteCodeFilePath) == 0 )
+  372                                          sprintf(path, "%s.%s", this->m_pCurClassDes->GetFullName(),szName);
+  373                                  else
+  374                                          sprintf(path, "%s%s%s.%s", m_szByteCodeFilePath, PATH_SEPARATOR_S, this->m_pCurClassDes->GetFullName(),szName);
+  375                      m_pMainFunction->Output(path);
+  376                  
+  377          }else{
+  378          SAFEDELETE( m_pMainFunction);   
+  379           }
+  380           m_pMainFunction = NULL;
+  381    .)
+  382    .
+  383    FunctionHeader       = "(" [ FormalParamList ] ")" 
+  384    (.    
+  385    this->m_pMainFunction->m_iParamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
+  386    if    (!m_pCurClassDes->getFuncTable()->AddFunction(this->m_pMainFunction))
+  387                  {
+  388                          GenError(114);
+  389                  }               
+  390   
+  391    .).
+  392    FunctionBody         = CompoundStatement (.   ADDCOMMAND0(__ret); .)  .
+  393    FormalParamList      = FormalParameter { "," FormalParameter } .
+  394    FormalParameter      = (. PTYPEDES type = new TYPEDES; .)
+  395    Type<type> { (. //test; .) "*"                (. type->refLevel++; .)
+  396  
+  397    }  identifier  
+  398    (. 
+  399          char szName[MAX_IDENTIFIER_LENGTH];
+  400          memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
+  401          Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
+  402    .)
+  403    ArraySize 
+  404  (. 
+  405          long op;
+  406          long type1;
+  407          TYPEDES DT1;
+  408          
+  409          if (!m_pMainFunction->PopDigit(&op, &type1, &DT1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
+  410          {
+  411  
+  412                  if (type->objID > 0 && type->type == dtGeneral && type->refLevel == 0)//»Áπ˚ «Ω·ππ£¨ …˙≥…À˚µƒ÷∏’Î
+  413                  {
+  414                          type->refLevel++;
+  415                  }
+  416                  if (!AllocVar(type, szName))
+  417                          GenError(113);
+  418                  else
+  419                          m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
+  420          }
+  421          else
+  422          {
+  423                  
+  424                  int dimsize[64];// ˝◊È◊Ó¥ÛŒ¨ ˝64
+  425                  int i = 0;
+  426                  int arraysize = op;//total size
+  427                  dimsize[i] = op;
+  428                  i++;
+  429                  
+  430                  while (m_pMainFunction->PopDigit(&op, &type1, &DT1))
+  431                  {
+  432                          dimsize[i] = op;                        
+  433                          i++;
+  434                          arraysize *= op;
+  435                  }
+  436  
+  437                  //»Áπ˚ « ˝◊È£¨ ∑÷≈‰÷∏’Î¿‡–Õ
+  438                  long temp;
+  439                  long index;
+  440                  temp = AllocTempVar(type->type, 1);
+  441                  if (temp == -1)
+  442                  {
+  443                          GenError(98);
+  444                  }
+  445                  //…Ë÷√¿‡–Õ∫Õ√˚◊÷
+  446                  index = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount -1;
+  447                  strcpy(m_pMainFunction->m_SymbolTable.tableEntry[index].szName, szName);
+  448                  type->dim = i-1;
+  449                  type->refLevel = 1;
+  450                  memcpy(type->dimsize, dimsize, (i-1)*sizeof(long));
+  451                  memcpy(&m_pMainFunction->m_SymbolTable.tableEntry[index].type, type, sizeof(TYPEDES));
+  452                  m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
+  453          }
+  454          delete type;
+  455  .)  
+  456    .
+  457  
+  458  /* Statements */
+  459  
+  460    Statement            = { Label }
+  461                           ( 
+  462                           /*
+  463  (.
+  464                  char szName[MAX_IDENTIFIER_LENGTH];
+  465                  memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
+  466                  Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH);
+  467  .)*/
+  468                                                   AssignmentStatement | BreakStatement
+  469                             | ContinueStatement
+  470                             | DoStatement | ForStatement
+  471                             | IfStatement  | NullStatement
+  472                             | ReturnStatement | SwitchStatement
+  473                             | WhileStatement ) (.        m_pMainFunction->ClearExpStack(); .)
+  474   .
+  475  
+  476    Label                = ("case" ConstExpression ":")  | ( "default" ":") .
+  477  
+  478  /* There is no requirement that a switch statement be followed by a compound
+  479     statement.  Actually labels may be even more general */
+  480  
+  481    AssignmentStatement = Expression ";" .
+  482  
+  483    BreakStatement       = "break" ";" 
+  484    (.    //recode this command for write back
+  485          this->m_curloop->AddBreak(this->m_pMainFunction->m_nCurrentCmdNum);
+  486          //add command
+  487          ADDCOMMAND1(__jmp, CC, 0);      
+  488   .)
+  489   .
+  490   LocalDeclaration     = 
+  491                                                          (.
+  492                                                                  PTYPEDES type = new TYPEDES;
+  493                                                                  char szName[MAX_IDENTIFIER_LENGTH];
+  494                                                                  
+  495                                                          .)
+  496   ( Type<type> |  StorageClass  [Type<type>] )
+  497    
+  498                                                          
+  499   /* { "*"                                               (.              type->refLevel++; .)
+  500    } */
+  501    
+  502    identifier                            (.      
+  503                                                                  memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+  504                                                                  Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);
+  505                                                          .)
+  506   VarList<type, szName>";"  (. delete type; .)
+  507   . 
+  508    CompoundStatement    = "{" { LocalDeclaration | Statement } "}" .
+  509  
+  510    ContinueStatement    = "continue" ";" 
+  511    (.
+  512          //recode this command for write back
+  513          this->m_curloop->AddContinue(this->m_pMainFunction->m_nCurrentCmdNum);
+  514          //add command
+  515          ADDCOMMAND1(__jmp, CC, 0);      
+  516  
+  517    .)
+  518    .
+  519  
+  520    DoStatement          = "do" Statement "while" "(" Expression ")" ";" .
+  521  
+  522    ForStatement         = "for"  "(" [ Expression ] ";" 
+  523    (.
+  524          //—≠ª∑¥”œ¬“ªæ‰ø™ º
+  525          int loopEntry = this->m_pMainFunction->m_nCurrentCmdNum;
+  526          int jzCmd = 0;
+  527          
+  528          //—π’ª
+  529          this->AddNewLoop();//ÃÌº”“ª∏ˆ–¬µƒlooptree
+  530          this->m_curloop->m_entry = loopEntry;//…Ë÷√–¬looptreeµƒ»Îø⁄
+  531  
+  532  
+  533    .)
+  534    
+  535    [ Expression ] 
+  536    (.
+  537                  //add command jz
+  538                  jzCmd = this->m_pMainFunction->m_nCurrentCmdNum;
+  539                  ADDCOMMAND1(__jnz, CC, 0)
+  540   
+  541    .)
+  542    ";" 
+  543    (.
+  544          PCOMMAND cmd = NULL;
+  545          int cmdsaved;
+  546          int cmdnum;
+  547  
+  548  
+  549    .)
+  550    [ 
+  551  (.
+  552                  cmdsaved = this->m_pMainFunction->m_nCurrentCmdNum;
+  553  .)
+  554          Expression 
+  555  (.
+  556                  cmdnum = this->m_pMainFunction->m_nCurrentCmdNum - cmdsaved;
+  557                  cmd = new COMMAND[cmdnum];    
+  558                  //save expression cmd to insert before jmp command
+  559                  long t=cmdnum*sizeof(COMMAND);
+  560                  memcpy(cmd, &(m_pMainFunction->m_pCmdTable[cmdsaved]), cmdnum*sizeof(COMMAND));
+  561                  m_pMainFunction->m_nCurrentCmdNum = cmdsaved;           
+  562  
+  563  .)
+  564    ] ")" Statement
+  565    (.
+  566          long nContinue;//continue ”Ôæ‰µƒÃ¯◊™ƒøµƒµÿ°£
+  567          nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
+  568          this->m_curloop->SetContinue(nContinue);
+  569  
+  570          //insert saved cmd
+  571          for (int i = 0; i< cmdnum; i++)
+  572          {
+  573                  m_pMainFunction->AddCommand(cmd[i]);
+  574          }
+  575          delete cmd;
+  576          //change loop variable
+  577          //jump back
+  578          ADDCOMMAND1(__jmp, CC, loopEntry);      
+  579          //write back jz instructment
+  580          this->m_pMainFunction->m_pCmdTable[jzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
+  581          //write back break continue statement
+  582          this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
+  583          this->ExitCurLoop();//destroy current loop tree
+  584  
+  585    .) .
+  586  
+  587    IfStatement          = "if" "(" Expression ")" 
+  588    (.
+  589          //≈–∂œ
+  590          {
+  591                  long op1;
+  592                  long type1;
+  593                  TYPEDES dt1;
+  594                  //pop
+  595                  if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+  596                  {
+  597                          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+  598                          GenError(96);
+  599                          return;
+  600                  }
+  601                  else
+  602                  {
+  603                          if (dt1.type == dtFloat)
+  604                          {
+  605                                  GenError(112);
+  606                          }
+  607                          else
+  608                          {
+  609                                  //get address mode
+  610                                  int address_mode = (type1<<8);
+  611                                  address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
+  612                                  address_mode |= AMODE_DIRECT;
+  613                                  //add commmand to command table
+  614                                  ADDCOMMAND3(__test, address_mode, op1, 0, 0)    
+  615                          }
+  616                  }
+  617          }
+  618  
+  619          //º«¬ºÃ¯◊™÷∏¡Óµƒ–Ú∫≈
+  620          int jzcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+  621          //º”»Î≈–∂œ”Ôæ‰
+  622          ADDCOMMAND1(__jz, CC, 0)//Ã¯◊™ƒø±Í‘⁄œ¬√Ê≤π…œ
+  623    .)
+  624    Statement   (.        int nextcmd; bool bElse = false;.)[
+  625   
+  626     "else" 
+  627    (.
+  628                  bElse = true;
+  629                  int jmpcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+  630                  ADDCOMMAND1(__jmp, CC, 0);
+  631                  //≤π…œjnzµƒÃ¯◊™ƒø±Í
+  632                  nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+  633                  this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
+  634  
+  635    .)
+  636    Statement
+  637    (.
+  638                  nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+  639                  //≤π…œjmpµƒÃ¯◊™ƒø±Í
+  640                  this->m_pMainFunction->m_pCmdTable[jmpcmd].op[0] = nextcmd;
+  641  
+  642    .)
+  643     ]
+  644     (.
+  645     if (!bElse)
+  646     {
+  647                  //≤π…œjnzµƒÃ¯◊™ƒø±Í
+  648                  nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+  649                  this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
+  650          }
+  651  .)
+  652   .
+  653  
+  654    NullStatement        = ";" .
+  655  
+  656    ReturnStatement      = "return" [ Expression ] 
+  657    (.
+  658          //pop
+  659          long op1;
+  660          long type;
+  661          TYPEDES dt1;
+  662          if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
+  663          {
+  664          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+  665                  this->GenError(96);
+  666                  return;
+  667          }
+  668          int address_mode = type&0x00ff;
+  669          address_mode |= (log2(UnitSize(dt1))<<6);
+  670          
+  671          //ADDCOMMAND
+  672          // move reutrn value to _ax
+  673          ADDCOMMAND2(__mov, address_mode|0x8200, _AX, op1);
+  674          // return
+  675          ADDCOMMAND0(__ret);
+  676  
+  677    .)
+  678    ";" .
+  679                           /* Expression usually in parentheses */
+  680  
+  681    SwitchStatement      = "switch" "("
+  682  
+  683     Expression 
+  684  
+  685     
+  686     ")" Statement 
+  687  
+  688          .
+  689  
+  690    WhileStatement       = "while" "(" 
+  691      (.
+  692          int loopentry = this->m_pMainFunction->m_nCurrentCmdNum;
+  693  
+  694          //—π’ª
+  695          this->AddNewLoop();//ÃÌº”“ª∏ˆ–¬µƒlooptree
+  696          this->m_curloop->m_entry = loopentry;//…Ë÷√–¬looptreeµƒ»Îø⁄
+  697  
+  698  
+  699    .)
+  700          Expression 
+  701             (.
+  702          //≈–∂œ
+  703          {
+  704                  long op1;
+  705                  long type1;
+  706                  TYPEDES dt1;
+  707                  //pop
+  708                  if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+  709                  {
+  710                          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+  711                          GenError(96);
+  712                          return;
+  713                  }
+  714                  else
+  715                  {
+  716                          if (dt1.type == dtFloat)
+  717                          {
+  718                                  GenError(112);
+  719                          }
+  720                          else
+  721                          {
+  722                                  //get address mode
+  723                                  int address_mode = (type1<<8);
+  724                                  address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
+  725                                  address_mode |= AMODE_DIRECT;
+  726                                  //add commmand to command table
+  727                                  ADDCOMMAND3(__test, address_mode, op1, 0, 0)    
+  728                          }
+  729                  }
+  730          }
+  731  
+  732          int jnzCmd =  this->m_pMainFunction->m_nCurrentCmdNum;
+  733          //jnz command
+  734          ADDCOMMAND1(__jz, CC, 0);
+  735     .)
+  736     ")" Statement 
+  737     
+  738       (.
+  739          long nContinue;//continue ”Ôæ‰µƒÃ¯◊™ƒøµƒµÿ°£
+  740          nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
+  741          this->m_curloop->SetContinue(nContinue);
+  742  
+  743          //jmp back
+  744          ADDCOMMAND1(__jmp, CC, loopentry);
+  745          //write back jnz
+  746          this->m_pMainFunction->m_pCmdTable[jnzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
+  747  
+  748          this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
+  749          this->ExitCurLoop();//destroy current loop tree
+  750  
+  751     .).
+  752  
+  753  /* LocalDeclarations */
+  754  
+  755  /*  LocalDeclaration     = 
+  756                                                          (.
+  757                                                                  PTYPEDES type = new TYPEDES;
+  758                                                                  char szName[MAX_IDENTIFIER_LENGTH];
+  759                                                                  
+  760                                                          .)
+  761    [ StorageClass ] [Type<type>  ]
+  762                                                          
+  763    { "*"                                                 (.              type->refLevel++; .)
+  764    } 
+  765    
+  766    identifier                            (.      
+  767                                                                  memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+  768                                                                  Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);
+  769                                                          .)
+  770   ( FunctionHeader | VarList<type, szName> ) ";"  (. delete type; .)
+  771   . 
+  772  */
+  773  
+  774  /* Expressions, based on Kernighan and Ritchie: "The C Programming Language".
+  775     There does not seem to be a way to make this work in an LL(1) fashion,
+  776     but this generates a "working" parser */
+  777  
+  778    ConstExpression      = Expression .
+  779  
+  780    Expression           = Conditional { AssignmentOperator Expression
+  781    (.
+  782          if (!doAssign()) 
+  783                          continue;
+  784  
+  785    .)
+  786     }.
+  787  
+  788    Conditional          = LogORExp .
+  789  
+  790    LogORExp             = LogANDExp  (.          int type = -1; .) { "||"
+  791    
+  792    (.
+  793                  type = 7;
+  794    .)
+  795  LogANDExp 
+  796  (.
+  797                  //add command
+  798                  long op1, op2;
+  799                  long type1, type2;
+  800                  TYPEDES dt1, dt2;
+  801                  //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+  802                  if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+  803                  {
+  804                  //      REPORT_COMPILE_ERROR("POP UP FAILED");
+  805                          GenError(96);
+  806                          return;
+  807                  }
+  808                  else
+  809                  {
+  810                          CAST
+  811                          //get address mode
+  812                          int address_mode = (type1<<8)|(short)type2;
+  813                          address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+  814                          //add commmand to command table
+  815                          ADDCOMMAND3(__test, address_mode, op1, op2, 7/*==*/)                                    
+  816                          //push result
+  817                          TYPEDES dt;//not used
+  818                          memset(&dt, 0, sizeof(TYPEDES));
+  819                          this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
+  820                  }
+  821  .)
+  822  } 
+  823  
+  824  (.
+  825          if (type >= 0)
+  826          {
+  827                  long g;
+  828                  long t;
+  829                  TYPEDES DT;
+  830                  m_pMainFunction->PopDigit(&g, &t, &DT);
+  831                  //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+  832                  
+  833                  _typedes(DT1, dtLong)
+  834                  if (m_pMainFunction->AddVal(NULL, DT1))
+  835                  {
+  836                          long temp;
+  837                          temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+  838                          ADDCOMMAND2(__mov, DR, temp, _PSW);
+  839                          m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, DT1);
+  840                  }
+  841                  else
+  842                  {
+  843                          REPORT_COMPILE_ERROR("add symbol failed");
+  844                  }
+  845          }
+  846  .)
+  847  .
+  848  
+  849    LogANDExp            =
+  850   (.     
+  851   int type = -1;
+  852          long op1, op2;
+  853          long type1, type2;
+  854          TYPEDES dt1, dt2;
+  855  .)
+  856  
+  857  InclORExp   { "&&" 
+  858  
+  859  (.              type = 7;  .)
+  860  
+  861  InclORExp 
+  862  
+  863  (.
+  864                  //add command
+  865                  //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+  866                  if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+  867                  {
+  868                  //      REPORT_COMPILE_ERROR("POP UP FAILED");
+  869                          GenError(96);
+  870                          return;
+  871                  }
+  872                  else
+  873                  {
+  874                          CAST
+  875                          //get address mode
+  876                          int address_mode = (type1<<8)|(short)type2;
+  877                          address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+  878                          //add commmand to command table
+  879                          ADDCOMMAND3(__test, address_mode, op1, op2, 6/*==*/)                                    
+  880                          //push result
+  881                          TYPEDES dt;//not used
+  882                          memset(&dt, 0, sizeof(TYPEDES));
+  883                          this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
+  884                  }
+  885  
+  886  .)
+  887  }
+  888  (.
+  889          if (type >= 0)
+  890          {
+  891                  long g;
+  892                  long t;
+  893                  TYPEDES dt;
+  894                  m_pMainFunction->PopDigit(&g, &t, &dt);
+  895                  
+  896                  //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+  897                  if (m_pMainFunction->AddVal(NULL, dt1))
+  898                  {                       
+  899                          long temp;
+  900                          temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+  901                          ADDCOMMAND2(__mov, DR, temp, _PSW);
+  902                          m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
+  903                  }
+  904                  else
+  905                  {
+  906                          REPORT_COMPILE_ERROR("add symbol failed");
+  907                  }
+  908                  }
+  909  .)
+  910  .
+  911  
+  912    InclORExp            = ExclORExp   { "|" ExclORExp } .
+  913  
+  914    ExclORExp            = ANDExp      { "^" ANDExp } .
+  915  
+  916    ANDExp               = EqualExp    { "&" EqualExp } .
+  917  
+  918    EqualExp             = 
+  919    (.
+  920          int type = -1;//0: == 1: !=
+  921          long op1, op2;
+  922          long type1, type2;
+  923          TYPEDES dt1, dt2;
+  924  
+  925    .)
+  926  
+  927    RelationExp { ( "=="
+  928     (.                   type = 0; .)
+  929  | "!="
+  930  (.
+  931                          type = 1;
+  932  
+  933  .) ) RelationExp 
+  934  
+  935  (.
+  936                  //add command
+  937                  //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+  938                  if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+  939                  {
+  940                  //      REPORT_COMPILE_ERROR("POP UP FAILED");
+  941                          GenError(96);
+  942                          return;
+  943                  }
+  944                  else
+  945                  {
+  946                          CAST
+  947                          //get address mode
+  948                          int address_mode = (type1<<8)|(short)type2;
+  949                          address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+  950  
+  951                          //add commmand to command table
+  952                          if (type == 0)
+  953                          {       
+  954                                  ADDCOMMAND3(__test, address_mode, op1, op2, 0/*==*/)                                    
+  955                          }
+  956                          else if (type == 1)
+  957                          {
+  958                                  ADDCOMMAND3(__test, address_mode, op1, op2, 1/*==*/)    
+  959                          }
+  960  
+  961                          //push result
+  962                          TYPEDES dt;//not used
+  963                          memset(&dt, 0, sizeof(TYPEDES));
+  964                          this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
+  965                  }
+  966  
+  967  .)
+  968  } 
+  969  
+  970  (.
+  971          if (type >= 0)
+  972          {
+  973                  long g;
+  974                  long t;
+  975                  TYPEDES dt;
+  976                  if (m_pMainFunction->PopDigit(&g, &t, &dt))
+  977                  {
+  978                          //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+  979                          if (m_pMainFunction->AddVal(NULL,  dt1))
+  980                          {                       
+  981                                  long temp;
+  982                                  temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+  983                                  ADDCOMMAND2(__mov, DR, temp , _PSW);
+  984                                  m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
+  985                          }
+  986                          else
+  987                          {
+  988                                  REPORT_COMPILE_ERROR("add symbol failed");
+  989                          }
+  990                  }
+  991          }
+  992  .)
+  993  .
+  994  
+  995    RelationExp          = 
+  996    (.
+  997          int type = -1;
+  998          long op1, op2;
+  999          long type1, type2;
+ 1000          TYPEDES dt1, dt2;
+ 1001  
+ 1002    .)
+ 1003    ShiftExp    { ( "<" (. type = 5; .) | ">" (. type = 4; .)| "<=" (. type = 3; .)| ">=" (. type = 2; .)) 
+ 1004    ShiftExp
+ 1005    
+ 1006    (.
+ 1007                  //add command
+ 1008                  //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+ 1009                  if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+ 1010                  {
+ 1011                  //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 1012                          GenError(96);
+ 1013                          return;
+ 1014                  }
+ 1015                  else
+ 1016                  {
+ 1017                          CAST
+ 1018                          //get address mode
+ 1019                          int address_mode = (type1<<8)|(short)type2;
+ 1020                          address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+ 1021  
+ 1022                          //add commmand to command table
+ 1023                          ADDCOMMAND3(__test, address_mode, op1, op2, type)                                       
+ 1024  
+ 1025                          //push result
+ 1026                          TYPEDES dt;//not used
+ 1027                          memset(&dt, 0, sizeof(TYPEDES));
+ 1028                          this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
+ 1029                  }
+ 1030  
+ 1031  
+ 1032    .) }
+ 1033    
+ 1034    
+ 1035    (.
+ 1036          if (type >= 0)
+ 1037          {
+ 1038                  // popµÙ∂‡”⁄µƒ≤Ÿ◊˜ ˝, “ÚŒ™’‚ ±Ω·π˚“—‘⁄__AX÷–
+ 1039                  long g;
+ 1040                  long t;
+ 1041                  TYPEDES dt;
+ 1042                  m_pMainFunction->PopDigit(&g, &t, &dt);
+ 1043  
+ 1044                  //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+ 1045                  _typedes(dt_temp, dtLong)
+ 1046                  if (m_pMainFunction->AddVal(NULL,  dt_temp))
+ 1047                  {                       
+ 1048                          long temp;
+ 1049                          temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 1050                          ADDCOMMAND2(__mov, DR, temp, _PSW);
+ 1051                          m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt_temp);
+ 1052                  }
+ 1053                  else
+ 1054                  {
+ 1055                          REPORT_COMPILE_ERROR("add symbol failed");
+ 1056                  }
+ 1057          }
+ 1058    .)
+ 1059    .
+ 1060  
+ 1061    ShiftExp             = AddExp      { ( "<<" | ">>" ) AddExp } .
+ 1062  
+ 1063    AddExp               = (.     int type = -1;//1: add 0: sub .)
+ 1064  MultExp     { ( "+" (.          type = 1; .) | "-" (. type = 0; .) ) MultExp 
+ 1065  
+ 1066  (.
+ 1067                  //add command
+ 1068                  long op1, op2;
+ 1069                  long type1, type2;
+ 1070                  TYPEDES dt1, dt2;
+ 1071                  //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+ 1072                  if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+ 1073                  {
+ 1074                  //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 1075                          GenError(96);
+ 1076                          return;
+ 1077                  }
+ 1078                  else
+ 1079                  {
+ 1080  
+ 1081                          //¿‡–Õ◊™ªª
+ 1082                          CAST
+ 1083                          //get address mode
+ 1084                          int address_mode = (type1<<8)|(short)type2;
+ 1085                          address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+ 1086  
+ 1087                          
+ 1088                          if (dt1.dim >0)
+ 1089                          {//»Áπ˚ « ˝◊È±‰¡ø
+ 1090                                  //µ√µΩ‘ˆ¡ø
+ 1091                                  int size = UnitSize(dt1);
+ 1092                                  for (int i=1; i<dt1.dim;i++)
+ 1093                                  {
+ 1094                                          size *= dt1.dimsize[i];
+ 1095                                  }
+ 1096                                  //‘ˆ¡ø≥À“‘op2µ√µΩ µº ‘ˆ¡ø,¥Ê»Î_AX
+ 1097                                  ADDCOMMAND2(__mul, type2<<8, op2, size)
+ 1098                                  //º”∑®
+ 1099                                  if (dt1.type == dtFloat && dt1.refLevel==0)
+ 1100                                  {
+ 1101                                          if (type == 0)
+ 1102                                          ADDCOMMAND2(__fsub, (type1<<8)|0x82, op1, _AX)  
+ 1103                                          else if (type == 1)
+ 1104                                          ADDCOMMAND2(__fadd, (type1<<8)|0x82, op1, _AX)  
+ 1105                                  }
+ 1106                                  else
+ 1107                                  {
+ 1108                                          if (type == 0)
+ 1109                                          ADDCOMMAND2(__sub, (type1<<8)|0x82, op1, _AX)   
+ 1110                                          else if (type == 1)
+ 1111                                          ADDCOMMAND2(__add, (type1<<8)|0x82, op1, _AX)   
+ 1112                                  }
+ 1113                          }
+ 1114                          else
+ 1115                          {
+ 1116                                  //add commmand to command table
+ 1117                                  if (dt1.type == dtFloat && dt1.refLevel==0)
+ 1118                                  {
+ 1119                                          if (type == 0)
+ 1120                                          ADDCOMMAND2(__fsub, address_mode, op1, op2)     
+ 1121                                          else if (type == 1)
+ 1122                                          ADDCOMMAND2(__fadd, address_mode, op1, op2)     
+ 1123                                  }
+ 1124                                  else
+ 1125                                  {
+ 1126                                          if (type == 0)
+ 1127                                          ADDCOMMAND2(__sub, address_mode, op1, op2)      
+ 1128                                          else if (type == 1)
+ 1129                                          ADDCOMMAND2(__add, address_mode, op1, op2)      
+ 1130                                  }
+ 1131                          }       
+ 1132                          //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+ 1133                          if (m_pMainFunction->AddVal(NULL,  dt1))
+ 1134                          {                       
+ 1135                                  long temp;
+ 1136                                  long opsize = log2(UnitSize(dt1))<<6;
+ 1137                                  temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 1138                                  ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp , _AX);
+ 1139                                  m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
+ 1140                          }
+ 1141                          else
+ 1142                          {
+ 1143                                  REPORT_COMPILE_ERROR("add symbol failed");
+ 1144                          }
+ 1145                  }
+ 1146  .)
+ 1147  
+ 1148  } .
+ 1149  
+ 1150    MultExp              = (.     char szName[MAX_IDENTIFIER_LENGTH];     memset(szName, 0, MAX_IDENTIFIER_LENGTH); .)
+ 1151    CastExp  
+ 1152  (. 
+ 1153          Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+ 1154          int type = -1;//0: mult 1: div 2:percent
+ 1155  .) { ( "*"  (.  type = 0; .) | "/"  (.  type = 1; .) | "%"  (.  type = 2; .) ) CastExp 
+ 1156  (.
+ 1157                  Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+ 1158                  
+ 1159                  //add command
+ 1160                  long op1, op2;
+ 1161                  long type1, type2;
+ 1162                  TYPEDES dt1, dt2;
+ 1163  
+ 1164                  //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+ 1165                  if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+ 1166                  {
+ 1167                          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 1168                          GenError(96);
+ 1169                          return;
+ 1170                  }
+ 1171                  else
+ 1172                  {
+ 1173                          CAST
+ 1174                          //get address mode
+ 1175                          int address_mode = (type1<<8)|(short)type2;
+ 1176                          address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+ 1177                          //add commmand to command table
+ 1178                          if (dt1.type == dtFloat && dt1.refLevel==0)
+ 1179                          {
+ 1180                                  if (type == 0) ADDCOMMAND2(__fmul, address_mode, op1, op2)                                      
+ 1181                                          else if (type == 1) ADDCOMMAND2(__fdiv, address_mode, op1, op2)                                 
+ 1182                                          else GenError(109);
+ 1183                          }
+ 1184                          else
+ 1185                          {
+ 1186                                  if (type == 0) ADDCOMMAND2(__mul, address_mode, op1, op2)                                       
+ 1187                                          else if (type == 1) ADDCOMMAND2(__div, address_mode, op1, op2)
+ 1188                                          else if (type == 2) ADDCOMMAND2(__mod, address_mode, op1, op2)
+ 1189                          }
+ 1190                          
+ 1191                          //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+ 1192                          if (m_pMainFunction->AddVal(NULL, dt1))
+ 1193                          {                       
+ 1194                                  long temp;
+ 1195                                  long opsize = log2(UnitSize(dt1))<<6;
+ 1196                                  temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 1197                                  ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp, _AX);
+ 1198                                  m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
+ 1199                          }
+ 1200                          else
+ 1201                          {
+ 1202                                  this->GenError(98);
+ 1203                          }
+ 1204                  }
+ 1205  
+ 1206  .)
+ 1207  } .
+ 1208  
+ 1209    CastExp              = 
+ 1210    (.
+ 1211          //±£¥Ê“ª‘™≤Ÿ◊˜∑˚’ª
+ 1212          EXPRESSIONOP* pSavedStack = this->m_pExpOpPt;
+ 1213          //«Âø’“ª‘™≤Ÿ◊˜∑˚’ª
+ 1214          m_pExpOpPt = &m_ExpOp;
+ 1215          //int op;
+ 1216  
+ 1217    .)
+ 1218    UnaryExp 
+ 1219    
+ 1220    (.
+ 1221          int op;
+ 1222          while (this->PopOp(&op))
+ 1223          {               
+ 1224  
+ 1225                  //≤Ÿ◊˜ ˝≥ˆ’ª
+ 1226                  long op1;
+ 1227                  long type1;
+ 1228                  TYPEDES dt1;    
+ 1229                  if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
+ 1230                  {
+ 1231                          break;//genError(96);???????
+ 1232                  }
+ 1233                  int address_mode = (type1<<8);
+ 1234                  address_mode |= log2(UnitSize(dt1))<<14;
+ 1235                  
+ 1236                  //ÃÌº”√¸¡Ó
+ 1237                  switch (op)
+ 1238                  {
+ 1239                  case PlusSym:                           
+ 1240                          //no operation
+ 1241                          break;
+ 1242                  case MinusSym:                  
+ 1243                          {
+ 1244                                  int opsize;
+ 1245                                  if (!m_pMainFunction->AddVal(NULL, dt1))
+ 1246                                          GenError(98);
+ 1247                                  if (dt1.type == dtFloat)
+ 1248                                  {
+ 1249                                          opsize = (type1>>6)&0xc0;
+ 1250                                          ADDCOMMAND2(__fsub, type1, 0, op1)
+ 1251                                  }
+ 1252                                  else
+ 1253                                  {
+ 1254                                          opsize = (type1>>6)&0xc0;
+ 1255                                          ADDCOMMAND2(__sub, type1, 0, op1)
+ 1256                                  }
+ 1257                                  ADDCOMMAND2(__mov, DR, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, _AX)
+ 1258                                  m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, AMODE_MEM|(opsize<<6), dt1);
+ 1259                          }
+ 1260                          break;
+ 1261                  case StarSym:  
+ 1262                          {
+ 1263                                  if (dt1.refLevel <1)
+ 1264                                          GenError(102);
+ 1265                                  dt1.refLevel--;
+ 1266                                  //»°≤Ÿ◊˜µƒ◊÷Ω⁄¿‡–Õ
+ 1267                                  int opsize = log2(UnitSize(dt1));
+ 1268                                  opsize = opsize<< 6;
+ 1269                                  type1 |= opsize; 
+ 1270  
+ 1271                                  //Ω´type1µƒº‰Ω”∑√Œ º∂±Ã·∏ﬂ“ªº∂
+ 1272                                  int level = (type1 & 0x30) >> 4;
+ 1273                                  if (level == 3)
+ 1274                                  {
+ 1275                                          GenError(103);
+ 1276                                          break;
+ 1277                                  }
+ 1278                                  level ++;
+ 1279                                  type1 |= level << 4;
+ 1280  /*                              int j = (type1>>4)&0x3;
+ 1281                                  if (j < 1)
+ 1282                                          GenError(102);//is not a point
+ 1283                                  else
+ 1284                                          j--;
+ 1285                                  j = j << 4;
+ 1286  */                              
+ 1287  /*                      
+ 1288                                  type1 &= 0xffcf;
+ 1289                                  type1 |= j;
+ 1290  */
+ 1291                                  //»Î’ª
+ 1292                                  m_pMainFunction->PushDigit(op1, type1, dt1);
+ 1293                          }
+ 1294                          break;
+ 1295                  case BangSym: 
+ 1296                          {
+ 1297                                  if (!m_pMainFunction->AddVal(NULL, dt1))
+ 1298                                          GenError(98);
+ 1299                                  int opsize = (type1>>6)&0x03;
+ 1300                                  ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
+ 1301                                  ADDCOMMAND1(__notr, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
+ 1302                                  m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
+ 1303                          }
+ 1304                          break;
+ 1305                  case AndSym:  
+ 1306                          {
+ 1307                                  long temp;
+ 1308                                  temp = AllocTempVar(dtLong, 1);
+ 1309                                  if (temp == -1)
+ 1310                                  {
+ 1311                                          GenError(98);
+ 1312                                  }
+ 1313                                  else
+ 1314                                  {
+ 1315                                          if (dt1.objID > 0)
+ 1316                                          {//»Áπ˚ ±obj£¨ ≤ª»°µÿ÷∑
+ 1317                                                  m_pMainFunction->PushDigit(op1, type1, dt1);
+ 1318                                          }
+ 1319                                          else
+ 1320                                          {
+ 1321                                                  ADDCOMMAND2(__ea, 0x8100|type1, temp, op1)
+ 1322                                                  dt1.refLevel ++;
+ 1323                                                  m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
+ 1324                                          }
+ 1325                                  }
+ 1326                          }
+ 1327                          break;
+ 1328                  case TildeSym: //'~'
+ 1329                          {
+ 1330                                  if (!m_pMainFunction->AddVal(NULL, dt1))
+ 1331                                          GenError(98);
+ 1332                                  int opsize = (type1>>6)&0xc0;
+ 1333                                  ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
+ 1334                                  ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
+ 1335                                  m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
+ 1336                          }
+ 1337                          break;
+ 1338                  default :GenError(93); break;
+ 1339                  }               
+ 1340          }
+ 1341          //ª÷∏¥“ª‘™‘ÀÀ„∑˚’ª
+ 1342          this->ClearOpStack();
+ 1343          m_pExpOpPt = pSavedStack;  
+ 1344    .)
+ 1345    .
+ 1346  
+ 1347  /* we should really add
+ 1348                           | "(" identifier ")" CastExp .
+ 1349     but this breaks it badly */
+ 1350  
+ 1351    UnaryExp             = PostFixExp
+ 1352                           | ( "++" | "--" ) UnaryExp
+ 1353                           | UnaryOperator CastExp .
+ 1354  
+ 1355  /* we should really add
+ 1356                           | "sizeof" ( UnaryExp | "(" (. PTYPEDES type = new TYPEDES;.) Type<type> ")" ) .
+ 1357     but this breaks it badly */
+ 1358  
+ 1359    PostFixExp           = Primary
+ 1360                           { "[" Expression "]"
+ 1361  (.
+ 1362  {
+ 1363                                  //add command
+ 1364                                  long op1, op2;
+ 1365                                  long type1, type2;
+ 1366                                  TYPEDES dt1, dt2;
+ 1367                                  //pop
+ 1368                                  if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+ 1369                                  {
+ 1370                                          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 1371                                          GenError(96);
+ 1372                                          return;
+ 1373                                          
+ 1374                                  }
+ 1375                                  else
+ 1376                                  {       
+ 1377                                  /*¥¶¿Ìa[b]µƒ¡˜≥Ã(“™øº¬«÷∏’Î£¨  ˝◊È£¨ ∂‡Œ¨ ˝◊È£¨ ◊˜Œ™≤Œ ˝¥´Ω¯¿¥µƒ ˝◊È∫Õ÷∏’Î£©
+ 1378                                          1. µ√µΩbœ¬±Í¥˙±Ìµƒµ•Œª≥§∂»(»Áπ˚ « ˝◊È, Õ®π˝Œ¨ ˝º∆À„, »Áπ˚ «÷∏’Î, reflvlºı“ª∫Ûº∆À„UnitSize)
+ 1379                                          2. b*µ•Œª≥§∂»= offset 
+ 1380                                          3. a + offset -> temp
+ 1381                                          4. push temp, º‰Ω”—∞÷∑
+ 1382                                          */
+ 1383                                          int offset;
+ 1384                                          BOOL bIsArray = TRUE;
+ 1385                                          if (dt1.dim >0)// « ˝◊È
+ 1386                                          {
+ 1387                                                  bIsArray = TRUE;
+ 1388                                                  offset= UnitSize(dt1);
+ 1389                                                  for (int i = 1; i< dt1.dim; i++)
+ 1390                                                  {
+ 1391                                                          offset *= dt1.dimsize[i];
+ 1392                                                  }
+ 1393                                                  //≤ª…˙≥…–¬µƒtypedes, ÷±Ω”–ﬁ∏ƒdt1,  π÷ÆŒ¨ ˝ºı“ª
+ 1394                                                  if (dt1.dim >1)
+ 1395                                                          memcpy(dt1.dimsize, dt1.dimsize+1, sizeof(long)*(dt1.dim-1));                                   
+ 1396                                                  dt1.dim--;                                                      
+ 1397                                          }
+ 1398                                          else
+ 1399                                          {//≤ª « ˝◊È,  «÷∏’Î
+ 1400                                                  bIsArray = FALSE;
+ 1401                                                  if (dt1.refLevel > 0)// «÷∏’Î«“≤ª «÷∏’Î ˝◊È
+ 1402                                                  {
+ 1403                                                          //≤ª…˙≥…–¬µƒtypedes, ÷±Ω”–ﬁ∏ƒdt1,  π÷Æ*∫≈ºı“ª
+ 1404                                                          dt1.refLevel--;
+ 1405                                                          offset = UnitSize(dt1);
+ 1406                                                  }
+ 1407                                                  else//º»≤ª «÷∏’Î“≤≤ª « ˝◊È
+ 1408                                                          GenError(101);                                          
+ 1409                                          }
+ 1410  
+ 1411                                          //∆´“∆¡ø = µ•Œª≥§∂»* œ¬±Íaddcommand(mul, DC, œ¬±Í, µ•Œª≥§∂»)
+ 1412                                          ADDCOMMAND2(__mul, (type2<<8)|0x8080, op2, offset)
+ 1413                                          //‘ˆº”¡Ÿ ±±‰¡ø¥Ê∑≈÷–º‰Ω·π˚
+ 1414                                          long temp = this->AllocTempVar(dtLong);
+ 1415                                          if (temp == -1)
+ 1416                                          {
+ 1417                                                  GenError(98);
+ 1418                                          }
+ 1419                                          //æ”Œ¿ª™2001-08-22
+ 1420                                          long lIndirect = (type1>>4)&0x03;
+ 1421                                          if (bIsArray == FALSE && lIndirect>0)//»Áπ˚ «÷∏’Î£¨ ‘Úº‰Ω”—∞÷∑
+ 1422                                                  ADDCOMMAND2(__add, DR|0x1000, op1, _AX)
+ 1423                                          else
+ 1424                                                  ADDCOMMAND2(__add, DR, op1, _AX)
+ 1425                                          //Ω´Ω·π˚±£¥ÊµΩtemp
+ 1426                                          ADDCOMMAND2(__mov, DR, temp, _AX)
+ 1427                                          //»Î’ª, ◊˜Œ™÷∏’Î”√
+ 1428                                          m_pMainFunction->PushDigit(temp, AMODE_MEM|0x10|((log2(UnitSize(dt1)))<<6), dt1);
+ 1429  }
+ 1430  }
+ 1431  .)
+ 1432                            | 
+ 1433  (.
+ 1434          
+ 1435  {
+ 1436                          char szName[MAX_IDENTIFIER_LENGTH];
+ 1437                          memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+ 1438                          Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+ 1439                          long index = m_PubFuncTable->FindFuncByName(szName);
+ 1440                          FUNCCALL fn;
+ 1441                          fn.name = szName;
+ 1442                          if (index < 0) // cannot find function name in public function table, guess is was script function
+ 1443                          {
+ 1444                                  // find in script function table
+ 1445                                  CFunction* pScript = m_pCurClassDes->getFuncTable()->GetFunction(szName, &index);
+ 1446                                  if (pScript == NULL)
+ 1447                                  {       
+ 1448                                          GenError(97);
+ 1449                                          Get();
+ 1450                                          return;
+ 1451                                  }
+ 1452                                  else
+ 1453                                  {
+ 1454                                          fn.pVF = pScript;
+ 1455                                          fn.nType = 0;
+ 1456                                          ADDCOMMAND1(__callv, CC, (long)pScript);
+ 1457                                          m_pCurClassDes->getFuncTable()->ReleaseFunc();
+ 1458                                  }
+ 1459  
+ 1460                          }
+ 1461                          else
+ 1462                          {
+ 1463                                  ADDCOMMAND1(__callpub, CC, (long)(this->m_PubFuncTable->m_FuncTable[index].pfn));
+ 1464                                  fn.pfn = &m_PubFuncTable->m_FuncTable[index];
+ 1465                                  fn.nType = 1;                           
+ 1466                          }
+ 1467  
+ 1468                                                    
+ 1469  .)
+ 1470  FunctionCall<&fn>
+ 1471  (.}.)
+ 1472                            | ("." identifier)  
+ 1473                            (.
+ 1474                            {
+ 1475                            char* member = GetCurrSym();
+ 1476                            int address = m_pMainFunction->AddStaticData(strlen(member)+1, (BYTE*)member);
+ 1477                            //add command
+ 1478                              long op1, type1;
+ 1479                              TYPEDES dt1;
+ 1480                  
+ 1481                              //pop
+ 1482                              if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 != dtGeneral){
+ 1483                                       GenError(96);
+ 1484                                      return;
+ 1485                              }else
+ 1486                                          {
+ 1487                                               long temp = AllocTempVar(dtGeneral);
+ 1488                                           if (temp == -1)
+ 1489                                                   {
+ 1490                               GenError(98);
+ 1491                                                  }
+ 1492                                                  // get effective address for object member
+ 1493                                                  ADDCOMMAND3(__eaobj, AMODE_OBJ|AMODE_MEM<<8, temp, op1, address);
+ 1494                                                   _typedes(DT1, dtLong)
+ 1495                                                   m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, DT1);
+ 1496                                          }
+ 1497                                          }
+ 1498                            .)
+ 1499                            
+ 1500                            
+ 1501                            
+ 1502                            | ( "->" "{" identifier "}" 
+ 1503  (.
+ 1504                          {                               
+ 1505                                  //pop
+ 1506                                  TYPEDES dt;
+ 1507                                  long type;
+ 1508                                  long op;
+ 1509                                  if (!m_pMainFunction->PopDigit(&op, &type, &dt))
+ 1510                                  {
+ 1511                                          GenError(96);
+ 1512                                  }
+ 1513                                  else
+ 1514                                  {
+ 1515                                          if (dt.objID > 0)
+ 1516                                          {
+ 1517                                                  char szName[MAX_IDENTIFIER_LENGTH];
+ 1518                                                  memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+ 1519                                                  Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆                                 
+ 1520                                                  
+ 1521                                                  #if 0
+ 1522                                                  //get offset
+ 1523                                                  OBJMEMDES* pMember = this->m_ObjTable[dt.objID-1]->GetMemberByName(szName);
+ 1524                                                  if (pMember == NULL)
+ 1525                                                  {
+ 1526                                                          GenError(121);                                  
+ 1527                                                  }
+ 1528                                                  else
+ 1529                                                  {       
+ 1530                                                          TYPEDES dtTemp;
+ 1531                                                          memcpy(&dtTemp, &pMember->dt, sizeof(TYPEDES));
+ 1532                                                          
+ 1533                                                          long temp = AllocTempVar(dtLong, 1);
+ 1534                                                          
+ 1535                                                          if (temp == -1)
+ 1536                                                          {
+ 1537                                                                  GenError(98);
+ 1538                                                          }
+ 1539                                                          
+ 1540                                                          //add(op, offset) = address
+ 1541                                                          ADDCOMMAND2(__add, DC, op, pMember->offset)
+ 1542                                                          ADDCOMMAND2(__mov, DR, temp, _AX)
+ 1543                                                          if ((dtTemp.dim ==0 && dtTemp.objID == 0 )
+ 1544                                                                  ||(dtTemp.objID > 0 && dtTemp.refLevel > 0))
+ 1545                                                                  {//»Áπ˚≤ª « ˝◊È∫Õobj
+ 1546                                                                          
+ 1547                                                                          //»°∏ƒmemberµƒopsize
+ 1548                                                                          int opsize;
+ 1549                                                                          if (dtTemp.refLevel > 0) //»Áπ˚ «÷∏’Î¿‡–Õ
+ 1550                                                                                  opsize = log2(OPSIZE_PTR);
+ 1551                                                                          else
+ 1552                                                                                  opsize = log2(typesize(dtTemp.type, dtTemp.objID));
+ 1553                                                                          opsize &= 0x3;
+ 1554                                                                          m_pMainFunction->PushDigit(temp, AMODE_MEM|(opsize << 6)|0x10, dtTemp);
+ 1555                                                                          
+ 1556                                                                  }
+ 1557                                                                  else
+ 1558                                                                  {
+ 1559                                                                          
+ 1560                                                                          //»Áπ˚ « ˝◊ÈªÚobj, …˙≥…¡Ÿ ±±‰¡ø¥Ê∑≈ ˝◊Èµÿ÷∑
+ 1561                                                                          if (dtTemp.dim != 0)
+ 1562                                                                          {                                                                       
+ 1563                                                                                  /*æ”Œ¿ª™2001-08-22–ﬁ∏ƒ
+ 1564                                                                                  dtTemp.refLevel++;
+ 1565                                                                                  dtTemp.dim--;
+ 1566                                                                                  */
+ 1567                                                                                  m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
+ 1568                                                                          }
+ 1569                                                                          else
+ 1570                                                                          {
+ 1571                                                                                  dtTemp.refLevel++;
+ 1572                                                                                  m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
+ 1573                                                                          }
+ 1574                                                                  }
+ 1575                                                                  
+ 1576                                                  }
+ 1577                                                  #endif
+ 1578                                          }
+ 1579                                  }
+ 1580                          }
+ 1581                          
+ 1582  .)
+ 1583                          )                         
+ 1584                                                    
+ 1585                                                    | identifier        
+ 1586                                                  /*  | (["::" identifier ])*/
+ 1587                            | "++"
+ 1588  
+ 1589  (.
+ 1590                  {
+ 1591                                  long op1;
+ 1592                                  long type1;
+ 1593                                  TYPEDES dt1;
+ 1594                                  //pop≥ˆ±ªº” ˝
+ 1595                                  if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+ 1596                                  {
+ 1597                                          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 1598                                                                  GenError(96);
+ 1599                          return;
+ 1600  
+ 1601                                  }
+ 1602                                  else
+ 1603                                  {
+ 1604                                          if (dt1.type == dtFloat)
+ 1605                                          {
+ 1606                                                  GenError(112);
+ 1607                                          }
+ 1608                                          else
+ 1609                                          {
+ 1610                                                  //get address mode
+ 1611                                                  int address_mode = (type1<<8);
+ 1612                                                  address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
+ 1613                                                  if (dt1.dim >0)
+ 1614                                                  {//»Áπ˚ « ˝◊È±‰¡ø
+ 1615                                                          //µ√µΩ‘ˆ¡ø
+ 1616                                                          int size = UnitSize(dt1);
+ 1617                                                          for (int i=1; i<dt1.dim;i++)
+ 1618                                                          {
+ 1619                                                                  size *= dt1.dimsize[i];
+ 1620                                                          }
+ 1621                                                          //º”∑®
+ 1622                                                          ADDCOMMAND2(__add, (type1<<8)|0x80, op1, size)
+ 1623                                                  }
+ 1624                                                  else
+ 1625                                                  {
+ 1626                                                          //add commmand to command table
+ 1627                                                          ADDCOMMAND2(__add, address_mode, op1, 1)        
+ 1628                                                  }       
+ 1629                                                  ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
+ 1630                                                  //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+ 1631                                                  m_pMainFunction->PushDigit(op1, type1, dt1);
+ 1632                                          }
+ 1633                                  }
+ 1634                          }
+ 1635                  
+ 1636  .)
+ 1637                            | "--"
+ 1638  
+ 1639  (.
+ 1640                          {
+ 1641                                  long op1;
+ 1642                                  long type1;
+ 1643                                  TYPEDES dt1;
+ 1644                                  //pop≥ˆ±ªº” ˝
+ 1645                                  if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+ 1646                                  {
+ 1647                                          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 1648                                                                  GenError(96);
+ 1649                          return;
+ 1650  
+ 1651                                  }
+ 1652                                  else
+ 1653                                  {
+ 1654                                          if (dt1.type == dtFloat)
+ 1655                                          {
+ 1656                                                  GenError(112);
+ 1657                                          }
+ 1658                                          else
+ 1659                                          {
+ 1660                                                  //get address mode
+ 1661                                                  int address_mode = (type1<<8);
+ 1662                                                  address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
+ 1663                                                  if (dt1.dim >0)
+ 1664                                                  {//»Áπ˚ « ˝◊È±‰¡ø
+ 1665                                                          //µ√µΩ‘ˆ¡ø
+ 1666                                                          int size = UnitSize(dt1);
+ 1667                                                          for (int i=1; i<dt1.dim;i++)
+ 1668                                                          {
+ 1669                                                                  size *= dt1.dimsize[i];
+ 1670                                                          }
+ 1671                                                          //º”∑®
+ 1672                                                          ADDCOMMAND2(__sub, (type1<<8)|0x80, op1, size)
+ 1673                                                  }
+ 1674                                                  else
+ 1675                                                  {
+ 1676                                                          //add commmand to command table
+ 1677                                                          ADDCOMMAND2(__sub, address_mode, op1, 1)        
+ 1678                                                  }       
+ 1679                                                  ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
+ 1680                                                  //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+ 1681                                                  m_pMainFunction->PushDigit(op1, type1, dt1);
+ 1682                                          }
+ 1683                                  }
+ 1684                          }
+ 1685  .)                                                
+ 1686                           } .
+ 1687                           
+ 1688   HashItem  = (string1 | identifier) ":" Expression . 
+ 1689   SetItem = HashItem | Expression .
+ 1690    SetItems = SetItem { "," SetItem } .  
+ 1691    SetDef = "{"  [ SetItems ] "}" .
+ 1692    
+ 1693    Creator = 
+ 1694    (. char szName[_MAX_PATH] = ""; .)
+ 1695    ClassFullName<szName> {"(" {FormalParamList} ")"} 
+ 1696    (.    
+ 1697          CClassDes* cd = this->m_classTable->getClass(szName);
+ 1698          if (cd == NULL){
+ 1699                  std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+ 1700                  strcpy(szName, s.c_str());
+ 1701                  cd = this->m_classTable->getClass(szName);
+ 1702                  if (cd == NULL){
+ 1703                                  strcat(szName, ".c");
+ 1704                                  CCompiler cc;                         
+ 1705                      cc.Compile(szName);
+ 1706              }
+ 1707                  // TODO generete correct error
+ 1708                  //GenError(100);
+ 1709                  //return;
+ 1710          }
+ 1711                  int address = m_pMainFunction->AddStaticData(strlen(szName)+1, (BYTE*)szName);
+ 1712          ADDCOMMAND1(__newobj,DS, address);
+ 1713          
+ 1714      
+ 1715      TYPEDES dt1;
+ 1716          memset(&dt1, 0, sizeof(TYPEDES));
+ 1717          dt1.type = dtGeneral;
+ 1718     // Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+ 1719          if (m_pMainFunction->AddVal(NULL,  dt1))
+ 1720          {                       
+ 1721                          long temp;
+ 1722                          long opsize = log2(UnitSize(dt1))<<6;
+ 1723                          temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 1724                          ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp , _AX);
+ 1725                          m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
+ 1726          }
+ 1727          else
+ 1728          {
+ 1729                          REPORT_COMPILE_ERROR("add symbol failed");
+ 1730          }
+ 1731    .)
+ 1732     .
+ 1733    
+ 1734    ClassFullName<char* szName> = 
+ 1735    identifier (. strcpy(szName, GetCurrSym()); .) 
+ 1736    {"::" (. strcat(szName, PATH_SEPARATOR_S); .)
+ 1737     identifier (. strcat(szName, GetCurrSym()); .)
+ 1738     }  .
+ 1739    
+ 1740    Primary              = 
+ 1741  (.
+ 1742          char szName[MAX_IDENTIFIER_LENGTH];
+ 1743          memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+ 1744  .)
+ 1745   identifier (.
+ 1746   
+ 1747                  {       Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+ 1748                  
+ 1749                          
+ 1750                          int address = -1;
+ 1751                          
+ 1752                          if (strcmp(szName, "this")==0){
+ 1753                          // TODO: get address of current object
+ 1754                                  address = 0;
+ 1755                          }else
+ 1756                              address = GetSymAddress(szName);
+ 1757  
+ 1758                           //»Áπ˚adress<0 «∫Ø ˝√˚
+ 1759                                    if (address >= 0 )//»Áπ˚≤ª «∫Ø ˝√˚£¨  «±‰¡ø√˚°£
+ 1760                                    {
+ 1761                                            TYPEDES dt;
+ 1762                                            SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
+ 1763                                            if (pElement == NULL)
+ 1764                                            {
+ 1765                                                    GenError(115);
+ 1766                                            }
+ 1767                                            else
+ 1768                                            {
+ 1769                                                    memcpy(&dt ,&(pElement->type), sizeof(TYPEDES));
+ 1770                                                    /*if (pdt == NULL)
+ 1771                                                    {
+ 1772                                                    GenError(111);
+ 1773                                                    }
+ 1774                                                    else*/
+ 1775                                            
+ 1776                                                    if ((dt.dim ==0 && dt.objID == 0 )
+ 1777                                                            ||(dt.objID > 0 && dt.refLevel > 0))
+ 1778                                                    {//»Áπ˚≤ª « ˝◊È∫Õobj
+ 1779                                                            int opsize;
+ 1780                                                            if (dt.refLevel > 0) 
+ 1781                                                                    opsize = log2((int)OPSIZE_PTR);
+ 1782                                                            else
+ 1783                                                                    opsize = log2((int)typesize(dt.type, dt.objID));
+ 1784                                                            opsize &= 0x3;
+ 1785                                                            m_pMainFunction->PushDigit(address, AMODE_MEM|(opsize << 6), dt);
+ 1786                                                    }
+ 1787                                                    else
+ 1788                                                    {//»Áπ˚ « ˝◊ÈªÚobj, …˙≥…¡Ÿ ±±‰¡ø¥Ê∑≈ ˝◊Èµÿ÷∑
+ 1789                                                            if (dt.dim != 0)
+ 1790                                                            {
+ 1791                                                                    long temp = AllocTempVar(dtLong, 1);
+ 1792                                                                    if (temp == -1)
+ 1793                                                                    {
+ 1794                                                                            GenError(98);
+ 1795                                                                    }
+ 1796                                                                    
+ 1797                                                                    ADDCOMMAND2(__ea, DD, temp, address)
+ 1798                                                                    /*æ”Œ¿ª™2001£≠8£≠22–ﬁ∏ƒ
+ 1799                                                                    dt.refLevel++;
+ 1800                                                                    dt.dim--;
+ 1801                                                                    */
+ 1802                                                                    m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2( (int)(OPSIZE_PTR) )<<6), dt);
+ 1803                                                            }
+ 1804                                                            else // if it is object
+ 1805                                                            {
+ 1806                                                                                                    int opsize;
+ 1807                                                                                                    opsize = log2((int)OPSIZE_PTR);
+ 1808                                                                opsize &= 0x3;
+ 1809                                                                                                    m_pMainFunction->PushDigit(address, AMODE_MEM|(opsize << 6), dt);
+ 1810                                                            }
+ 1811                                                    }
+ 1812                                                    
+ 1813                                            }
+ 1814                                    }
+ 1815                          else
+ 1816                          {
+ 1817                                  //GenError(126);
+ 1818                                  if (this->m_PubFuncTable->FindFuncByName(szName) < 0)
+ 1819                                  {
+ 1820                                          long index = 0;
+ 1821                                          if (m_pCurClassDes->getFuncTable()->GetFunction(szName, &index) == NULL)
+ 1822                                                  GenError(104);
+ 1823                                          else
+ 1824                                                  m_pCurClassDes->getFuncTable()->ReleaseFunc();
+ 1825                                  }
+ 1826                                  //      return;
+ 1827                          }
+ 1828  }
+ 1829   .)
+ 1830    | "new" Creator
+ 1831    
+ 1832    
+ 1833    | string1
+ 1834    (.
+ 1835                   {
+ 1836                                              char* pCh;
+ 1837                                              pCh = new char[Scanner->CurrSym.Len+1];
+ 1838                                              if (pCh == NULL)
+ 1839                                              {
+ 1840                                                      GenError(106);
+ 1841                                                      Get();
+ 1842                                                      break;
+ 1843                                              }
+ 1844                                              memset(pCh, 0, Scanner->CurrSym.Len+1);
+ 1845                                                                  Scanner->GetName(&Scanner->CurrSym, pCh, Scanner->CurrSym.Len);//µ√µΩ√˚≥∆
+ 1846                                                 char* string = NULL;
+ 1847                                              string = AnalyzeConstString(pCh);
+ 1848                                           if (string == NULL)
+ 1849                                              {
+ 1850                                                      if (pCh)
+ 1851                                                              delete pCh;
+ 1852                                                      GenError(100);                          
+ 1853                                                      Get();
+ 1854                                                      break;
+ 1855                                              }
+ 1856                          
+ 1857                                              int straddress = this->m_pMainFunction->m_nSSUsedSize;
+ 1858                                              if (m_pMainFunction->AddStaticData(strlen(string)+1, (BYTE*)string)>=0)
+ 1859                                              {       
+ 1860                                                      _typedes(dt, dtInt)
+ 1861                                                      
+ 1862                                                      if (m_pMainFunction->AddVal(NULL,  dt))
+ 1863                                                      {
+ 1864                                                              long temp;
+ 1865                                                              temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 1866                                                              ADDCOMMAND2(__ea, DS, temp, straddress);
+ 1867                                                              m_pMainFunction->PushDigit(temp, AMODE_MEM, dt);                         
+ 1868                                                      }
+ 1869                                              }
+ 1870                                              else
+ 1871                                              {
+ 1872                                                      this->GenError(98);
+ 1873                                              }
+ 1874                                                  
+ 1875                                                                  if (string)
+ 1876                                                      delete string;
+ 1877                                                                  if (pCh)
+ 1878                                                      delete pCh;         
+ 1879                                      }
+ 1880    .)| char1
+ 1881    (.
+ 1882                  {
+ 1883                          Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+ 1884                          _typedes(dt,dtChar);
+ 1885                          m_pMainFunction->PushDigit(szName[1], AMODE_DIRECT, dt);
+ 1886                  }
+ 1887  
+ 1888    .)
+ 1889    | number 
+ 1890   (.
+ 1891  
+ 1892                  if (strchr(szName, '.'))        // float
+ 1893                  {
+ 1894                          
+ 1895                          float number = (float)atof(GetCurrSym());
+ 1896                          _typedes(dt, dtFloat);                  
+ 1897                          m_pMainFunction->PushDigit(*(long*)&number, AMODE_DIRECT|OPSIZE_4B, dt);
+ 1898                  }
+ 1899                  else    // int
+ 1900                  {
+ 1901                          
+ 1902                          int number = atoi(GetCurrSym());
+ 1903                          _typedes(dt, dtLong);                   
+ 1904                          m_pMainFunction->PushDigit(number, AMODE_DIRECT|OPSIZE_4B, dt);
+ 1905                  }
+ 1906  
+ 1907   .)
+ 1908    | "(" Expression ")" 
+ 1909    | SetDef
+ 1910    .
+ 1911  
+ 1912    FunctionCall<FUNCCALL* pFuncEntry>         = "("   [ ActualParameters<pFuncEntry> ] ")" 
+ 1913    (.
+ 1914      //long lParamNum = 0;
+ 1915          if (pFuncEntry->nType)
+ 1916          {
+ 1917          //addcommand
+ 1918          ADDCOMMAND0(__endcallpub);
+ 1919          //save return value
+ 1920          _typedes(dt, dtLong)
+ 1921          if (m_pMainFunction->AddVal(NULL, dt))
+ 1922          {                       
+ 1923                  long temp;
+ 1924                  temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 1925                  ADDCOMMAND2(__mov, DR, temp , _AX);
+ 1926                  m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
+ 1927          }
+ 1928          else
+ 1929          {
+ 1930                  this->GenError(98);
+ 1931          }
+ 1932                                  
+ 1933          }
+ 1934          else
+ 1935          {
+ 1936          // check param number
+ 1937          //if (lParamNum != pFuncEntry->pVF->m_iParamNum)
+ 1938          //{
+ 1939          //      GenError(123);
+ 1940          //}
+ 1941  
+ 1942          //addcommand
+ 1943          ADDCOMMAND0(__endcallv);
+ 1944  
+ 1945          //save return value
+ 1946          _typedes(dt, dtLong)
+ 1947          if (m_pMainFunction->AddVal(NULL, dt))
+ 1948          {
+ 1949                  long temp;
+ 1950                  temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 1951                  ADDCOMMAND2(__mov, DR, temp , _AX);
+ 1952                  m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
+ 1953          }
+ 1954          else
+ 1955          {
+ 1956                  this->GenError(98);
+ 1957          }
+ 1958          }
+ 1959    .).
+ 1960  
+ 1961    ActualParameters<FUNCCALL* pFuncEntry>     = 
+ 1962    (.
+ 1963  //      lParamNum = 0;
+ 1964          if (pFuncEntry == NULL)
+ 1965                  return;
+ 1966  
+ 1967          char cParamNum = 0;     
+ 1968  
+ 1969    .)Expression 
+ 1970    (.
+ 1971          //pop
+ 1972          long op1;
+ 1973          long type;
+ 1974          TYPEDES dt1;
+ 1975          if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
+ 1976          {
+ 1977          //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 1978                  this->GenError(96);
+ 1979                  return;
+ 1980          }
+ 1981          int address_mode = (type<<8)&0xff00;
+ 1982          address_mode |= (log2(UnitSize(dt1))<<14);
+ 1983  
+ 1984          if (pFuncEntry->nType)  // native function
+ 1985                  ADDCOMMAND1(__parampub, address_mode, op1)                      
+ 1986          else
+ 1987                  ADDCOMMAND1(__paramv, address_mode, op1)
+ 1988  
+ 1989          cParamNum++; 
+ 1990    .)
+ 1991    { "," Expression 
+ 1992    
+ 1993    (.
+ 1994                          // modified on 20030331 by weihua ju
+ 1995  //                      if (cParamNum > pFuncEntry->params.size()-1)
+ 1996  //                      {
+ 1997  //                              GenError(106);
+ 1998  //                      }
+ 1999  
+ 2000                          //pop
+ 2001                          long op1;
+ 2002                          long type;
+ 2003                          TYPEDES dt1;
+ 2004                          if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE)
+ 2005                          {
+ 2006                                  //      REPORT_COMPILE_ERROR("POP UP FAILED");
+ 2007                                  this->GenError(96);
+ 2008                                  return;
+ 2009                          }
+ 2010                          else
+ 2011                          {
+ 2012                                  //get address mode
+ 2013                                  int address_mode = (type<<8)&0xff00;
+ 2014                                  address_mode |= (log2(UnitSize(dt1))<<14);
+ 2015                                  
+ 2016                                  /*              ±£¡Ù
+ 2017                                  if (dt1.dim > 0)
+ 2018                                  {
+ 2019                                  _typedes(dt, dtInt)
+ 2020                                  long temp;
+ 2021                                  //»Áπ˚ « ˝◊È, ∞—À¸µƒµÿ÷∑¥Ê»Î¡Ÿ ±±‰¡ø, ¥´»Î¡Ÿ ±±‰¡ø
+ 2022                                  if (m_pMainFunction->AddVal(NULL, dt))
+ 2023                                  {                       
+ 2024                                  temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+ 2025                                  ADDCOMMAND2(__ea, DD, temp, op1);
+ 2026                                  }
+ 2027                                  long size = sizeof(long*);
+ 2028                                  size = log2(size);
+ 2029                                  size = size << 14;
+ 2030  
+ 2031                                  ADDCOMMAND1(__parampub, size|0x100, temp)       
+ 2032                                  }
+ 2033                                  else    
+ 2034                                  */                      
+ 2035                                  if (pFuncEntry->nType)  // native function
+ 2036                                  ADDCOMMAND1(__parampub, address_mode, op1)                      
+ 2037                                          else
+ 2038                                  ADDCOMMAND1(__paramv, address_mode, op1)                
+ 2039                                  cParamNum++; 
+ 2040                          }               
+ 2041  
+ 2042    .)
+ 2043    } 
+ 2044    (.
+ 2045                  // code added on 20030331 weihua ju
+ 2046                  if ((pFuncEntry->nType!=0) && cParamNum != pFuncEntry->pfn->cParamNum)
+ 2047                  {
+ 2048  
+ 2049                          GenError(106);
+ 2050                  }
+ 2051          //lParamNum = cParamNum;
+ 2052    .)
+ 2053    .
+ 2054  
+ 2055    AssignmentOperator   =   "="  | "*=" | "/=" | "%=" | "+=" | "-=" | "&="
+ 2056                           | "^=" | "|=" | "<<=" | ">>=" .
+ 2057  
+ 2058    UnaryOperator        = "+" | "-" | "*" | "!" | "&" | "~" .
+ 2059  
+ 2060  END C.
+ 2061  
+ 2062  
+ 2063  
+ 2064  
+
+
+    0 syntax errors
+"NCpp.ATG", Line 2060, Col 0 :**** Warning : VarList is nullable
+"NCpp.ATG", Line 2060, Col 0 :**** Warning : ArraySize is nullable
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "*=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "/=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "%=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "+=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "-=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "&=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "^=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "|=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: "<<=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Expression: ">>=" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in IfStatement: "else" is the start & successor of nullable structures.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in SetItem: identifier is the start of several alternatives.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in SetItem: string1 is the start of several alternatives.
+"NCpp.ATG", Line 2060, Col 0 :**** LL(1) Error in Creator: "(" is the start & successor of nullable structures.
+
+Class
+  1|letter	=	ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz
+  2|digit	=	0123456789
+  3|hexdigit	=	0123456789ABCDEFabcdef
+  4|tab	=	 #9 
+  5|eol	=	 #10 
+  6|files	=	.0123456789:ABCDEFGHIJKLMNOPQRSTUVWXYZ\abcdefghijklmnopqrstuvwxyz
+  7|chars	=	 #32 !"#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÄÅÇÉÑÖÜáàâäãåçéèêëíìîïñóòôöõúùûü†°¢£§•¶ß®©™´¨≠ÆØ∞±≤≥¥µ∂∑∏π∫ªºΩæø¿¡¬√ƒ≈∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂ‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚÛÙıˆ˜¯˘˙˚¸˝˛ˇ
+  8|strings	=	 #32 !#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÄÅÇÉÑÖÜáàâäãåçéèêëíìîïñóòôöõúùûü†°¢£§•¶ß®©™´¨≠ÆØ∞±≤≥¥µ∂∑∏π∫ªºΩæø¿¡¬√ƒ≈∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂ‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚÛÙıˆ˜¯˘˙˚¸˝˛ˇ
+  9|macros	=	 #1  #2  #3  #4  #5  #6  #7  #8  #9  #11  #12  #13  #14  #15  #16  #17  #18  #19  #20  #21  #22  #23  #24  #25  #26  #27  #28  #29  #30  #31  #32 !"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\]^_`abcdefghijklmnopqrstuvwxyz{|}~ÄÅÇÉÑÖÜáàâäãåçéèêëíìîïñóòôöõúùûü†°¢£§•¶ß®©™´¨≠ÆØ∞±≤≥¥µ∂∑∏π∫ªºΩæø¿¡¬√ƒ≈∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂ‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚÛÙıˆ˜¯˘˙˚¸˝˛ˇ
+ 10|##	=	123456789
+ 11|##	=	 #32 !"#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~ÄÅÇÉÑÖÜáàâäãåçéèêëíìîïñóòôöõúùûü†°¢£§•¶ß®©™´¨≠ÆØ∞±≤≥¥µ∂∑∏π∫ªºΩæø¿¡¬√ƒ≈∆«»… ÀÃÕŒœ–—“”‘’÷◊ÿŸ⁄€‹›ﬁﬂ‡·‚„‰ÂÊÁËÈÍÎÏÌÓÔÒÚÛÙıˆ˜¯˘˙˚¸˝˛ˇ
+ 12|##	=	ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
+ 13|##	=	0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz
+ 14|##	=	Xx
+
+TERMINALS
+  0|EOF	=	Class Token
+  1|identifier	=	Class Literal Token
+  2|number	=	Class Token
+  3|hexnumber	=	Class Token
+  4|string1	=	Class Token
+  5|char1	=	Class Token
+  6|library	=	Class Token
+  7|"use"	=	Literal Token
+  8|";"	=	Class Token
+  9|"load"	=	Literal Token
+ 10|"="	=	Class Token
+ 11|"inherit"	=	Literal Token
+ 12|"class"	=	Literal Token
+ 13|"{"	=	Class Token
+ 14|"}"	=	Class Token
+ 15|"static"	=	Literal Token
+ 16|"my"	=	Literal Token
+ 17|"function"	=	Literal Token
+ 18|"var"	=	Literal Token
+ 19|"mixed"	=	Literal Token
+ 20|"short"	=	Literal Token
+ 21|"int"	=	Literal Token
+ 22|"long"	=	Literal Token
+ 23|"float"	=	Literal Token
+ 24|"unsigned"	=	Literal Token
+ 25|"char"	=	Literal Token
+ 26|"double"	=	Literal Token
+ 27|"void"	=	Literal Token
+ 28|"string"	=	Literal Token
+ 29|","	=	Class Token
+ 30|"["	=	Class Token
+ 31|"]"	=	Class Token
+ 32|"("	=	Class Token
+ 33|")"	=	Class Token
+ 34|"*"	=	Class Token
+ 35|"case"	=	Literal Token
+ 36|":"	=	Class Token
+ 37|"default"	=	Literal Token
+ 38|"break"	=	Literal Token
+ 39|"continue"	=	Literal Token
+ 40|"do"	=	Literal Token
+ 41|"while"	=	Literal Token
+ 42|"for"	=	Literal Token
+ 43|"if"	=	Literal Token
+ 44|"else"	=	Literal Token
+ 45|"return"	=	Literal Token
+ 46|"switch"	=	Literal Token
+ 47|"||"	=	Class Token
+ 48|"&&"	=	Class Token
+ 49|"|"	=	Class Token
+ 50|"^"	=	Class Token
+ 51|"&"	=	Class Token
+ 52|"=="	=	Class Token
+ 53|"!="	=	Class Token
+ 54|"<"	=	Class Token
+ 55|">"	=	Class Token
+ 56|"<="	=	Class Token
+ 57|">="	=	Class Token
+ 58|"<<"	=	Class Token
+ 59|">>"	=	Class Token
+ 60|"+"	=	Class Token
+ 61|"-"	=	Class Token
+ 62|"/"	=	Class Token
+ 63|"%"	=	Class Token
+ 64|"++"	=	Class Token
+ 65|"--"	=	Class Token
+ 66|"."	=	Class Token
+ 67|"->"	=	Class Token
+ 68|"::"	=	Class Token
+ 69|"new"	=	Literal Token
+ 70|"*="	=	Class Token
+ 71|"/="	=	Class Token
+ 72|"%="	=	Class Token
+ 73|"+="	=	Class Token
+ 74|"-="	=	Class Token
+ 75|"&="	=	Class Token
+ 76|"^="	=	Class Token
+ 77|"|="	=	Class Token
+ 78|"<<="	=	Class Token
+ 79|">>="	=	Class Token
+ 80|"!"	=	Class Token
+ 81|"~"	=	Class Token
+ 82|not	=	Class Token
+ 83|PreProcessor	=	Pragma Token
+
+COMMENTS
+  0| FROM /*  TO  */ 
+  1| FROM //  TO  
+ 
+
+SYMBOL SETS
+  0|SYNC   = 	EOF 
+
+NO TERMINALS
+  1|C	:
+	Graph: 2^SEM 7^{4^(3^Import -7^|5^LoadLib -7^) -7^} 9^[8^Inheritance -11^] 11^{10^Definition -11^} 12^EOF 13^SEM 0^
+	Start With :	EOF identifier "use" "load" "inherit" "class" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+	Follow =	EOF 
+  2|Import	:
+	Graph: 14^"use" 15^SEM 16^ClassFullName 18^SEM 19^";" 0^
+	Start With :	"use" 
+	Follow =	EOF identifier "use" "load" "inherit" "class" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+  3|LoadLib	:
+	Graph: 20^"load" 21^identifier 22^SEM 23^";" 0^
+	Start With :	"load" 
+	Follow =	EOF identifier "use" "load" "inherit" "class" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+  4|Inheritance	:
+	Graph: 48^"inherit" 49^identifier 50^SEM 51^";" 0^
+	Start With :	"inherit" 
+	Follow =	EOF identifier "class" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+  5|Definition	:
+	Graph: 45^(25^[24^StorageClass -26^] 26^SEM 29^[27^Type -30^] 30^identifier 31^SEM 34^(32^FunctionDefinition 33^SEM 0^|40^(35^"=" 36^SEM 37^Expression 38^SEM 39^";" 0^|41^";" 42^SEM 0^) 0^) 0^|46^ClassDef 0^) 0^
+	Start With :	identifier "class" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+	Follow =	EOF identifier "class" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+  6|ClassFullName	:
+	Graph: 449^identifier 450^SEM 455^{451^"::" 452^SEM 453^identifier 454^SEM -455^} 0^
+	Start With :	identifier 
+	Follow =	identifier ";" "=" "}" "," "[" "]" "(" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "++" "--" "." "->" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+  7|StorageClass	:
+	Graph: 64^(63^"static" 0^|65^"my" 0^|67^"function" 0^) 0^
+	Start With :	"static" "my" "function" 
+	Follow =	identifier "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+  8|Type	:
+	Graph: 75^(71^(70^"var" -74^|72^"mixed" -74^) 74^SEM 0^|76^"short" 78^[77^"int" -79^] 79^SEM 0^|81^"long" 86^[83^(82^"int" -87^|84^"float" -87^) -87^] 87^SEM 0^|89^"unsigned" 96^[91^(90^"char" 0^|92^"int" 0^|94^"long" 0^) 0^] 0^|98^"char" 99^SEM 0^|101^"int" 102^SEM 0^|104^"float" 105^SEM 0^|107^"double" 0^|109^"void" 0^|111^"string" 112^SEM 0^) 0^
+	Start With :	"var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+	Follow =	identifier "*" 
+  9|FunctionDefinition	:
+	Graph: 136^SEM 137^FunctionHeader 138^FunctionBody 139^SEM 0^
+	Start With :	"(" 
+	Follow =	EOF identifier "class" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+ 10|Expression	:
+	Graph: 280^Conditional 284^{281^AssignmentOperator 282^Expression 283^SEM -284^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 11|ClassDef	:
+	Graph: 52^"class" 53^identifier 54^SEM 55^ClassBody 56^";" 0^
+	Start With :	"class" 
+	Follow =	EOF identifier "class" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+ 12|ClassBody	:
+	Graph: 57^SEM 58^"{" 60^{59^Definition -60^} 61^"}" 62^SEM 0^
+	Start With :	"{" 
+	Follow =	";" 
+ 13|VarList	:    (Nullable)
+	Graph: 115^ArraySize 116^SEM 120^[117^"=" 118^Expression 119^SEM -130^] 130^{121^"," 122^identifier 123^SEM 124^ArraySize 125^SEM 129^[126^"=" 127^Expression 128^SEM -130^] -130^} 0^
+	Start With :	"=" "," "[" 
+	Follow =	";" 
+ 14|ArraySize	:    (Nullable)
+	Graph: 135^{131^"[" 133^[132^ConstExpression -134^] 134^"]" -135^} 0^
+	Start With :	"[" 
+	Follow =	";" "=" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "," ")" 
+ 15|ConstExpression	:
+	Graph: 279^Expression 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	"]" ":" 
+ 16|FunctionHeader	:
+	Graph: 140^"(" 142^[141^FormalParamList -143^] 143^")" 144^SEM 0^
+	Start With :	"(" 
+	Follow =	"{" 
+ 17|FunctionBody	:
+	Graph: 145^CompoundStatement 146^SEM 0^
+	Start With :	"{" 
+	Follow =	EOF identifier "class" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+ 18|FormalParamList	:
+	Graph: 147^FormalParameter 150^{148^"," 149^FormalParameter -150^} 0^
+	Start With :	"var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+	Follow =	"var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" ")" 
+ 19|CompoundStatement	:
+	Graph: 212^"{" 217^{214^(213^LocalDeclaration -217^|215^Statement -217^) -217^} 218^"}" 0^
+	Start With :	"{" 
+	Follow =	EOF identifier "class" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+ 20|FormalParameter	:
+	Graph: 151^SEM 152^Type 157^{154^SEM 155^"*" 156^SEM -157^} 158^identifier 159^SEM 160^ArraySize 161^SEM 0^
+	Start With :	"var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+	Follow =	"var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "," ")" 
+ 21|Statement	:
+	Graph: 163^{162^Label -163^} 165^(164^AssignmentStatement -184^|166^BreakStatement -184^|168^ContinueStatement -184^|170^DoStatement -184^|172^ForStatement -184^|174^IfStatement -184^|176^NullStatement -184^|178^ReturnStatement -184^|180^SwitchStatement -184^|182^WhileStatement -184^) 184^SEM 0^
+	Start With :	identifier number string1 char1 ";" "{" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 22|Label	:
+	Graph: 188^(185^"case" 186^ConstExpression 187^":" 0^|189^"default" 190^":" 0^) 0^
+	Start With :	"case" "default" 
+	Follow =	identifier number string1 char1 ";" "{" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 23|AssignmentStatement	:
+	Graph: 192^Expression 193^";" 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 24|BreakStatement	:
+	Graph: 194^"break" 195^";" 196^SEM 0^
+	Start With :	"break" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 25|ContinueStatement	:
+	Graph: 219^"continue" 220^";" 221^SEM 0^
+	Start With :	"continue" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 26|DoStatement	:
+	Graph: 222^"do" 223^Statement 224^"while" 225^"(" 226^Expression 227^")" 228^";" 0^
+	Start With :	"do" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 27|ForStatement	:
+	Graph: 229^"for" 230^"(" 232^[231^Expression -233^] 233^";" 234^SEM 236^[235^Expression -237^] 237^SEM 238^";" 239^SEM 243^[240^SEM 241^Expression 242^SEM -244^] 244^")" 245^Statement 246^SEM 0^
+	Start With :	"for" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 28|IfStatement	:
+	Graph: 247^"if" 248^"(" 249^Expression 250^")" 251^SEM 252^Statement 253^SEM 258^[254^"else" 255^SEM 256^Statement 257^SEM -259^] 259^SEM 0^
+	Start With :	"if" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 29|NullStatement	:
+	Graph: 260^";" 0^
+	Start With :	";" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 30|ReturnStatement	:
+	Graph: 261^"return" 263^[262^Expression -264^] 264^SEM 265^";" 0^
+	Start With :	"return" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 31|SwitchStatement	:
+	Graph: 266^"switch" 267^"(" 268^Expression 269^")" 270^Statement 0^
+	Start With :	"switch" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 32|WhileStatement	:
+	Graph: 271^"while" 272^"(" 273^SEM 274^Expression 275^SEM 276^")" 277^Statement 278^SEM 0^
+	Start With :	"while" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "else" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 33|LocalDeclaration	:
+	Graph: 197^SEM 200^(198^Type -206^|201^StorageClass 204^[202^Type -206^] -206^) 206^identifier 207^SEM 208^VarList 210^";" 211^SEM 0^
+	Start With :	"static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" 
+	Follow =	identifier number string1 char1 ";" "{" "}" "static" "my" "function" "var" "mixed" "short" "int" "long" "float" "unsigned" "char" "double" "void" "string" "(" "*" "case" "default" "break" "continue" "do" "while" "for" "if" "return" "switch" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 34|Conditional	:
+	Graph: 285^LogORExp 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 35|AssignmentOperator	:
+	Graph: 495^(494^"=" 0^|496^"*=" 0^|498^"/=" 0^|500^"%=" 0^|502^"+=" 0^|504^"-=" 0^|506^"&=" 0^|508^"^=" 0^|510^"|=" 0^|512^"<<=" 0^|514^">>=" 0^) 0^
+	Start With :	"=" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+	Follow =	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 36|LogORExp	:
+	Graph: 286^LogANDExp 287^SEM 292^{288^"||" 289^SEM 290^LogANDExp 291^SEM -292^} 293^SEM 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 37|LogANDExp	:
+	Graph: 294^SEM 295^InclORExp 300^{296^"&&" 297^SEM 298^InclORExp 299^SEM -300^} 301^SEM 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 38|InclORExp	:
+	Graph: 302^ExclORExp 305^{303^"|" 304^ExclORExp -305^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 39|ExclORExp	:
+	Graph: 306^ANDExp 309^{307^"^" 308^ANDExp -309^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "|" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 40|ANDExp	:
+	Graph: 310^EqualExp 313^{311^"&" 312^EqualExp -313^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "|" "^" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 41|EqualExp	:
+	Graph: 314^SEM 315^RelationExp 324^{318^(316^"==" 317^SEM -322^|319^"!=" 320^SEM -322^) 322^RelationExp 323^SEM -324^} 325^SEM 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "|" "^" "&" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 42|RelationExp	:
+	Graph: 326^SEM 327^ShiftExp 342^{330^(328^"<" 329^SEM -340^|331^">" 332^SEM -340^|334^"<=" 335^SEM -340^|337^">=" 338^SEM -340^) 340^ShiftExp 341^SEM -342^} 343^SEM 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "|" "^" "&" "==" "!=" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 43|ShiftExp	:
+	Graph: 344^AddExp 350^{346^(345^"<<" -349^|347^">>" -349^) 349^AddExp -350^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 44|AddExp	:
+	Graph: 351^SEM 352^MultExp 361^{355^(353^"+" 354^SEM -359^|356^"-" 357^SEM -359^) 359^MultExp 360^SEM -361^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 45|MultExp	:
+	Graph: 362^SEM 363^CastExp 364^SEM 376^{367^(365^"*" 366^SEM -374^|368^"/" 369^SEM -374^|371^"%" 372^SEM -374^) 374^CastExp 375^SEM -376^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 46|CastExp	:
+	Graph: 377^SEM 378^UnaryExp 379^SEM 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 47|UnaryExp	:
+	Graph: 381^(380^PostFixExp 0^|383^(382^"++" -386^|384^"--" -386^) 386^UnaryExp 0^|388^UnaryOperator 389^CastExp 0^) 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	";" "=" "}" "," "]" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 48|PostFixExp	:
+	Graph: 391^Primary 420^{396^(392^"[" 393^Expression 394^"]" 395^SEM -420^|397^SEM 398^FunctionCall 400^SEM -420^|402^"." 403^identifier 404^SEM -420^|406^"->" 407^"{" 408^identifier 409^"}" 410^SEM -420^|412^identifier -420^|414^"++" 415^SEM -420^|417^"--" 418^SEM -420^) -420^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "new" 
+	Follow =	";" "=" "}" "," "]" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 49|UnaryOperator	:
+	Graph: 517^(516^"+" 0^|518^"-" 0^|520^"*" 0^|522^"!" 0^|524^"&" 0^|526^"~" 0^) 0^
+	Start With :	"*" "&" "+" "-" "!" "~" 
+	Follow =	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+ 50|Primary	:
+	Graph: 456^SEM 459^(457^identifier 458^SEM 0^|460^"new" 461^Creator 0^|463^string1 464^SEM 0^|466^char1 467^SEM 0^|469^number 470^SEM 0^|472^"(" 473^Expression 474^")" 0^|476^SetDef 0^) 0^
+	Start With :	identifier number string1 char1 "{" "(" "new" 
+	Follow =	identifier ";" "=" "}" "," "[" "]" "(" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "++" "--" "." "->" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 51|FunctionCall	:
+	Graph: 479^"(" 482^[480^ActualParameters -483^] 483^")" 484^SEM 0^
+	Start With :	"(" 
+	Follow =	identifier ";" "=" "}" "," "[" "]" "(" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "++" "--" "." "->" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 52|HashItem	:
+	Graph: 422^(421^string1 -425^|423^identifier -425^) 425^":" 426^Expression 0^
+	Start With :	identifier string1 
+	Follow =	"}" "," 
+ 53|SetItem	:
+	Graph: 428^(427^HashItem 0^|429^Expression 0^) 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	"}" "," 
+ 54|SetItems	:
+	Graph: 431^SetItem 434^{432^"," 433^SetItem -434^} 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	"}" 
+ 55|SetDef	:
+	Graph: 435^"{" 437^[436^SetItems -438^] 438^"}" 0^
+	Start With :	"{" 
+	Follow =	identifier ";" "=" "}" "," "[" "]" "(" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "++" "--" "." "->" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 56|Creator	:
+	Graph: 439^SEM 440^ClassFullName 446^{442^"(" 444^{443^FormalParamList -444^} 445^")" -446^} 447^SEM 0^
+	Start With :	identifier 
+	Follow =	identifier ";" "=" "}" "," "[" "]" "(" ")" "*" ":" "||" "&&" "|" "^" "&" "==" "!=" "<" ">" "<=" ">=" "<<" ">>" "+" "-" "/" "%" "++" "--" "." "->" "*=" "/=" "%=" "+=" "-=" "&=" "^=" "|=" "<<=" ">>=" 
+ 57|ActualParameters	:
+	Graph: 486^SEM 487^Expression 488^SEM 492^{489^"," 490^Expression 491^SEM -492^} 493^SEM 0^
+	Start With :	identifier number string1 char1 "{" "(" "*" "&" "+" "-" "++" "--" "new" "!" "~" 
+	Follow =	")" 

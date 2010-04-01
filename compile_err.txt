@@ -1,0 +1,113 @@
+************************compile ouput*********************
+Start at 2009-01-05 05:26:05
+Compile file 'test\test.c' succeeded
+2009-01-05 05:26:06
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 05:27:08
+Compile file 'test\test.c' succeeded
+2009-01-05 05:27:10
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 05:27:10
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 35: ")" expected (E27)
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 45: unexpected symbol in UnaryExp (E94)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-01-05 05:27:10
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:32:07
+Compile file 'test\test.c' succeeded
+2009-01-05 06:32:07
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:32:07
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 35: ")" expected (E27)
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 45: unexpected symbol in UnaryExp (E94)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-01-05 06:32:07
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:32:53
+Compile file 'test\test.c' succeeded
+2009-01-05 06:32:53
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:32:53
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 35: ")" expected (E27)
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 45: unexpected symbol in UnaryExp (E94)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-01-05 06:32:53
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:35:39
+Compile file 'test\test.c' succeeded
+2009-01-05 06:35:39
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:36:53
+Compile file 'test\test.c' succeeded
+2009-01-05 06:36:53
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:50:24
+Compile file 'test\test.c' succeeded
+2009-01-05 06:50:24
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:50:24
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 35: ")" expected (E27)
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 45: unexpected symbol in UnaryExp (E94)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-01-05 06:50:26
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:51:18
+Compile file 'test\test.c' succeeded
+2009-01-05 06:51:18
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-05 06:51:18
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 35: ")" expected (E27)
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 14, Col 45: unexpected symbol in UnaryExp (E94)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-01-05 06:51:19
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-24 09:38:03
+"test\test.c", Line 3, Col 6: variable allocate failed (E113)
+"test\test.c", Line 8, Col 18: ";" expected (E8)
+Compile file 'test\test.c' failed
+2009-01-24 09:38:03
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-24 09:38:03
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 5, Col 10: can not get this class info (E120)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-01-24 09:38:03
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-24 09:40:53
+"test\test.c", Line 3, Col 6: variable allocate failed (E113)
+"test\test.c", Line 8, Col 18: ";" expected (E8)
+Compile file 'test\test.c' failed
+2009-01-24 09:40:53
+********************************************************
+************************compile ouput*********************
+Start at 2009-01-24 09:40:53
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 5, Col 10: can not get this class info (E120)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-01-24 09:40:53
+********************************************************
+************************compile ouput*********************
+Start at 2009-02-01 04:10:44
+"test\test.c", Line 9, Col 11: can not get this class info (E120)
+Compile file 'test\test.c' failed
+2009-02-01 04:10:44
+********************************************************
+************************compile ouput*********************
+Start at 2009-02-01 04:10:44
+"D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c", Line 5, Col 10: can not get this class info (E120)
+Compile file 'D:\studio\projects\webmud\mud\MudOS\MudLib\xkx2001\d\city\dongmen.c' failed
+2009-02-01 04:10:44
+********************************************************

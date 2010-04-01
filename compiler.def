@@ -1,0 +1,33 @@
+EXPORTS 	
+;		SE_Init
+;		SE_UnInit
+		SE_Compile
+;		SE_HandleRequest
+;		SE_SetFunctionMode
+
+		SE_GetVersion
+		SE_Start
+		SE_Stop
+		SE_StopAllVM
+		SE_ExecScript
+;		SE_RunScript
+;		SE_GetActiveVMNum
+;		SE_GetActiveVMStatus
+;		SE_ReleaseVMStatus
+		SE_AddPubFunc
+		SE_REQ_ReleaseReq
+		SE_REQ_Create
+		SE_REQ_AddParamLong
+		SE_REQ_AddParamFloat
+		SE_REQ_AddParamString
+		SE_REQ_AddParamShort
+		SE_REQ_SetFn
+		SE_REQ_Load
+		SE_REQ_InsertParam
+		SE_GetErrFileName
+;		SE_GetConfig
+		
+;
+		SE_CompileAll		
+		SE_LoadLib		
+		SE_SetRegKey

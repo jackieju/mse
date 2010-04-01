@@ -1,0 +1,743 @@
+
+
+all:
+	program
+       
+    ;
+
+program:
+	program def possible_semi_colon
+        
+    |   /* empty */
+        
+    ;
+
+possible_semi_colon:
+	/* empty */
+    |   ';'
+	    
+    ;
+
+
+inheritance:
+	type_modifier_list L_INHERIT string_con1 ';'
+	    
+    ;
+
+real:
+	    L_REAL
+	    
+    ;
+
+number:
+	L_NUMBER
+	    
+    ;
+
+optional_star:
+	/* empty */
+	   
+    |   '*'
+
+    ;
+
+block_or_semi:
+	block
+          
+    |   ';'
+	   
+    | error
+            
+    ;
+
+identifier: 
+        L_DEFINED_NAME
+           
+     |  L_IDENTIFIER
+     ;
+
+def:
+        type optional_star identifier 
+            
+        '(' argument ')'
+	    
+	block_or_semi
+	    
+    |   type name_list ';'
+	    
+    |   inheritance
+    |   type_decl
+    |   modifier_change
+    ;
+
+modifier_change: type_modifier_list ':'
+            
+     ;
+
+member_name:
+        optional_star identifier
+            
+     ;
+
+member_name_list:
+        member_name
+    |   member_name ',' member_name_list
+    ;
+
+member_list:
+            /* empty */
+    | member_list basic_type
+          
+    member_name_list ';'
+    ;
+
+type_decl:
+      type_modifier_list L_CLASS identifier '{' 
+            
+    member_list '}'
+            
+    ;
+
+new_local_name:
+        L_IDENTIFIER
+      | L_DEFINED_NAME
+            
+      ;
+
+atomic_type:
+        L_BASIC_TYPE
+      | L_CLASS L_DEFINED_NAME
+            
+      | L_CLASS L_IDENTIFIER
+	    
+       ;
+
+
+opt_atomic_type:
+        atomic_type
+    |   /* empty */
+	    
+    ;
+
+
+basic_type:
+         atomic_type
+
+       | opt_atomic_type L_ARRAY    
+            
+
+       ;
+
+arg_type:
+         basic_type
+
+       | basic_type ref
+            
+
+       ;
+
+new_arg:
+        arg_type optional_star
+            
+      | arg_type optional_star new_local_name
+	    
+      | new_local_name
+            
+      ;
+
+argument:
+	/* empty */
+	    
+    |   argument_list
+    |   argument_list L_DOT_DOT_DOT
+            
+    ;
+
+argument_list:
+	new_arg
+	    
+    |   argument_list ',' new_arg
+	    
+    ;
+
+type_modifier_list:
+	/* empty */
+	    
+    |   L_TYPE_MODIFIER type_modifier_list
+	    
+    ;
+
+type:
+	type_modifier_list opt_basic_type
+	    
+    ;
+
+cast:
+	'(' basic_type optional_star ')'
+	    
+    ;
+
+opt_basic_type:
+        basic_type
+    |   /* empty */
+	    
+    ;
+
+name_list:
+	new_name
+    |   new_name ',' name_list
+    ;
+
+new_name:
+	optional_star identifier
+	    
+    |   optional_star identifier L_ASSIGN expr0
+	    
+    ;
+
+block:
+	'{' local_declarations statements '}'
+            
+    ;
+
+decl_block: block | for | foreach ;
+
+local_declarations:
+        /* empty */
+            
+    |   local_declarations basic_type
+            
+        local_name_list ';'
+            
+    ;
+
+
+new_local_def:
+	optional_star new_local_name
+            
+    |   optional_star new_local_name L_ASSIGN expr0
+	    
+    ;
+
+single_new_local_def:
+        arg_type optional_star new_local_name
+     
+    ;
+
+single_new_local_def_with_init:
+        single_new_local_def L_ASSIGN expr0
+            
+    ;
+
+local_name_list:
+        new_local_def
+           
+    |   new_local_def ',' local_name_list
+            
+    ;
+
+statements:
+	/* empty */
+         
+    |   statement statements
+            
+    |   error ';'
+            
+    ;
+
+statement:
+	comma_expr ';'
+	    
+    |   cond
+    |   while
+    |   do
+    |   switch
+    |   return
+    |   decl_block
+         
+    |   /* empty */ ';' 
+        
+    |   L_BREAK ';'
+            
+    |   L_CONTINUE ';'
+	    
+    ;
+
+while:
+       L_WHILE '(' comma_expr ')'
+	   
+	statement
+	    
+    ;
+
+do:
+        L_DO
+         
+        statement L_WHILE '(' comma_expr ')' ';'
+            
+    ;
+
+for:
+	L_FOR '(' first_for_expr ';' for_expr ';' for_expr ')'
+	    
+        statement
+            
+    ;
+
+foreach_var: L_DEFINED_NAME
+            
+          | single_new_local_def
+	    
+          | L_IDENTIFIER
+            
+     ;
+
+foreach_vars:
+        foreach_var
+           
+     |  foreach_var ',' foreach_var
+            
+     ;
+
+foreach:
+        L_FOREACH '(' foreach_vars L_IN expr0 ')'
+            
+        statement
+            
+         ;
+
+for_expr:
+	/* EMPTY */
+	  
+    |   comma_expr
+    ;
+
+first_for_expr:
+        for_expr 
+	   
+    |   single_new_local_def_with_init 
+	   
+    ;
+
+ switch:
+        L_SWITCH '(' comma_expr ')'
+            
+       '{' local_declarations case switch_block '}'
+            
+    ;
+
+ switch_block:
+        case switch_block
+       
+    |   statement switch_block
+         
+    |   /* empty */
+          
+
+    ;
+
+ case:
+        L_CASE case_label ':'
+        
+    |   L_CASE case_label L_RANGE case_label ':'
+       
+    |  L_DEFAULT ':'
+          
+    ;
+
+ case_label:
+        constant
+          
+    |   string_con1
+            
+    ;
+
+ constant:
+        constant '|' constant
+           
+    |   constant '^' constant
+           
+    |   constant '&' constant
+           
+    |   constant L_EQ constant
+           
+    |   constant L_NE constant
+           
+    |   constant L_ORDER constant
+        
+    |   constant '<' constant
+           
+    |   constant L_LSH constant
+           
+    |   constant L_RSH constant
+           
+    |   constant '+' constant
+            
+    |   constant '-' constant
+           
+    |   constant '*' constant
+          
+    |   constant '%' constant
+          
+    |   constant '/' constant
+           
+    |   '(' constant ')'
+           
+    |   L_NUMBER
+       
+    |   '-' L_NUMBER
+            
+    |   L_NOT L_NUMBER
+           
+    |   '~' L_NUMBER
+           
+    ;
+
+comma_expr:
+	expr0
+	   
+    |   comma_expr ',' expr0
+	   
+    ;
+
+
+ref:
+      L_REF 
+
+    | '&' 
+
+    ;
+
+
+expr0:
+
+        ref lvalue
+            
+    |
+
+	lvalue L_ASSIGN expr0
+	    
+    |   error L_ASSIGN expr0
+	    
+    |   expr0 '?' expr0 ':' expr0 %prec '?'
+	    
+    |   expr0 L_LOR expr0
+
+    |   expr0 L_LAND expr0
+	 
+    |   expr0 '|' expr0
+	    
+    |   expr0 '^' expr0
+	   
+    |   expr0 '&' expr0
+	    
+    |   expr0 L_EQ expr0
+	    
+    |   expr0 L_NE expr0
+	    
+    |   expr0 L_ORDER expr0
+	    
+    |   expr0 '<' expr0
+            
+    |   expr0 L_LSH expr0
+	   
+    |   expr0 L_RSH expr0
+	   
+    |   expr0 '+' expr0 
+	    
+    |   expr0 '-' expr0
+	    
+    |   expr0 '*' expr0
+	    
+    |   expr0 '%' expr0
+	    
+    |   expr0 '/' expr0
+	    
+    |   cast expr0  %prec L_NOT
+	    
+    |   L_INC lvalue  %prec L_NOT  /* note lower precedence here */
+	    
+    |   L_DEC lvalue  %prec L_NOT  /* note lower precedence here */
+	    
+    |   L_NOT expr0
+	    
+    |   '~' expr0
+	    
+    |   '-' expr0  %prec L_NOT
+            
+    |   lvalue L_INC   /* normal precedence here */
+            
+    |   lvalue L_DEC
+            
+    |   expr4
+    |   sscanf
+    |   parse_command
+    |   time_expression
+    |   number
+    |   real
+    ;
+
+return:
+	L_RETURN ';'
+
+    |   L_RETURN comma_expr ';'
+	    
+    ;
+
+expr_list:
+	/* empty */
+	 
+    |   expr_list2
+	  
+    |   expr_list2 ','
+	  
+    ;
+
+expr_list_node:
+        expr0
+    
+    |   expr0 L_DOT_DOT_DOT
+            
+    ;
+
+expr_list2:
+        expr_list_node
+	    
+    |   expr_list2 ',' expr_list_node
+	    
+    ;
+
+expr_list3:
+	/* empty */
+	  
+    |   expr_list4
+	  
+    |   expr_list4 ','
+	   
+    ;
+
+expr_list4:
+	assoc_pair
+            
+    |   expr_list4 ',' assoc_pair
+	    
+    ;
+
+assoc_pair:
+	expr0 ':' expr0 
+           
+    ;
+
+lvalue:
+        expr4
+            
+        ;
+
+l_new_function_open: L_NEW_FUNCTION_OPEN
+    | L_FUNCTION_OPEN efun_override
+	   
+    ;
+
+
+simple_function_pointer: l_new_function_open ':' ')' 
+       
+    |   L_LAMBDA L_DEFINED_NAME
+            
+    ;
+
+
+expr4:
+	function_call
+    |   L_DEFINED_NAME
+            
+    |   L_IDENTIFIER
+   
+    |   L_PARAMETER
+          
+    |   '$' '(' 
+          
+        comma_expr ')'
+            
+    |   expr4 L_ARROW identifier
+            
+    |   expr4 '[' comma_expr L_RANGE comma_expr ']'
+        
+    |   expr4 '[' '<' comma_expr L_RANGE comma_expr ']'
+         
+    |   expr4 '[' '<' comma_expr L_RANGE '<' comma_expr ']'
+       
+    |   expr4 '[' comma_expr L_RANGE '<' comma_expr ']'
+       
+    |   expr4 '[' comma_expr L_RANGE ']'
+          
+    |   expr4 '[' '<' comma_expr L_RANGE ']'
+           
+    |   expr4 '[' '<' comma_expr ']'
+            
+    |   expr4 '[' comma_expr ']'
+            
+    |   string
+    |   '(' comma_expr ')'
+	    
+    |   catch
+
+    |   tree
+
+    |   L_BASIC_TYPE
+            
+        '(' argument ')' block
+            
+
+    |   simple_function_pointer
+
+    |   l_new_function_open ':' ')'
+
+            
+    |   l_new_function_open ',' expr_list2 ':' ')'
+            
+    |   L_FUNCTION_OPEN comma_expr ':' ')'
+  
+    |   L_MAPPING_OPEN expr_list3 ']' ')'
+
+    |   L_ARRAY_OPEN expr_list '}' ')'
+	
+    ;
+
+expr_or_block:
+        block
+    
+    |   '(' comma_expr ')'
+   
+    ;
+
+catch:
+	L_CATCH
+   
+        expr_or_block
+	
+    ;
+
+
+tree:
+	L_TREE block
+      
+    |
+        L_TREE '(' comma_expr ')'
+       
+    ;
+
+
+sscanf:
+	L_SSCANF '(' expr0 ',' expr0 lvalue_list ')'
+	   
+    ;
+
+parse_command:
+	L_PARSE_COMMAND '(' expr0 ',' expr0 ',' expr0 lvalue_list ')'
+	 
+    ;
+
+time_expression:
+	L_TIME_EXPRESSION 
+      
+	expr_or_block
+	   
+    ;
+
+lvalue_list:
+	/* empty */
+	    
+    |   ',' lvalue lvalue_list
+	    
+    ;
+
+string:
+	string_con2
+	    
+    ;
+
+string_con1:
+	string_con2
+    |   '(' string_con1 ')'
+	    
+    |   string_con1 '+' string_con1
+	    
+    ;
+
+string_con2:
+	L_STRING
+    |   string_con2 L_STRING
+	    
+    ;
+
+class_init: identifier ':' expr0
+    
+    ;
+
+opt_class_init:
+	/* empty */
+    
+    |	opt_class_init ',' class_init
+    
+    ;
+
+
+function_call:
+	efun_override '(' 
+            
+        expr_list ')'
+	    
+        | L_NEW '('
+            
+        expr_list ')'
+            
+        | L_NEW '(' L_CLASS L_DEFINED_NAME opt_class_init ')'
+            
+	| L_NEW '(' L_CLASS L_IDENTIFIER opt_class_init ')'
+	    
+	| L_DEFINED_NAME '(' 
+            
+        expr_list ')'
+	    
+	| function_name	'(' 
+            
+        expr_list ')'
+	    
+    |   expr4 L_ARROW identifier '(' 
+            
+    expr_list ')'
+	    
+    |   '(' '*' comma_expr ')' '(' 
+            
+        expr_list ')'
+            
+    ;
+
+efun_override: L_EFUN L_COLON_COLON identifier 	
+    | L_EFUN L_COLON_COLON L_NEW 
+    ;
+    
+function_name:
+	L_IDENTIFIER
+    |   L_COLON_COLON identifier
+	    
+    |   L_BASIC_TYPE L_COLON_COLON identifier
+	    
+    |   identifier L_COLON_COLON identifier
+	    
+    ;
+
+cond:
+        L_IF '(' comma_expr ')' statement optional_else_part
+	    
+    ;
+
+optional_else_part:
+	/* empty */    %prec LOWER_THAN_ELSE
+            
+    |   L_ELSE statement
+            
+    ;
+
+
+

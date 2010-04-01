@@ -1,0 +1,2096 @@
+COMPILER C
+
+/* An attempt to describe a subset of C */
+
+/////////////////////////////////
+// add by jackie juju
+#include "clib.h"
+#include <string.h>
+#include <vector>
+#include <string>
+#include "datatype.h"
+#include "LoopTree.h"
+#include "opcode.h"
+#include "os/CSS_LOCKEX.h"
+#include "ScriptFuncTable.h"
+#include "log.h"
+#include "PubFuncTable.h"
+
+
+#define CAST Cast(op1, type1, dt1, op2, type2, dt2);
+
+extern int typesize(int type);
+
+int log2(int x);
+
+
+// add by jackie juju
+/////////////////////////////////
+
+CHARACTERS
+  letter   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+  digit    = "0123456789" .
+  hexdigit = digit + "ABCDEFabcdef" .
+  tab      = CHR(9) .
+  eol      = CHR(10) .
+  files    = letter + digit + ":\." .
+  chars    = CHR(32) .. CHR(255) - "'" .
+  strings  = CHR(32) .. CHR(255) - '"'.
+  macros   = ANY - eol .
+
+COMMENTS FROM "/*" TO "*/"
+COMMENTS FROM "//" TO eol
+
+IGNORE
+  tab + eol + CHR(13)
+
+TOKENS
+  identifier = ( "_" | letter) { "_" | letter | digit } .
+  number     = digit { digit } [ "." { digit }] [ "U" | "u" | "L" | "l" ] .
+  hexnumber  = "0" ( "x" | "X" ) hexdigit { hexdigit } [ "U" | "u" | "L" | "l" ] .
+  string1     = '"' { strings } '"' .
+  char       = "'" [ "\\" ] chars "'" .
+  library    = "<" files { files } ">" .
+
+PRAGMAS
+
+  PreProcessor = "#" ( letter ) .
+		    (.
+		 	// process #include       	    		    
+		char str[256];
+		Scanner->GetName(&Scanner->NextSym, str, 255);
+		// get directive
+		char* p = strchr(str, ' ');
+		char* directive = NULL;
+		char* content = NULL;
+		if ( p != NULL ){
+			*p=0; 
+			directive = str + sizeof(char);
+			// proce include 
+			if (strcmp(str, "include") == 0){
+				// get content
+				p += sizeof(char);
+				while ( (*p == ' ' || *p == '\t' ) && *p != '\0' ){
+					p += sizeof(char);		
+				}
+				if ( *p != '\0' )
+					content = p;
+			}
+
+		}
+			
+			 .)
+
+
+
+
+
+PRODUCTIONS
+
+    C                    = { Definition } EOF .
+
+/* Variable and Type Definitions */
+	
+  Definition           =
+   ( [ StorageClass ] (. PTYPEDES type = NULL .) 
+   Type<type> { "*" } 
+(. 
+		if (type->type < dtFirstType  || type->type > dtLastType)
+		{
+			GenError(99);
+		}
+		
+		//指针类型
+		while (Sym == StarSym) 
+		{
+			type->refLevel++;
+			Get();
+		}
+.)
+   
+   identifier
+(.
+	char szName[MAX_IDENTIFIER_LENGTH];
+	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+.)
+
+   ( FunctionDefinition | VarList< type,  szName> ";" ) )| ClassDef | Inheritance .
+                            
+  /* PreProcess = Define | Include .
+  
+ Define = "#define" identifier macros .
+  
+  Include = "#include" files .*/
+  
+  Inheritance              = "inherit" identifier ";" .
+  
+
+	ClassDef			= "class" identifier  
+(.
+ 	// get name
+	char *szName = new char[MAX_IDENTIFIER_LENGTH];
+	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+.)
+ClassBody	";" .
+	ClassBody			 = 
+	(.
+	// 利用CFunction来存放类成员
+	CFunction* pSaved = this->m_pMainFunction;	// save current function
+	CFunction function;
+	function.m_SymbolTable.m_pParser = this;
+	this->m_pMainFunction = &function;
+	
+	.)
+
+	"{" { Definition} "}" 
+	
+	(.
+	/*
+	//添加class
+	if (!Error->Errors)
+	{
+		CObjDes* pClass = new CObjDes(this);
+		pClass->SetName(szName);
+		if (!pClass)
+		{
+			REPORT_MEM_ERROR("Allcotion memory failed")
+		}
+		else
+		{
+			for (int i = 0; i < function.m_SymbolTable.m_nSymbolCount; i++)
+			{
+				if (!pClass->AddMember(function.m_SymbolTable.tableEntry[i].szName, 
+					function.m_SymbolTable.tableEntry[i].type))
+				{
+					if (pClass)
+					{
+						delete pClass;
+						pClass = NULL;
+					}
+					GenError(118);					
+					break;
+				}
+			}
+		}
+		if (!this->AddObj(*pClass))
+		{
+			GenError(119);				
+			if (pClass)
+			{
+				delete pClass;
+				pClass = NULL;
+			}
+		}
+	}
+			*/
+	.)
+	.
+
+
+  StorageClass         = "auto" | "extern" | "register" | "static" .
+
+  Type<PTYPEDES type>                 = 
+(.
+   	type = new TYPEDES;
+	memset(type, 0, sizeof(TYPEDES));	
+.)
+identifier 
+(.
+			#ifdef __SUPPORT_OBJ
+			char szName[MAX_IDENTIFIER_LENGTH];
+			memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+			Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称			
+			type->type = dtObject;
+			type->objID = GetObjIDByName(szName); 
+			if (type->objID == 0)
+				GenError(120);
+			#else
+			// TODO
+				GenError(120);
+			#endif
+
+.)
+	| "short" [ "int" ]
+(. 			 type->type = dtShort; type->refLevel = 0;	.)
+    | "long"  [ "int" | "float" ]
+ (.			 type->type = dtLong; type->refLevel = 0; .)
+	| "unsigned" [ "char" | "int" | "long" ]
+	| "char"
+(. 			type->type = dtChar;			type->refLevel = 0; .)
+	| "int" | "float"		
+(. 			type->type = dtFloat;			type->refLevel = 0; .)
+
+	| "double" | "void"  | "string".
+
+  VarList<PTYPEDES type, char* szFirstName>   = 
+  ArraySize
+(.
+	long op;
+	long type1;
+	TYPEDES DT1;
+	if (!PopDigit(&op, &type1, &DT1))
+	{
+		if (!AllocVar(type, szFirstName))
+			GenError(113);
+	}
+	else
+	{ 
+		if (type1 >=FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
+		{
+			//error
+		};
+		/*		int i;
+		BOOL bPop = TRUE;
+		while (!bPop)
+		{	
+		if (type1 != AMODE_DIRECT)
+		{
+		//error
+		}
+		for ( i= 0; i<op; i++0)
+		{
+		AllocVar(type, NULL);
+		}
+		bPop = PopDigit(&op, type1);
+		}
+		*/	
+		
+		int dimsize[64];//数组最大维数64
+		int i = 0;
+		int arraysize = op;//total size
+		dimsize[i] = op;
+		i++;
+		
+		while (PopDigit(&op, &type1, &DT1))
+		{
+			dimsize[i] = op;			
+			i++;
+			arraysize *= op;
+		}
+		type->dim = i;
+		int k,j;
+		k = 0;
+		for (j=i-1; j>=0; j--)
+		{
+			type->dimsize[j] = dimsize[k];
+			k++;
+		}
+		
+		if (!AllocArrayVar(type, szFirstName, arraysize))
+			GenError(113);
+	}
+	char szName[MAX_IDENTIFIER_LENGTH];
+.)   
+{ "," { "*" } identifier
+(.
+		memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
+		Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
+		
+
+.)
+
+ArraySize
+(.
+		if (!PopDigit(&op, &type1, &DT1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
+		{
+			if (!AllocVar(type, szFirstName))
+				GenError(113);
+		}
+		else
+		{
+		/*		int i;
+		BOOL bPop = TRUE;
+		while (!bPop)
+		{	
+		if (type1 != AMODE_DIRECT)
+		{
+		//error
+		}
+		for ( i= 0; i<op; i++0)
+		{
+		AllocVar(type, NULL);
+		}
+		bPop = PopDigit(&op, type1);
+		}
+			*/	
+			
+			int dimsize[64];//数组最大维数64
+			int i = 0;
+			int arraysize = op;//total size
+			dimsize[i] = op;
+			i++;
+			
+			while (PopDigit(&op, &type1, &DT1))
+			{
+				dimsize[i] = op;			
+				i++;
+				arraysize *= op;
+			}
+			type->dim = i;
+			memcpy(type->dimsize, dimsize, i*sizeof(long));
+			if (!AllocArrayVar(type, szFirstName, arraysize))
+				GenError(113);
+		}
+.)
+
+  } .
+
+  ArraySize            = { "[" [ ConstExpression ] "]" } .
+
+/* Function Definitions */
+
+  FunctionDefinition   = 
+  (.
+ 	this->m_pMainFunction = new CFunction;
+	//for test
+	long t = sizeof(CFunction);
+	m_pMainFunction->m_SymbolTable.m_pParser = this;
+	this->m_LoopTree->m_pFunc = m_pMainFunction;
+	
+	char szName[MAX_IDENTIFIER_LENGTH];
+	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+
+	if (strlen(szName) > 20)
+		GenError(105);
+	else
+		strcpy(m_pMainFunction->m_szName, szName);
+
+ 
+  .)
+  FunctionHeader ( ";" | FunctionBody ) 
+  (.
+ 	if (!this->Error->Errors)
+	{
+		char path[_MAX_PATH];
+		if (strlen(m_szByteCodeFilePath))
+			sprintf(path, "%s/%s", m_szByteCodeFilePath, szName);
+		else
+			strcpy(path, szName);
+		m_pMainFunction->Output(path);
+		if 	(!m_ExeCodeTable->AddFunction(this->m_pMainFunction))
+		{
+			GenError(114);
+			delete m_pMainFunction;
+			m_pMainFunction = NULL;
+		}		
+	}
+	else
+	{
+		delete m_pMainFunction;
+		m_pMainFunction = NULL;
+	} 
+  .)
+  .
+  FunctionHeader       = "(" [ FormalParamList ] ")" (. 	this->m_pMainFunction->m_iParamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; .).
+  FunctionBody         = CompoundStatement (.	ADDCOMMAND0(__ret); .)  .
+  FormalParamList      = FormalParameter { "," FormalParameter } .
+  FormalParameter      = (. PTYPEDES type = NULL; .)
+  Type<type> { (. //test; .) "*" 		(. type->refLevel++; .)
+
+  } [ identifier  ] 
+  (. 
+	char szName[MAX_IDENTIFIER_LENGTH];
+	memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
+  .)
+  ArraySize 
+(. 
+	long op;
+	long type1;
+	TYPEDES DT1;
+	
+	if (!PopDigit(&op, &type1, &DT1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
+	{
+
+		if (type->objID > 0 && type->type == dtObject && type->refLevel == 0)//如果是结构， 生成他的指针
+		{
+			type->refLevel++;
+		}
+		if (!AllocVar(type, szName))
+			GenError(113);
+		else
+			m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
+	}
+	else
+	{
+		
+		int dimsize[64];//数组最大维数64
+		int i = 0;
+		int arraysize = op;//total size
+		dimsize[i] = op;
+		i++;
+		
+		while (PopDigit(&op, &type1, &DT1))
+		{
+			dimsize[i] = op;			
+			i++;
+			arraysize *= op;
+		}
+
+		//如果是数组， 分配指针类型
+		long temp;
+		long index;
+		temp = AllocTempVar(type->type, 1);
+		if (temp == -1)
+		{
+			GenError(98);
+		}
+		//设置类型和名字
+		index = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount -1;
+		strcpy(m_pMainFunction->m_SymbolTable.tableEntry[index].szName, szName);
+		type->dim = i-1;
+		type->refLevel = 1;
+		memcpy(type->dimsize, dimsize, (i-1)*sizeof(long));
+		memcpy(&m_pMainFunction->m_SymbolTable.tableEntry[index].type, type, sizeof(TYPEDES));
+		m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
+	}
+	delete type;
+.)  
+  .
+
+/* Statements */
+
+  Statement            = { Label }
+                         ( 
+(.
+ 		char szName[MAX_IDENTIFIER_LENGTH];
+		memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
+		Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH);
+.)
+						 AssignmentExpression | BreakStatement
+                           | CompoundStatement | ContinueStatement
+                           | DoStatement | ForStatement
+                           | IfStatement  | NullStatement
+                           | ReturnStatement | SwitchStatement
+                           | WhileStatement ) (. 	ClearExpStack(); .)
+ .
+
+  Label                = "case" ConstExpression ":"  |  "default" ":" .
+
+/* There is no requirement that a switch statement be followed by a compound
+   statement.  Actually labels may be even more general */
+
+  AssignmentExpression = Expression ";" .
+
+  BreakStatement       = "break" ";" 
+  (. 	//recode this command for write back
+	this->m_curloop->AddBreak(this->m_pMainFunction->m_nCurrentCmdNum);
+	//add command
+	ADDCOMMAND1(__jmp, CC, 0);	
+ .)
+ .
+
+  CompoundStatement    = "{" { LocalDeclaration } { Statement } "}" .
+
+  ContinueStatement    = "continue" ";" 
+  (.
+  	//recode this command for write back
+	this->m_curloop->AddContinue(this->m_pMainFunction->m_nCurrentCmdNum);
+	//add command
+	ADDCOMMAND1(__jmp, CC, 0);	
+
+  .)
+  .
+
+  DoStatement          = "do" Statement "while" "(" Expression ")" ";" .
+
+  ForStatement         = "for"  "(" [ Expression ] ";" 
+  (.
+	//循环从下一句开始
+	int loopEntry = this->m_pMainFunction->m_nCurrentCmdNum;
+	int jzCmd = 0;
+	
+	//压栈
+	this->AddNewLoop();//添加一个新的looptree
+	this->m_curloop->m_entry = loopEntry;//设置新looptree的入口
+
+
+  .)
+  
+  [ Expression ] 
+  (.
+ 		//add command jz
+		jzCmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		ADDCOMMAND1(__jnz, CC, 0)
+ 
+  .)
+  ";" 
+  (.
+	PCOMMAND cmd = NULL;
+	int cmdsaved;
+	int cmdnum;
+
+
+  .)
+  [ 
+(.
+  		cmdsaved = this->m_pMainFunction->m_nCurrentCmdNum;
+.)
+	Expression 
+(.
+		cmdnum = this->m_pMainFunction->m_nCurrentCmdNum - cmdsaved;
+		cmd = new COMMAND[cmdnum];    
+		//save expression cmd to insert before jmp command
+		long t=cmdnum*sizeof(COMMAND);
+		memcpy(cmd, &(m_pMainFunction->m_pCmdTable[cmdsaved]), cmdnum*sizeof(COMMAND));
+		m_pMainFunction->m_nCurrentCmdNum = cmdsaved;		
+
+.)
+  ] ")" Statement
+  (.
+  	long nContinue;//continue 语句的跳转目的地。
+	nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
+	this->m_curloop->SetContinue(nContinue);
+
+	//insert saved cmd
+	for (int i = 0; i< cmdnum; i++)
+	{
+		m_pMainFunction->AddCommand(cmd[i]);
+	}
+	delete cmd;
+	//change loop variable
+	//jump back
+	ADDCOMMAND1(__jmp, CC, loopEntry);	
+	//write back jz instructment
+	this->m_pMainFunction->m_pCmdTable[jzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
+	//write back break continue statement
+	this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
+	this->ExitCurLoop();//destroy current loop tree
+
+  .) .
+
+  IfStatement          = "if" "(" Expression ")" 
+  (.
+  	//判断
+	{
+		long op1;
+		long type1;
+		TYPEDES dt1;
+		//pop
+		if (!PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+		{
+			//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			if (dt1.type == dtFloat)
+			{
+				GenError(112);
+			}
+			else
+			{
+				//get address mode
+				int address_mode = (type1<<8);
+				address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+				address_mode |= AMODE_DIRECT;
+				//add commmand to command table
+				ADDCOMMAND3(__test, address_mode, op1, 0, 0)	
+			}
+		}
+	}
+
+	//记录跳转指令的序号
+	int jzcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+	//加入判断语句
+	ADDCOMMAND1(__jz, CC, 0)//跳转目标在下面补上
+  .)
+  Statement   (. 	int nextcmd; bool bElse = false;.)[
+ 
+   "else" 
+  (.
+		bElse = true;
+  		int jmpcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		ADDCOMMAND1(__jmp, CC, 0);
+		//补上jnz的跳转目标
+		nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
+
+  .)
+  Statement
+  (.
+  		nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		//补上jmp的跳转目标
+		this->m_pMainFunction->m_pCmdTable[jmpcmd].op[0] = nextcmd;
+
+  .)
+   ]
+   (.
+   if (!bElse)
+   {
+   		//补上jnz的跳转目标
+		nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
+	}
+.)
+ .
+
+  NullStatement        = ";" .
+
+  ReturnStatement      = "return" [ Expression ] 
+  (.
+	//pop
+	long op1;
+	long type;
+	TYPEDES dt1;
+	if (!PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
+	{
+	//	REPORT_COMPILE_ERROR("POP UP FAILED");
+		this->GenError(96);
+		return;
+	}
+	int address_mode = type&0x00ff;
+	address_mode |= (log2(UnitSize(dt1))<<6);
+	
+	//ADDCOMMAND
+	// move reutrn value to _ax
+	ADDCOMMAND2(__mov, address_mode|0x8200, _AX, op1);
+	// return
+	ADDCOMMAND0(__ret);
+
+  .)
+  ";" .
+                         /* Expression usually in parentheses */
+
+  SwitchStatement      = "switch" "("
+
+   Expression 
+
+   
+   ")" Statement 
+
+	.
+
+  WhileStatement       = "while" "(" 
+    (.
+	int loopentry = this->m_pMainFunction->m_nCurrentCmdNum;
+
+	//压栈
+	this->AddNewLoop();//添加一个新的looptree
+	this->m_curloop->m_entry = loopentry;//设置新looptree的入口
+
+
+  .)
+	Expression 
+	   (.
+	//判断
+	{
+		long op1;
+		long type1;
+		TYPEDES dt1;
+		//pop
+		if (!PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+		{
+			//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			if (dt1.type == dtFloat)
+			{
+				GenError(112);
+			}
+			else
+			{
+				//get address mode
+				int address_mode = (type1<<8);
+				address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+				address_mode |= AMODE_DIRECT;
+				//add commmand to command table
+				ADDCOMMAND3(__test, address_mode, op1, 0, 0)	
+			}
+		}
+	}
+
+	int jnzCmd =  this->m_pMainFunction->m_nCurrentCmdNum;
+	//jnz command
+	ADDCOMMAND1(__jz, CC, 0);
+   .)
+   ")" Statement 
+   
+     (.
+   	long nContinue;//continue 语句的跳转目的地。
+	nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
+	this->m_curloop->SetContinue(nContinue);
+
+	//jmp back
+	ADDCOMMAND1(__jmp, CC, loopentry);
+	//write back jnz
+	this->m_pMainFunction->m_pCmdTable[jnzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
+
+	this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
+	this->ExitCurLoop();//destroy current loop tree
+
+   .).
+
+/* LocalDeclarations */
+
+  LocalDeclaration     = 
+							(.
+								PTYPEDES type = NULL;
+								char szName[MAX_IDENTIFIER_LENGTH];
+								
+							.)
+  [ StorageClass ] Type<type>	
+							
+  { "*"						(. 		type->refLevel++; .)
+  } identifier				(.	
+								memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+								Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);
+							.)
+ ( FunctionHeader | VarList<type, szName> ) ";"  (. delete type; .)
+ . 
+
+
+/* Expressions, based on Kernighan and Ritchie: "The C Programming Language".
+   There does not seem to be a way to make this work in an LL(1) fashion,
+   but this generates a "working" parser */
+
+  ConstExpression      = Expression .
+
+  Expression           = Conditional { AssignmentOperator Expression
+  (.
+		//add command
+		long op1, op2;
+		long type1, type2;
+		TYPEDES dt1, dt2;
+
+		//pop
+		if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+		{
+		//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			//类型转换
+			long castcode = -1; //cast操作码
+			char casted = 0;	//被转换类型的运算数
+			//类型转换
+			long temp;//临时变量地址, 存放转换后的变量
+			long type;//目标类型
+			long level;
+			long objid;
+			long am;  //cast指令的寻址方式
+			long* castedop = NULL;
+			type = dt1.type;
+			level = dt1.refLevel;
+			castedop = &op2;
+			objid = dt1.objID;
+			//get cast code
+			{
+				TYPEDES DT1, DT2;
+				memcpy(&DT1, &dt1, sizeof(TYPEDES));
+				memcpy(&DT2, &dt2, sizeof(TYPEDES));
+				if ( (DT1.objID > 0 && DT2.objID ==0) || (DT2.objID > 0 && DT1.objID ==0))
+				{
+					GenError(110);
+					continue;
+				}
+
+				if (DT1.refLevel > 0)//是指针
+				{
+					if (DT2.refLevel == 0 // 不是指针
+						&& DT2.type != dtLong //不是长整型
+						&& DT2.type != dtInt)
+					{
+						GenError(110);
+						continue;
+					}
+					DT1.type = dtLong;					
+				}
+				if (DT2.refLevel > 0)
+				{
+					if (DT1.refLevel == 0 && DT1.type != dtLong &&DT1.type != dtInt)
+					{
+						GenError(110);
+						continue;
+					}
+					DT2.type = dtLong;					
+				}				
+				switch (DT2.type)
+				{
+				case dtChar:
+					{
+						switch (DT1.type)
+						{
+						case dtChar:break;
+						case dtShort:castcode = __CAST_C2S;break;
+						case dtInt:castcode = __CAST_C2I;break;
+						case dtLong:castcode = __CAST_C2L;break;
+						case dtFloat:castcode = __CAST_C2F;break;
+						default:GenError(110);continue;
+						}						
+					}
+					break;
+				case dtShort:
+					{
+						switch (DT1.type)
+						{
+						case dtChar:castcode = __CAST_S2C;break;
+						case dtShort:break;
+						case dtInt:castcode = __CAST_S2I;break;
+						case dtLong:castcode = __CAST_S2L;break;
+						case dtFloat:castcode = __CAST_S2F;break;
+						default:GenError(110);continue;
+						}						
+					}
+					break;
+				case dtInt:
+					{
+						switch (DT1.type)
+						{
+						case dtChar:castcode = __CAST_I2C;break;
+						case dtShort:castcode = __CAST_I2S;break;
+						case dtInt:break;
+						case dtLong:break;
+						case dtFloat:castcode = __CAST_I2F;break;
+						default:GenError(110);continue;
+						}						
+					}
+					break;
+				case dtLong:
+					{
+						switch (DT1.type)
+						{
+						case dtChar:castcode = __CAST_L2C;break;
+						case dtShort:castcode = __CAST_L2S;break;
+						case dtInt:break;
+						case dtLong:break;
+						case dtFloat:castcode = __CAST_L2F;break;
+						default:GenError(110);continue;
+						}						
+					}
+					break;
+				case dtFloat:
+					if (DT1.type != dtFloat) 
+						GenError(110);
+					break;
+				}
+			}
+			temp = AllocTempVar(type, level);
+			if (temp == -1)
+			{
+				GenError(98);
+			}
+			else if (castcode != -1)
+			{//需要转换
+				
+				am = 1 | (log2(UnitSize(dt1))<<6);
+				am = am << 8;//temp的寻址方式
+				long exchange = am >> 8;
+				am |= (type2&0xff) /*| (((type2&0x30)<<8)&0xff00)*/;//整条指令的寻址方式					
+				ADDCOMMAND3(__cast, am, temp, *castedop, castcode)
+				//修改运算数
+				type2 = exchange;
+				dt2.type = type;
+				op2 = temp;
+			}				
+
+			
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//add commmand to command table
+			ADDCOMMAND2(__mov, address_mode, op1, op2)	
+
+			//push result
+			TYPEDES dt;//无效
+			memset(&dt, 0, sizeof(TYPEDES));
+			this->PushDigit(_AX, 0x82,dt);
+		}
+
+	
+  .)
+   }.
+
+  Conditional          = LogORExp .
+
+  LogORExp             = LogANDExp  (. 	int type = -1; .) { "||"
+  
+  (.
+   		type = 7;
+  .)
+LogANDExp 
+(.
+		//add command
+		long op1, op2;
+		long type1, type2;
+		TYPEDES dt1, dt2;
+		//pop出乘数和被乘数
+		if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+		{
+		//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			CAST
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//add commmand to command table
+			ADDCOMMAND3(__test, address_mode, op1, op2, 7/*==*/)					
+			//push result
+			TYPEDES dt;//not used
+			memset(&dt, 0, sizeof(TYPEDES));
+			this->PushDigit(_PSW, 0x82, dt);
+		}
+.)
+} 
+
+(.
+	if (type >= 0)
+	{
+		long g;
+		long t;
+		TYPEDES DT;
+		PopDigit(&g, &t, &DT);
+		//将结果存入临时变量
+		
+		_typedes(DT1, dtLong)
+		if (m_pMainFunction->AddVal(NULL, DT1))
+		{
+			long temp;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+			ADDCOMMAND2(__mov, DR, temp, _PSW);
+			PushDigit(temp, AMODE_MEM|0x80, DT1);
+		}
+		else
+		{
+			REPORT_COMPILE_ERROR("add symbol failed");
+		}
+	}
+.)
+.
+
+  LogANDExp            =
+ (. 	
+ int type = -1;
+	long op1, op2;
+	long type1, type2;
+	TYPEDES dt1, dt2;
+.)
+
+InclORExp   { "&&" 
+
+(. 		type = 7;  .)
+
+InclORExp 
+
+(.
+		//add command
+		//pop出乘数和被乘数
+		if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+		{
+		//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			CAST
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//add commmand to command table
+			ADDCOMMAND3(__test, address_mode, op1, op2, 6/*==*/)					
+			//push result
+			TYPEDES dt;//not used
+			memset(&dt, 0, sizeof(TYPEDES));
+			this->PushDigit(_PSW, 0x82, dt);
+		}
+
+.)
+}
+(.
+	if (type >= 0)
+	{
+		long g;
+		long t;
+		TYPEDES dt;
+		PopDigit(&g, &t, &dt);
+		
+		//将结果存入临时变量
+		if (m_pMainFunction->AddVal(NULL, dt1))
+		{			
+			long temp;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+			ADDCOMMAND2(__mov, DR, temp, _PSW);
+			PushDigit(temp, AMODE_MEM|0x80, dt1);
+		}
+		else
+		{
+			REPORT_COMPILE_ERROR("add symbol failed");
+		}
+		}
+.)
+.
+
+  InclORExp            = ExclORExp   { "|" ExclORExp } .
+
+  ExclORExp            = ANDExp      { "^" ANDExp } .
+
+  ANDExp               = EqualExp    { "&" EqualExp } .
+
+  EqualExp             = 
+  (.
+	int type = -1;//0: == 1: !=
+	long op1, op2;
+	long type1, type2;
+	TYPEDES dt1, dt2;
+
+  .)
+
+  RelationExp { ( "=="
+   (. 			type = 0; .)
+| "!="
+(.
+			type = 1;
+
+.) ) RelationExp 
+
+(.
+		//add command
+		//pop出乘数和被乘数
+		if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+		{
+		//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			CAST
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+
+			//add commmand to command table
+			if (type == 0)
+			{	
+				ADDCOMMAND3(__test, address_mode, op1, op2, 0/*==*/)					
+			}
+			else if (type == 1)
+			{
+				ADDCOMMAND3(__test, address_mode, op1, op2, 1/*==*/)	
+			}
+
+			//push result
+			TYPEDES dt;//not used
+			memset(&dt, 0, sizeof(TYPEDES));
+			this->PushDigit(_PSW, 0x82, dt);
+		}
+
+.)
+} 
+
+(.
+	if (type >= 0)
+	{
+		long g;
+		long t;
+		TYPEDES dt;
+		if (PopDigit(&g, &t, &dt))
+		{
+			//将结果存入临时变量
+			if (m_pMainFunction->AddVal(NULL,  dt1))
+			{			
+				long temp;
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+				ADDCOMMAND2(__mov, DR, temp , _PSW);
+				PushDigit(temp, AMODE_MEM|0x80, dt1);
+			}
+			else
+			{
+				REPORT_COMPILE_ERROR("add symbol failed");
+			}
+		}
+	}
+.)
+.
+
+  RelationExp          = 
+  (.
+  	int type = -1;
+	long op1, op2;
+	long type1, type2;
+	TYPEDES dt1, dt2;
+
+  .)
+  ShiftExp    { ( "<" (. type = 5; .) | ">" (. type = 4; .)| "<=" (. type = 3; .)| ">=" (. type = 2; .)) 
+  ShiftExp
+  
+  (.
+  		//add command
+		//pop出乘数和被乘数
+		if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+		{
+		//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			CAST
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+
+			//add commmand to command table
+			ADDCOMMAND3(__test, address_mode, op1, op2, type)					
+
+			//push result
+			TYPEDES dt;//not used
+			memset(&dt, 0, sizeof(TYPEDES));
+			this->PushDigit(_PSW, 0x82, dt);
+		}
+
+
+  .) }
+  
+  
+  (.
+  	if (type >= 0)
+	{
+		// pop掉多于的操作数, 因为这时结果已在__AX中
+		long g;
+		long t;
+		TYPEDES dt;
+		PopDigit(&g, &t, &dt);
+
+		//将结果存入临时变量
+		_typedes(dt_temp, dtLong)
+		if (m_pMainFunction->AddVal(NULL,  dt_temp))
+		{			
+			long temp;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+			ADDCOMMAND2(__mov, DR, temp, _PSW);
+			PushDigit(temp, AMODE_MEM|0x80, dt_temp);
+		}
+		else
+		{
+			REPORT_COMPILE_ERROR("add symbol failed");
+		}
+	}
+  .)
+  .
+
+  ShiftExp             = AddExp      { ( "<<" | ">>" ) AddExp } .
+
+  AddExp               = (. 	int type = -1;//1: add 0: sub .)
+MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp 
+
+(.
+		//add command
+		long op1, op2;
+		long type1, type2;
+		TYPEDES dt1, dt2;
+		//pop出乘数和被乘数
+		if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+		{
+		//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+
+			//类型转换
+			CAST
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+
+			
+			if (dt1.dim >0)
+			{//如果是数组变量
+				//得到增量
+				int size = UnitSize(dt1);
+				for (int i=1; i<dt1.dim;i++)
+				{
+					size *= dt1.dimsize[i];
+				}
+				//增量乘以op2得到实际增量,存入_AX
+				ADDCOMMAND2(__mul, type2<<8, op2, size)
+				//加法
+				if (dt1.type == dtFloat && dt1.refLevel==0)
+				{
+					if (type == 0)
+					ADDCOMMAND2(__fsub, (type1<<8)|0x82, op1, _AX)	
+					else if (type == 1)
+					ADDCOMMAND2(__fadd, (type1<<8)|0x82, op1, _AX)	
+				}
+				else
+				{
+					if (type == 0)
+					ADDCOMMAND2(__sub, (type1<<8)|0x82, op1, _AX)	
+					else if (type == 1)
+					ADDCOMMAND2(__add, (type1<<8)|0x82, op1, _AX)	
+				}
+			}
+			else
+			{
+				//add commmand to command table
+				if (dt1.type == dtFloat && dt1.refLevel==0)
+				{
+					if (type == 0)
+					ADDCOMMAND2(__fsub, address_mode, op1, op2)	
+					else if (type == 1)
+					ADDCOMMAND2(__fadd, address_mode, op1, op2)	
+				}
+				else
+				{
+					if (type == 0)
+					ADDCOMMAND2(__sub, address_mode, op1, op2)	
+					else if (type == 1)
+					ADDCOMMAND2(__add, address_mode, op1, op2)	
+				}
+			}	
+			//将AX中的结果存入临时变量
+			if (m_pMainFunction->AddVal(NULL,  dt1))
+			{			
+				long temp;
+				long opsize = log2(UnitSize(dt1))<<6;
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+				ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp , _AX);
+				PushDigit(temp, AMODE_MEM|opsize, dt1);
+			}
+			else
+			{
+				REPORT_COMPILE_ERROR("add symbol failed");
+			}
+		}
+.)
+
+} .
+
+  MultExp              = (. 	char szName[MAX_IDENTIFIER_LENGTH];	memset(szName, 0, MAX_IDENTIFIER_LENGTH); .)
+  CastExp  
+(. 
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+	int type = -1;//0: mult 1: div 2:percent
+.) { ( "*"  (.	type = 0; .) | "/"  (.	type = 1; .) | "%"  (.	type = 2; .) ) CastExp 
+(.
+		Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+		
+		//add command
+		long op1, op2;
+		long type1, type2;
+		TYPEDES dt1, dt2;
+
+		//pop出乘数和被乘数
+		if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+		{
+			//	REPORT_COMPILE_ERROR("POP UP FAILED");
+			GenError(96);
+			return;
+		}
+		else
+		{
+			CAST
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//add commmand to command table
+			if (dt1.type == dtFloat && dt1.refLevel==0)
+			{
+				if (type == 0) ADDCOMMAND2(__fmul, address_mode, op1, op2)					
+					else if (type == 1) ADDCOMMAND2(__fdiv, address_mode, op1, op2)				
+					else GenError(109);
+			}
+			else
+			{
+				if (type == 0) ADDCOMMAND2(__mul, address_mode, op1, op2)					
+					else if (type == 1) ADDCOMMAND2(__div, address_mode, op1, op2)
+					else if (type == 2) ADDCOMMAND2(__mod, address_mode, op1, op2)
+			}
+			
+			//将AX中的结果存入临时变量
+			if (m_pMainFunction->AddVal(NULL, dt1))
+			{			
+				long temp;
+				long opsize = log2(UnitSize(dt1))<<6;
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+				ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp, _AX);
+				PushDigit(temp, AMODE_MEM|opsize, dt1);
+			}
+			else
+			{
+				this->GenError(98);
+			}
+		}
+
+.)
+} .
+
+  CastExp              = 
+  (.
+  	//保存一元操作符栈
+	EXPRESSIONOP* pSavedStack = this->m_pExpOpPt;
+	//清空一元操作符栈
+	m_pExpOpPt = &m_ExpOp;
+	//int op;
+
+  .)
+  UnaryExp 
+  
+  (.
+	int op;
+	while (this->PopOp(&op))
+	{		
+
+		//操作数出栈
+		long op1;
+		long type1;
+		TYPEDES dt1;	
+		if (!PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
+		{
+			break;//genError(96);???????
+		}
+		int address_mode = (type1<<8);
+		address_mode |= log2(UnitSize(dt1))<<14;
+		
+		//添加命令
+		switch (op)
+		{
+		case PlusSym:  			
+			//no operation
+			break;
+		case MinusSym:			
+			{
+				int opsize;
+				if (!m_pMainFunction->AddVal(NULL, dt1))
+					GenError(98);
+				if (dt1.type == dtFloat)
+				{
+					opsize = (type1>>6)&0xc0;
+					ADDCOMMAND2(__fsub, type1, 0, op1)
+				}
+				else
+				{
+					opsize = (type1>>6)&0xc0;
+					ADDCOMMAND2(__sub, type1, 0, op1)
+				}
+				ADDCOMMAND2(__mov, DR, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, _AX)
+				PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, AMODE_MEM|(opsize<<6), dt1);
+			}
+			break;
+		case StarSym:  
+			{
+				if (dt1.refLevel <1)
+					GenError(102);
+				dt1.refLevel--;
+				//取操作的字节类型
+				int opsize = log2(UnitSize(dt1));
+				opsize = opsize<< 6;
+				type1 |= opsize; 
+
+				//将type1的间接访问级别提高一级
+				int level = (type1 & 0x30) >> 4;
+				if (level == 3)
+				{
+					GenError(103);
+					break;
+				}
+				level ++;
+				type1 |= level << 4;
+/*				int j = (type1>>4)&0x3;
+				if (j < 1)
+					GenError(102);//is not a point
+				else
+					j--;
+				j = j << 4;
+*/				
+/*			
+				type1 &= 0xffcf;
+				type1 |= j;
+*/
+				//入栈
+				PushDigit(op1, type1, dt1);
+			}
+			break;
+		case BangSym: 
+			{
+				if (!m_pMainFunction->AddVal(NULL, dt1))
+					GenError(98);
+				int opsize = (type1>>6)&0x03;
+				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
+				ADDCOMMAND1(__notr, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
+				PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
+			}
+			break;
+		case AndSym:  
+			{
+				long temp;
+				temp = AllocTempVar(dtLong, 1);
+				if (temp == -1)
+				{
+					GenError(98);
+				}
+				else
+				{
+					if (dt1.objID > 0)
+					{//如果时obj， 不取地址
+						PushDigit(op1, type1, dt1);
+					}
+					else
+					{
+						ADDCOMMAND2(__ea, 0x8100|type1, temp, op1)
+						dt1.refLevel ++;
+						PushDigit(temp, AMODE_MEM|0x80, dt1);
+					}
+				}
+			}
+			break;
+		case TildeSym: //'~'
+			{
+				if (!m_pMainFunction->AddVal(NULL, dt1))
+					GenError(98);
+				int opsize = (type1>>6)&0xc0;
+				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
+				ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
+				PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
+			}
+			break;
+		default :GenError(93); break;
+		}		
+	}
+	//恢复一元运算符栈
+	this->ClearOpStack();
+	m_pExpOpPt = pSavedStack;  
+  .)
+  .
+
+/* we should really add
+                         | "(" identifier ")" CastExp .
+   but this breaks it badly */
+
+  UnaryExp             = PostFixExp
+                         | ( "++" | "--" ) UnaryExp
+                         | UnaryOperator CastExp .
+
+/* we should really add
+                         | "sizeof" ( UnaryExp | "(" (. PTYPEDES type;.)Type<type> ")" ) .
+   but this breaks it badly */
+
+  PostFixExp           = Primary
+                         { "[" Expression "]"
+(.
+{
+				//add command
+				long op1, op2;
+				long type1, type2;
+				TYPEDES dt1, dt2;
+				//pop
+				if (!PopDigit(&op2, &type2, &dt2) || !PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
+				{
+					//	REPORT_COMPILE_ERROR("POP UP FAILED");
+					GenError(96);
+					return;
+					
+				}
+				else
+				{	
+				/*处理a[b]的流程(要考虑指针， 数组， 多维数组， 作为参数传进来的数组和指针）
+					1. 得到b下标代表的单位长度(如果是数组, 通过维数计算, 如果是指针, reflvl减一后计算UnitSize)
+					2. b*单位长度= offset 
+					3. a + offset -> temp
+					4. push temp, 间接寻址
+					*/
+					int offset;
+					BOOL bIsArray = TRUE;
+					if (dt1.dim >0)//是数组
+					{
+						bIsArray = TRUE;
+						offset= UnitSize(dt1);
+						for (int i = 1; i< dt1.dim; i++)
+						{
+							offset *= dt1.dimsize[i];
+						}
+						//不生成新的typedes, 直接修改dt1, 使之维数减一
+						if (dt1.dim >1)
+							memcpy(dt1.dimsize, dt1.dimsize+1, sizeof(long)*(dt1.dim-1));					
+						dt1.dim--;							
+					}
+					else
+					{//不是数组, 是指针
+						bIsArray = FALSE;
+						if (dt1.refLevel > 0)//是指针且不是指针数组
+						{
+							//不生成新的typedes, 直接修改dt1, 使之*号减一
+							dt1.refLevel--;
+							offset = UnitSize(dt1);
+						}
+						else//既不是指针也不是数组
+							GenError(101);						
+					}
+
+					//偏移量 = 单位长度* 下标addcommand(mul, DC, 下标, 单位长度)
+					ADDCOMMAND2(__mul, (type2<<8)|0x8080, op2, offset)
+					//增加临时变量存放中间结果
+					long temp = this->AllocTempVar(dtLong);
+					if (temp == -1)
+					{
+						GenError(98);
+					}
+					//居卫华2001-08-22
+					long lIndirect = (type1>>4)&0x03;
+					if (bIsArray == FALSE && lIndirect>0)//如果是指针， 则间接寻址
+						ADDCOMMAND2(__add, DR|0x1000, op1, _AX)
+					else
+						ADDCOMMAND2(__add, DR, op1, _AX)
+					//将结果保存到temp
+					ADDCOMMAND2(__mov, DR, temp, _AX)
+					//入栈, 作为指针用
+					PushDigit(temp, AMODE_MEM|0x10|((log2(UnitSize(dt1)))<<6), dt1);
+}
+}
+.)
+                          | 
+(.
+	
+{
+			char szName[MAX_IDENTIFIER_LENGTH];
+			memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+			Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+			long index = m_PubFuncTable->FindFuncByName(szName);
+			FUNCCALL fn;
+			fn.name = szName;
+			if (index < 0) // can find function name in public function table
+			{
+				// find in script function table
+				CFunction* pScript = m_ExeCodeTable->GetFunction(szName, &index);
+				if (pScript == NULL)
+				{	
+					GenError(97);
+					Get();
+				}
+				else
+				{
+					fn.pVF = pScript;
+					fn.nType = 0;
+					ADDCOMMAND1(__callv, CC, (long)pScript);
+					m_ExeCodeTable->ReleaseFunc();
+				}
+
+			}
+			else
+			{
+				ADDCOMMAND1(__callpub, CC, (long)(this->m_PubFuncTable->m_FuncTable[index].pfn));
+				fn.pfn = &m_PubFuncTable->m_FuncTable[index];
+				fn.nType = 1;				
+			}
+
+						  
+.)
+FunctionCall<&fn>
+(.}.)
+                          | ("." identifier)
+(.
+			{				
+				//pop
+				TYPEDES dt;
+				long type;
+				long op;
+				if (!PopDigit(&op, &type, &dt))
+				{
+					GenError(96);
+				}
+				else
+				{
+					if (dt.objID > 0)
+					{
+						char szName[MAX_IDENTIFIER_LENGTH];
+						memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+						Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称				
+						
+						
+						//get offset
+						OBJMEMDES* pMember = this->m_ObjTable[dt.objID-1]->GetMemberByName(szName);
+						if (pMember == NULL)
+						{
+							GenError(121);					
+						}
+						else
+						{	
+							TYPEDES dtTemp;
+							memcpy(&dtTemp, &pMember->dt, sizeof(TYPEDES));
+							
+							long temp = AllocTempVar(dtLong, 1);
+							
+							if (temp == -1)
+							{
+								GenError(98);
+							}
+							
+							//add(op, offset) = address
+							ADDCOMMAND2(__add, DC, op, pMember->offset)
+							ADDCOMMAND2(__mov, DR, temp, _AX)
+							if ((dtTemp.dim ==0 && dtTemp.objID == 0 )
+								||(dtTemp.objID > 0 && dtTemp.refLevel > 0))
+								{//如果不是数组和obj
+									
+									//取改member的opsize
+									int opsize;
+									if (dtTemp.refLevel > 0) //如果是指针类型
+										opsize = log2(OPSIZE_PTR);
+									else
+										opsize = log2(typesize(dtTemp.type, dtTemp.objID));
+									opsize &= 0x3;
+									PushDigit(temp, AMODE_MEM|(opsize << 6)|0x10, dtTemp);
+									
+								}
+								else
+								{
+									
+									//如果是数组或obj, 生成临时变量存放数组地址
+									if (dtTemp.dim != 0)
+									{									
+										/*居卫华2001-08-22修改
+										dtTemp.refLevel++;
+										dtTemp.dim--;
+										*/
+										PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
+									}
+									else
+									{
+										dtTemp.refLevel++;
+										PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
+									}
+								}
+								
+						}
+					}
+				}
+			}
+			
+.)
+						  
+						  
+						  identifier
+                          | "->" identifier
+                          | "++"
+
+(.
+		{
+				long op1;
+				long type1;
+				TYPEDES dt1;
+				//pop出被加数
+				if (!PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+				{
+					//	REPORT_COMPILE_ERROR("POP UP FAILED");
+								GenError(96);
+			return;
+
+				}
+				else
+				{
+					if (dt1.type == dtFloat)
+					{
+						GenError(112);
+					}
+					else
+					{
+						//get address mode
+						int address_mode = (type1<<8);
+						address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+						if (dt1.dim >0)
+						{//如果是数组变量
+							//得到增量
+							int size = UnitSize(dt1);
+							for (int i=1; i<dt1.dim;i++)
+							{
+								size *= dt1.dimsize[i];
+							}
+							//加法
+							ADDCOMMAND2(__add, (type1<<8)|0x80, op1, size)
+						}
+						else
+						{
+							//add commmand to command table
+							ADDCOMMAND2(__add, address_mode, op1, 1)	
+						}	
+						ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
+						//将AX中的结果存入临时变量
+						PushDigit(op1, type1, dt1);
+					}
+				}
+			}
+		
+.)
+                          | "--"
+
+(.
+			{
+				long op1;
+				long type1;
+				TYPEDES dt1;
+				//pop出被加数
+				if (!PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
+				{
+					//	REPORT_COMPILE_ERROR("POP UP FAILED");
+								GenError(96);
+			return;
+
+				}
+				else
+				{
+					if (dt1.type == dtFloat)
+					{
+						GenError(112);
+					}
+					else
+					{
+						//get address mode
+						int address_mode = (type1<<8);
+						address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+						if (dt1.dim >0)
+						{//如果是数组变量
+							//得到增量
+							int size = UnitSize(dt1);
+							for (int i=1; i<dt1.dim;i++)
+							{
+								size *= dt1.dimsize[i];
+							}
+							//加法
+							ADDCOMMAND2(__sub, (type1<<8)|0x80, op1, size)
+						}
+						else
+						{
+							//add commmand to command table
+							ADDCOMMAND2(__sub, address_mode, op1, 1)	
+						}	
+						ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
+						//将AX中的结果存入临时变量
+						PushDigit(op1, type1, dt1);
+					}
+				}
+			}
+.)						  
+                         } .
+
+  Primary              = 
+(.
+	char szName[MAX_IDENTIFIER_LENGTH];
+	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+.)
+ identifier
+ (.
+ 		{	Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+			int address = GetSymAddress(szName);
+
+			//如果adress<0是函数名
+			if (address >= 0 )//如果不是函数名， 是变量名。
+			{
+				TYPEDES dt;
+				SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
+				if (pElement == NULL)
+				{
+					GenError(115);
+				}
+				else
+				{
+					memcpy(&dt ,&(pElement->type), sizeof(TYPEDES));
+					/*if (pdt == NULL)
+					{
+					GenError(111);
+					}
+					else*/
+				
+					if ((dt.dim ==0 && dt.objID == 0 )
+						||(dt.objID > 0 && dt.refLevel > 0))
+					{//如果不是数组和obj
+						int opsize;
+						if (dt.refLevel > 0) 
+							opsize = log2((int)OPSIZE_PTR);
+						else
+							opsize = log2((int)typesize(dt.type, dt.objID));
+						opsize &= 0x3;
+						PushDigit(address, AMODE_MEM|(opsize << 6), dt);
+					}
+					else
+					{//如果是数组或obj, 生成临时变量存放数组地址
+						if (dt.dim != 0)
+						{
+							long temp = AllocTempVar(dtLong, 1);
+							if (temp == -1)
+							{
+								GenError(98);
+							}
+							
+							ADDCOMMAND2(__ea, DD, temp, address)
+							/*居卫华2001－8－22修改
+							dt.refLevel++;
+							dt.dim--;
+							*/
+							PushDigit(temp, AMODE_MEM|(log2( (int)(OPSIZE_PTR) )<<6), dt);
+						}
+						else
+						{
+							long temp = AllocTempVar(dtLong, 1);		
+							if (temp == -1)
+							{
+								GenError(98);
+							}
+							
+							ADDCOMMAND2(__ea, DD, temp, address)
+								dt.refLevel++;
+							PushDigit(temp, AMODE_MEM|(log2((int)(OPSIZE_PTR) )<<6), dt);
+						}
+					}
+					
+				}
+			}
+			else
+			{
+				
+				if (this->m_PubFuncTable->FindFuncByName(szName) < 0)
+				{
+					long index = 0;
+					if (m_ExeCodeTable->GetFunction(szName, &index) == NULL)
+						GenError(104);
+					else
+						m_ExeCodeTable->ReleaseFunc();
+				}
+				//	return;
+			}
+}
+ .)
+  | string1
+  (.
+  		{
+			char* pCh;
+			pCh = new char[Scanner->NextSym.Len+1];
+			if (pCh == NULL)
+			{
+				GenError(106);
+				Get();
+				break;
+			}
+			memset(pCh, 0, Scanner->NextSym.Len+1);
+			Scanner->GetName(&Scanner->NextSym, pCh, Scanner->NextSym.Len);//得到名称
+			char* string = NULL;
+			string = AnalyzeConstString(pCh);
+			if (string == NULL)
+			{
+				if (pCh)
+					delete pCh;
+				GenError(100);				
+				Get();
+				break;
+			}
+
+			int straddress = this->m_pMainFunction->m_nSSUsedSize;
+			if (m_pMainFunction->AddStaticData(strlen(string)+1, (BYTE*)string))
+			{	
+				_typedes(dt, dtInt)
+				
+				if (m_pMainFunction->AddVal(NULL,  dt))
+				{
+					long temp;
+					temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+					ADDCOMMAND2(__ea, DS, temp, straddress);
+					PushDigit(temp, AMODE_MEM, dt);			
+				}
+			}
+			else
+			{
+				this->GenError(98);
+			}
+			if (string)
+				delete string;
+			if (pCh)
+				delete pCh;
+		}
+  .)| char 
+  (.
+		{
+			Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+			_typedes(dt,dtChar);
+			PushDigit(szName[1], AMODE_DIRECT, dt);
+		}
+
+  .)
+  | number 
+ (.
+
+		if (strchr(szName, '.'))	// float
+		{
+			Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+			float number = (float)atof(szName);
+			_typedes(dt, dtFloat);			
+			PushDigit(*(long*)&number, AMODE_DIRECT|OPSIZE_4B, dt);
+		}
+		else	// int
+		{
+			Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
+			int number = atoi(szName);
+			_typedes(dt, dtLong);			
+			PushDigit(number, AMODE_DIRECT|OPSIZE_4B, dt);
+		}
+
+ .)
+  | "(" Expression ")" .
+
+  FunctionCall<FUNCCALL* pFuncEntry>         = "("   [ ActualParameters<pFuncEntry> ] ")" 
+  (.
+    long lParamNum = 0;
+	if (pFuncEntry->nType)
+	{
+  	//addcommand
+	ADDCOMMAND0(__endcallpub);
+	//save return value
+	_typedes(dt, dtLong)
+	if (m_pMainFunction->AddVal(NULL, dt))
+	{			
+		long temp;
+		temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+		ADDCOMMAND2(__mov, DR, temp , _AX);
+		PushDigit(temp, AMODE_MEM|0x80, dt);
+	}
+	else
+	{
+		this->GenError(98);
+	}
+				
+	}
+	else
+	{
+	// check param number
+		if (lParamNum != pFuncEntry->pVF->m_iParamNum)
+	{
+		GenError(123);
+	}
+
+	//addcommand
+	ADDCOMMAND0(__endcallv);
+
+	//save return value
+	_typedes(dt, dtLong)
+	if (m_pMainFunction->AddVal(NULL, dt))
+	{
+		long temp;
+		temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+		ADDCOMMAND2(__mov, DR, temp , _AX);
+		PushDigit(temp, AMODE_MEM|0x80, dt);
+	}
+	else
+	{
+		this->GenError(98);
+	}
+	}
+  .).
+
+  ActualParameters<FUNCCALL* pFuncEntry>     = 
+  (.
+//  	lParamNum = 0;
+	if (pFuncEntry == NULL)
+		return;
+
+	char cParamNum = 0;	
+
+  .)Expression 
+  (.
+ 	//pop
+	long op1;
+	long type;
+	TYPEDES dt1;
+	if (!PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
+	{
+	//	REPORT_COMPILE_ERROR("POP UP FAILED");
+		this->GenError(96);
+		return;
+	}
+	int address_mode = (type<<8)&0xff00;
+	address_mode |= (log2(UnitSize(dt1))<<14);
+
+	if (pFuncEntry->nType)	// native function
+		ADDCOMMAND1(__parampub, address_mode, op1)			
+	else
+		ADDCOMMAND1(__paramv, address_mode, op1)
+
+	cParamNum++; 
+  .)
+  { "," Expression 
+  
+  (.
+  			// modified on 20030331 by weihua ju
+//			if (cParamNum > pFuncEntry->params.size()-1)
+//			{
+//				GenError(106);
+//			}
+
+			//pop
+			long op1;
+			long type;
+			TYPEDES dt1;
+			if (!PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE)
+			{
+				//	REPORT_COMPILE_ERROR("POP UP FAILED");
+				this->GenError(96);
+				return;
+			}
+			else
+			{
+				//get address mode
+				int address_mode = (type<<8)&0xff00;
+				address_mode |= (log2(UnitSize(dt1))<<14);
+				
+				/*		保留
+				if (dt1.dim > 0)
+				{
+				_typedes(dt, dtInt)
+				long temp;
+				//如果是数组, 把它的地址存入临时变量, 传入临时变量
+				if (m_pMainFunction->AddVal(NULL, dt))
+				{			
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+				ADDCOMMAND2(__ea, DD, temp, op1);
+				}
+				long size = sizeof(long*);
+				size = log2(size);
+				size = size << 14;
+
+				ADDCOMMAND1(__parampub, size|0x100, temp)	
+				}
+				else	
+				*/			
+				if (pFuncEntry->nType)	// native function
+				ADDCOMMAND1(__parampub, address_mode, op1)			
+					else
+				ADDCOMMAND1(__paramv, address_mode, op1)		
+				
+			}		
+
+  .)
+  } 
+  (.
+  		// code added on 20030331 weihua ju
+		if (cParamNum != pFuncEntry->pfn->cParamNum)
+		{
+
+			GenError(106);
+		}
+	//lParamNum = cParamNum;
+  .)
+  .
+
+  AssignmentOperator   =   "="  | "*=" | "/=" | "%=" | "+=" | "-=" | "&="
+                         | "^=" | "|=" | "<<=" | ">>=" .
+
+  UnaryOperator        = "+" | "-" | "*" | "!" | "&" | "~" .
+
+END C.
+
+
+
+

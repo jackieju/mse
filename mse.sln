@@ -1,0 +1,72 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "compiler", "..\..\..\..\..\ncse\ncse\compiler1\compiler.vcproj", "{E8713936-2A23-4350-9DBE-8B2497CA652D}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mse", "mse.vcproj", "{42DAD14C-E09E-405F-8FE7-8A323D51FE43}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "mudos", "..\..\..\MudOS\src\v22.2b14\windows\mudos\mudos.vcproj", "{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug_Support_Obj|Win32 = Debug_Support_Obj|Win32
+		Debug|Win32 = Debug|Win32
+		java_debug|Win32 = java_debug|Win32
+		java_Release|Win32 = java_Release|Win32
+		java|Win32 = java|Win32
+		profile|Win32 = profile|Win32
+		Release_Support_Obj|Win32 = Release_Support_Obj|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.Debug_Support_Obj|Win32.ActiveCfg = Debug_Support_Obj|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.Debug_Support_Obj|Win32.Build.0 = Debug_Support_Obj|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.Debug|Win32.ActiveCfg = Debug_Support_Obj|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.java_debug|Win32.ActiveCfg = java_debug|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.java_debug|Win32.Build.0 = java_debug|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.java_Release|Win32.ActiveCfg = java_Release|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.java_Release|Win32.Build.0 = java_Release|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.java|Win32.ActiveCfg = java|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.java|Win32.Build.0 = java|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.profile|Win32.ActiveCfg = profile|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.profile|Win32.Build.0 = profile|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.Release_Support_Obj|Win32.ActiveCfg = Release_Support_Obj|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.Release_Support_Obj|Win32.Build.0 = Release_Support_Obj|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.Release|Win32.ActiveCfg = java_Release|Win32
+		{E8713936-2A23-4350-9DBE-8B2497CA652D}.Release|Win32.Build.0 = java_Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Debug_Support_Obj|Win32.ActiveCfg = Debug|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Debug_Support_Obj|Win32.Build.0 = Debug|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Debug|Win32.ActiveCfg = Debug|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Debug|Win32.Build.0 = Debug|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.java_debug|Win32.ActiveCfg = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.java_debug|Win32.Build.0 = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.java_Release|Win32.ActiveCfg = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.java_Release|Win32.Build.0 = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.java|Win32.ActiveCfg = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.java|Win32.Build.0 = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.profile|Win32.ActiveCfg = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.profile|Win32.Build.0 = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Release_Support_Obj|Win32.ActiveCfg = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Release_Support_Obj|Win32.Build.0 = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Release|Win32.ActiveCfg = Release|Win32
+		{42DAD14C-E09E-405F-8FE7-8A323D51FE43}.Release|Win32.Build.0 = Release|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.Debug_Support_Obj|Win32.ActiveCfg = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.Debug_Support_Obj|Win32.Build.0 = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.java_debug|Win32.ActiveCfg = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.java_debug|Win32.Build.0 = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.java_Release|Win32.ActiveCfg = Release|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.java_Release|Win32.Build.0 = Release|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.java|Win32.ActiveCfg = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.java|Win32.Build.0 = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.profile|Win32.ActiveCfg = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.profile|Win32.Build.0 = Debug|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.Release_Support_Obj|Win32.ActiveCfg = Release|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.Release_Support_Obj|Win32.Build.0 = Release|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.Release|Win32.ActiveCfg = Release|Win32
+		{AB81AA15-5F79-4A40-ADB7-725CE5A34BB5}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

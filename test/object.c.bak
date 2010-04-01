@@ -1,0 +1,8 @@
+void set(string name, object obj){
+	//this->{name} = obj;
+}
+
+void create()
+{
+
+}

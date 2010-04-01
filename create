@@ -1,0 +1,86 @@
+************************command table*********************
+index   mode   line   code    op1   op2   op3
+0000: mode=8180 line=001b opcode = 10ac     (0000,  006e,  0003)
+0001: mode=8080 line=001d opcode = 10a3     callpub(10001020)
+0002: mode=8181 line=001d opcode = 10f4     ea(0024,  0000)
+0003: mode=8100 line=001d opcode = 10a4     parampub(0024)
+0004: mode=0000 line=001d opcode = 10a5     endcallpub()
+0005: mode=8182 line=001d opcode = 1010     mov(0028,  0001)
+0006: mode=8080 line=001e opcode = 10a3     callpub(10001020)
+0007: mode=8000 line=001e opcode = 10a4     parampub(0144)
+0008: mode=0000 line=001e opcode = 10a5     endcallpub()
+0009: mode=8182 line=001e opcode = 1010     mov(002c,  0001)
+000a: mode=8080 line=001f opcode = 10a3     callpub(10001000)
+000b: mode=8183 line=001f opcode = 10f4     ea(0030,  0000)
+000c: mode=8100 line=001f opcode = 10a4     parampub(0030)
+000d: mode=0000 line=001f opcode = 10a5     endcallpub()
+000e: mode=8182 line=001f opcode = 1010     mov(0034,  0001)
+000f: mode=8080 line=0020 opcode = 10a3     callpub(10001000)
+0010: mode=8183 line=0020 opcode = 10f4     ea(0038,  0004)
+0011: mode=8100 line=0020 opcode = 10a4     parampub(0038)
+0012: mode=0000 line=0020 opcode = 10a5     endcallpub()
+0013: mode=8182 line=0020 opcode = 1010     mov(003c,  0001)
+0014: mode=8080 line=0021 opcode = 10a6     (3ed538)
+0015: mode=8183 line=0021 opcode = 10f4     ea(0040,  000c)
+0016: mode=8100 line=0021 opcode = 10a7     (0040)
+0017: mode=8183 line=0021 opcode = 10f4     ea(0044,  0014)
+0018: mode=8100 line=0021 opcode = 10a7     (0044)
+0019: mode=0000 line=0021 opcode = 10a8     ()
+001a: mode=8182 line=0021 opcode = 1010     mov(0048,  0001)
+001b: mode=8080 line=0029 opcode = 10a6     (3ed538)
+001c: mode=8183 line=0029 opcode = 10f4     ea(004c,  001c)
+001d: mode=8100 line=0029 opcode = 10a7     (004c)
+001e: mode=8183 line=0029 opcode = 10f4     ea(0050,  0028)
+001f: mode=8100 line=0029 opcode = 10a7     (0050)
+0020: mode=0000 line=0029 opcode = 10a8     ()
+0021: mode=8182 line=0029 opcode = 1010     mov(0054,  0001)
+0022: mode=8080 line=002e opcode = 10a6     (3ed538)
+0023: mode=8183 line=002e opcode = 10f4     ea(0058,  0030)
+0024: mode=8100 line=002e opcode = 10a7     (0058)
+0025: mode=8183 line=002f opcode = 10f4     ea(005c,  0038)
+0026: mode=8183 line=0030 opcode = 10f4     ea(0060,  004c)
+0027: mode=8183 line=0031 opcode = 10f4     ea(0064,  005c)
+0028: mode=8183 line=0032 opcode = 10f4     ea(0068,  0068)
+0029: mode=8100 line=0033 opcode = 10a7     (0068)
+002a: mode=0000 line=0033 opcode = 10a8     ()
+002b: mode=8182 line=0033 opcode = 1010     mov(006c,  0001)
+002c: mode=8080 line=0035 opcode = 10a6     (3ed538)
+002d: mode=8183 line=0035 opcode = 10f4     ea(0070,  0074)
+002e: mode=8100 line=0035 opcode = 10a7     (0070)
+002f: mode=8000 line=0039 opcode = 10a7     (0001)
+0030: mode=0000 line=0039 opcode = 10a8     ()
+0031: mode=8182 line=0039 opcode = 1010     mov(0074,  0001)
+0032: mode=8080 line=003b opcode = 10a6     (3ed538)
+0033: mode=8183 line=003b opcode = 10f4     ea(0078,  0080)
+0034: mode=8100 line=003b opcode = 10a7     (0078)
+0035: mode=8000 line=003b opcode = 10a7     (0001)
+0036: mode=0000 line=003b opcode = 10a8     ()
+0037: mode=8182 line=003b opcode = 1010     mov(007c,  0001)
+0038: mode=0000 line=003d opcode = 10f3     ret()
+************************segment*********************
+index offset size name
+0000: 0000,    20,    l
+0001: 0032,    4,    
+0002: 0036,    4,    
+0003: 0040,    4,    
+0004: 0044,    4,    
+0005: 0048,    4,    
+0006: 0052,    4,    
+0007: 0056,    4,    
+0008: 0060,    4,    
+0009: 0064,    4,    
+000a: 0068,    4,    
+000b: 0072,    4,    
+000c: 0076,    4,    
+000d: 0080,    4,    
+000e: 0084,    4,    
+000f: 0088,    4,    
+0010: 0092,    4,    
+0011: 0096,    4,    
+0012: 0100,    4,    
+0013: 0104,    4,    
+0014: 0108,    4,    
+0015: 0112,    4,    
+0016: 0116,    4,    
+0017: 0120,    4,    
+0018: 0124,    4,    
