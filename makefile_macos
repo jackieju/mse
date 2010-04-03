@@ -34,20 +34,20 @@ CCompiler.o: CCompiler.cpp
 cp.o: cocoR/cp.cpp
 	$(CC) -c cocoR/cp.cpp -o cp.o $(CFLAGS)
 
-CR_ABS.o: CR_ABS.cpp
-	$(CC) -c CR_ABS.cpp -o CR_ABS.o $(CFLAGS)
+CR_ABS.o: cocoR/CR_ABS.cpp
+	$(CC) -c cocoR/CR_ABS.cpp -o CR_ABS.o $(CFLAGS)
 
-CR_ERROR.o: CR_ERROR.cpp
-	$(CC) -c CR_ERROR.cpp -o CR_ERROR.o $(CFLAGS)
+CR_ERROR.o: cocoR/CR_ERROR.cpp
+	$(CC) -c cocoR/CR_ERROR.cpp -o CR_ERROR.o $(CFLAGS)
 
-CR_PARSE.o: CR_PARSE.cpp
-	$(CC) -c CR_PARSE.cpp -o CR_PARSE.o $(CFLAGS)
+CR_PARSE.o: cocoR/CR_PARSE.cpp
+	$(CC) -c cocoR/CR_PARSE.cpp -o CR_PARSE.o $(CFLAGS)
 
-CR_SCAN.o: CR_SCAN.cpp
-	$(CC) -c CR_SCAN.cpp -o CR_SCAN.o $(CFLAGS)
+CR_SCAN.o: cocoR/CR_SCAN.cpp
+	$(CC) -c cocoR/CR_SCAN.cpp -o CR_SCAN.o $(CFLAGS)
 
-cs.o: cs.cpp
-	$(CC) -c cs.cpp -o cs.o $(CFLAGS)
+cs.o: cocoR/cs.cpp
+	$(CC) -c cocoR/cs.cpp -o cs.o $(CFLAGS)
 
 Function.o: Function.cpp
 	$(CC) -c Function.cpp -o Function.o $(CFLAGS)

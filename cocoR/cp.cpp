@@ -187,7 +187,9 @@ void cParser::LoadLib()
 	#ifdef WIN32
 	            m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
 	#else
-	    m_PubFuncTable->LoadLib(lib+".so", lib+".int");
+	    char* c1 = (char*)(lib+".so").c_str();
+	    char* c2 = (char*)(lib+".int").c_str();
+	    m_PubFuncTable->LoadLib(c1, c2);
 	#endif
 	/* for the further if VM run in another process than compiler run
 	    int address = m_pMainFunction->AddStaticData(lib.size()+1, (BYTE*)lib.c_str());
