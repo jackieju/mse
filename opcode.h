@@ -4,40 +4,40 @@
 */
 #ifndef OPCODE_H
 #define OPCODE_H
-//´«ËÍÖ¸Áî
-#define __mov		0x1010							//mov (±äÁ¿, ±äÁ¿)
-#define __ea		0x10f4							//È¡ÓĞĞ§µØÖ·(Ö»ÄÜÓÃAMODE_MEMÑ°Ö··½Ê½)
+//ä¼ é€æŒ‡ä»¤
+#define __mov		0x1010							//mov (å˜é‡, å˜é‡)
+#define __ea		0x10f4							//å–æœ‰æ•ˆåœ°å€(åªèƒ½ç”¨AMODE_MEMå¯»å€æ–¹å¼)
 
-//ËãÊõÔËËãÖ¸Áî
-//ÕûÊı
-#define __add		0x1021			            //add (±äÁ¿, ±äÁ¿)-> ax
-#define __sub		0x1050						//sub (±äÁ¿, ±äÁ¿)
-#define __mul		0x1070						//mul (±äÁ¿, ³£Á¿)
-#define __div		0x1090						//div (±äÁ¿, ³£Á¿)
+//ç®—æœ¯è¿ç®—æŒ‡ä»¤
+//æ•´æ•°
+#define __add		0x1021			            //add (å˜é‡, å˜é‡)-> ax
+#define __sub		0x1050						//sub (å˜é‡, å˜é‡)
+#define __mul		0x1070						//mul (å˜é‡, å¸¸é‡)
+#define __div		0x1090						//div (å˜é‡, å¸¸é‡)
 #define __mod		0x10f0						//%
-#define __not		0x10d0						//not (±äÁ¿), Ïàµ±ÓÚ~ÔËËã
-#define __test		0x10f2						//±È½Ïtest(a, b, Ìõ¼ş)
-#define __notr		0x10f5						//(__notr(±äÁ¿) !ÔËËã
-//¸¡µã
+#define __not		0x10d0						//not (å˜é‡), ç›¸å½“äº~è¿ç®—
+#define __test		0x10f2						//æ¯”è¾ƒtest(a, b, æ¡ä»¶)
+#define __notr		0x10f5						//(__notr(å˜é‡) !è¿ç®—
+//æµ®ç‚¹
 #define __fadd		0x1022
 #define __fsub		0x1051
 #define __fmul		0x1071
 #define __fdiv		0x1091
 
-//Ìø×ªÖ¸Áî
-#define __jmp		0x10a0                     //jmp (³£Á¿)
-#define __jz		0x10a1						//jz (Óï¾ä)
+//è·³è½¬æŒ‡ä»¤
+#define __jmp		0x10a0                     //jmp (å¸¸é‡)
+#define __jz		0x10a1						//jz (è¯­å¥)
 #define __jnz		0x10a2						//jnz (constant)
 #define __ret		0x10f3
 /*#define __jmpz   0x10a2                   //jmpz(address, constant) 
 */
 
-// µ÷ÓÃÍâ²¿º¯Êı
+// è°ƒç”¨å¤–éƒ¨å‡½æ•°
 #define __callpub		0x10a3					//call (function entry)
 #define __parampub		0x10a4					//param (address)
 #define __endcallpub	0x10a5					//endcall
 
-// µ÷ÓÃ½Å±¾º¯Êı
+// è°ƒç”¨è„šæœ¬å‡½æ•°
 #define __callv			0x10a6
 #define __paramv		0x10a7
 #define __endcallv		0x10a8
@@ -48,11 +48,11 @@
 #define __newobj		0x10ab				// create new object or array
 #define __movobj		0x10ac				// assignment for object
 
-//ÀàĞÍ×ª»»(__cast(Ä¿±êµØÖ·,  Ô­µØÖ·, ×ª»»ÀàĞÍ)
+//ç±»å‹è½¬æ¢(__cast(ç›®æ ‡åœ°å€,  åŸåœ°å€, è½¬æ¢ç±»å‹)
 #define	__cast			0x10f6				
 
-//ÀàĞÍ×ª»»Âë
-//Ê¹ÓÃ³£Á¿
+//ç±»å‹è½¬æ¢ç 
+//ä½¿ç”¨å¸¸é‡
 #define __CAST_C2F 0 // char  -> float
 #define __CAST_S2F 1 // short -> float
 #define __CAST_L2F 2 // long  -> float
@@ -71,7 +71,7 @@
 #define __CAST_L2I 15// long  -> int
 
 /*
-//Ê¹ÓÃÊı¾İÀàĞÍµÄ×éºÏ
+//ä½¿ç”¨æ•°æ®ç±»å‹çš„ç»„åˆ
 #define __CAST_C2F (dtChar<<8||dtFloat) // char  -> float
 #define __CAST_S2F (dtShort<<8||dtFloat) // short -> float
 #define __CAST_L2F (dtLong<<8||dtFloat) // long  -> float
@@ -95,15 +95,15 @@
 #define OPSIZE_8B 0xc0
 #define OPSIZE_PTR sizeof(long*)
 /*
-//Õ»²Ù×÷
-Ä¿Ç°²»ÓÃ, ÒòÎªÃ»ÓĞ¶ÑÕ»¶Î
-#define __pop    0x10b0                     //pop (±äÁ¿)
-#define __push   0x10c0                    //push (¼Ä´æÆ÷, ±äÁ¿)
+//æ ˆæ“ä½œ
+ç›®å‰ä¸ç”¨, å› ä¸ºæ²¡æœ‰å †æ ˆæ®µ
+#define __pop    0x10b0                     //pop (å˜é‡)
+#define __push   0x10c0                    //push (å¯„å­˜å™¨, å˜é‡)
 */
-                                       //Àı: test(a, b, 0)
+                                       //ä¾‹: test(a, b, 0)
 
                                        //0: == 1: != 2: >= 3:<= 4:> 5:< 6:&& 7:||
-                                       //Èç³ÉÁ¢ÔòÖÃ±êÖ¾Î»1²»³ÉÁ¢ÖÃÁã
+                                       //å¦‚æˆç«‹åˆ™ç½®æ ‡å¿—ä½1ä¸æˆç«‹ç½®é›¶
 
 //address mode
 /*
@@ -116,16 +116,16 @@ addressing mode, 0: Immediate 1: mem 2: register 3: static 4: preserved
 6, 7 bit:		0: byte operation, 1: word operation 2: DWORD operation 3: preserved
 */
 // addressing mode
-//0:³£Á¿c 1: Ö±½ÓÑ°Ö·d 2:registerR 3: ³£Á¿¶ÎÑ°Ö·
-//¸ß×Ó½ÚÎªop1, µÍ×Ö½ÚÎªop2
+//0:å¸¸é‡c 1: ç›´æ¥å¯»å€d 2:registerR 3: å¸¸é‡æ®µå¯»å€
+//é«˜å­èŠ‚ä¸ºop1, ä½å­—èŠ‚ä¸ºop2
 #define FIRST_ADDRESS_MODE 0
-#define AMODE_DIRECT 0  //Á¢¼´Êı
-#define AMODE_MEM   1   //ÄÚ´æ
+#define AMODE_DIRECT 0  //ç«‹å³æ•°
+#define AMODE_MEM   1   //å†…å­˜
 #define AMODE_REG   2
-#define AMODE_STATIC 3  //³£Á¿¶ÎÑ°Ö·
-//#define AMODE_ARRAY   4  //Êı×éÑ°Ö·, ¼°»ùÖ·±äÖ·Ñ°Ö·EA = DS + BX + OP)
+#define AMODE_STATIC 3  //å¸¸é‡æ®µå¯»å€
+//#define AMODE_ARRAY   4  //æ•°ç»„å¯»å€, åŠåŸºå€å˜å€å¯»å€EA = DS + BX + OP)
 #define AMODE_OBJ      4// address mode for object
-//#define AMODE_POINT  4 //Ö¸ÕëÑ°Ö·(EA = PS + OFFSET)
+//#define AMODE_POINT  4 //æŒ‡é’ˆå¯»å€(EA = PS + OFFSET)
 #define LAST_ADDRESS_MODE 0xf4
 
 #define DD 0x8181

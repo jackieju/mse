@@ -15,7 +15,7 @@
 #include <vector>
 #include <stack>
 struct BP{
-		char m_szName[21];					//º¯ÊıÃû³Æ
+		char m_szName[21];					//å‡½æ•°åç§°
 		long lIP;
 };
 typedef std::vector<BP>	bp_list;
@@ -42,8 +42,8 @@ typedef struct {
 	CFunction* pFunc;	// saved function pointer
 	long IP;			// saved IP
 	BYTE* VMemory;		// saved virtual memory
-	BYTE* DataSeg;		//Êı¾İ¶Î
-	BYTE* StaticSeg;	//³£Á¿¶Î
+	BYTE* DataSeg;		//æ•°æ®æ®µ
+	BYTE* StaticSeg;	//å¸¸é‡æ®µ
 	long ulVMemSize;
 	long ulDataSegSize;
 	long ulSSize;
@@ -60,24 +60,24 @@ typedef vector<CALLSTACKELE> CALL_STACK;
 typedef stack<FUNCTIONSTACKELE*> FUNC_STACK;
 
 /**
-	¶ÔÏóÃû³Æ	: CVirtualMachine
-	¶ÔÏóÃèÊö	: ĞéÄâ»úÀà
-	ÖØÒªº¯Êı	: 
+	å¯¹è±¡åç§°	: CVirtualMachine
+	å¯¹è±¡æè¿°	: è™šæ‹Ÿæœºç±»
+	é‡è¦å‡½æ•°	: 
 	///////////////////////////////////////////
-	//²Ù×÷ĞéÄâ»ú
-	//Ìí¼ÓÍâ²¿¿É·ÃÎÊµØÖ·¿Õ¼ä
+	//æ“ä½œè™šæ‹Ÿæœº
+	//æ·»åŠ å¤–éƒ¨å¯è®¿é—®åœ°å€ç©ºé—´
 	BOOL AddExternalSpace(unsigned char* start, unsigned long size);
-	//´«Èë²ÎÊı
+	//ä¼ å…¥å‚æ•°
 	BOOL AttachParam(BYTE* pParam, int size_t);
-	//ÔËĞĞĞéÄâ»ú
+	//è¿è¡Œè™šæ‹Ÿæœº
 	BOOL Run();
-	//¼ÓÔØÒªÔËĞĞµÄº¯Êı
+	//åŠ è½½è¦è¿è¡Œçš„å‡½æ•°
 	BOOL LoadFunction(CFunction* pFunc);
-	//ĞéÄâ»úreset
+	//è™šæ‹Ÿæœºreset
 	void Reset();
 
 	////////////////////////////////////
-	//ÒÔÏÂ³ÉÔ±ÓÃÓÚµ÷ÊÔ
+	//ä»¥ä¸‹æˆå‘˜ç”¨äºè°ƒè¯•
 	//
 	void SetWorkMode(int mode);
 	void SetDbgCmd(long lCmdID, long p1, long p2, char* p3);
@@ -86,7 +86,7 @@ typedef stack<FUNCTIONSTACKELE*> FUNC_STACK;
 	void OutputMemToFile(char* szFileName);
 	void OutputMemToFile(FILE* file);
 
-	//ĞéÄâ»úÔËĞĞº¯Êı
+	//è™šæ‹Ÿæœºè¿è¡Œå‡½æ•°
 	BOOL _test(PCOMMAND cmd);
 	BOOL _jmp(PCOMMAND cmd);
 	BOOL _jz(PCOMMAND cmd);
@@ -110,8 +110,8 @@ typedef stack<FUNCTIONSTACKELE*> FUNC_STACK;
 	BOOL _endcallpub(PCOMMAND cmd);
 	BOOL _ea(PCOMMAND cmd);
 
-	±àĞ´ÈË		: ¾ÓÎÀ»ª
-	Íê³ÉÈÕÆÚ	: 2001 - 8 - 21
+	ç¼–å†™äºº		: å±…å«å
+	å®Œæˆæ—¥æœŸ	: 2001 - 8 - 21
 **/
 
 class CFunction;
@@ -127,14 +127,14 @@ private:
 //	BOOL IsRunning;		// Is this VM in the procedure of running a function
 	BOOL m_bIsDebugBreak;	// Dose the VM break when debuging 
 
-	// ÓÃÀ´¼ÇÂ¼µ÷ÓÃµÄº¯ÊıÃû, ºÍ²ÎÊı
+	// ç”¨æ¥è®°å½•è°ƒç”¨çš„å‡½æ•°å, å’Œå‚æ•°
 	FUNC_STACK m_FuncStack;
 
 
-	// ĞéÄâ»úµÄCALL STACK, ¼ÇÂ¼½Å±¾º¯ÊıµÄµ÷ÓÃ¹ı³Ì
+	// è™šæ‹Ÿæœºçš„CALL STACK, è®°å½•è„šæœ¬å‡½æ•°çš„è°ƒç”¨è¿‡ç¨‹
 	CALL_STACK m_CallStack;
 	CALLSTACKELE* m_pCurCall;
-	//¼Ä´æÆ÷
+	//å¯„å­˜å™¨
 #define REGNUM 6
 	long m_registers[REGNUM];
 #define __AX m_registers[1]
@@ -143,50 +143,50 @@ private:
 #define __DX m_registers[4]
 #define __IP m_registers[5]
 #define __PSW m_registers[0]
-//#define __XX m_registers[6] //´æ·ÅpubfunctionµÄpfnÖ¸Õë
-//#define __YX m_registers[7] //´æ·ÅpubfunctionµÄ²ÎÊıÖ¸Õë
-//#define __ZX m_registers[8] //´æ·ÅpubfunctionµÄ²ÎÊı¸öÊı
+//#define __XX m_registers[6] //å­˜æ”¾pubfunctionçš„pfnæŒ‡é’ˆ
+//#define __YX m_registers[7] //å­˜æ”¾pubfunctionçš„å‚æ•°æŒ‡é’ˆ
+//#define __ZX m_registers[8] //å­˜æ”¾pubfunctionçš„å‚æ•°ä¸ªæ•°
 #define LASTREGISTER 5
 
-	//ÄÚ´æ
-//	BYTE* m_DataSeg;  //Êı¾İ¶Î
-//	BYTE* m_StaticSeg;//³£Á¿¶Î
-//	BYTE* m_VMemory;  //×ÜµÄĞéÄâÄÚ´æ
+	//å†…å­˜
+//	BYTE* m_DataSeg;  //æ•°æ®æ®µ
+//	BYTE* m_StaticSeg;//å¸¸é‡æ®µ
+//	BYTE* m_VMemory;  //æ€»çš„è™šæ‹Ÿå†…å­˜
 	/*
 	|-------------------------------|  <-m_staticSeg <-m_VMemory 
-	|           ³£Á¿¶Î              |
+	|           å¸¸é‡æ®µ              |
 	|-------------------------------|  <-m_DataSeg;
 	|                               |
 	|                               |
-	|           Êı¾İ¶Î              |
+	|           æ•°æ®æ®µ              |
 	|                               |
 	|                               |
 	|-------------------------------|
     */
 
-//	unsigned long m_ulSSize;//³£Á¿¶Î´óĞ¡
-//	unsigned long m_ulDataSegSize;//Êı¾İ¶Î´óĞ¡
-//	unsigned long m_ulVMemSize;//ĞéÄâÄÚ´æ´óĞ¡
+//	unsigned long m_ulSSize;//å¸¸é‡æ®µå¤§å°
+//	unsigned long m_ulDataSegSize;//æ•°æ®æ®µå¤§å°
+//	unsigned long m_ulVMemSize;//è™šæ‹Ÿå†…å­˜å¤§å°
 
-	//Íâ²¿¿É·ÃÎÊµØÖ·¿Õ¼ä
+	//å¤–éƒ¨å¯è®¿é—®åœ°å€ç©ºé—´
 	EXTERNALSPACE *m_pExternalSpaceList;
 	long m_lExternalSpaceNum;
 	long m_lExternalSpaceListSize;
 
-	//ÒÔÏÂ³ÉÔ±±äÁ¿ÓÃÓÚµ÷ÊÔ
-//¹¤×÷Ä£Ê½
+	//ä»¥ä¸‹æˆå‘˜å˜é‡ç”¨äºè°ƒè¯•
+//å·¥ä½œæ¨¡å¼
 #define VM_MODE_NORMAL 0
 #define VM_MODE_DEBUG  1
 #define VM_MODE_STEPDEBUG 2
 
-	long m_nWorkMode;           //ÔËĞĞÄ£Ê½
-//	FILE* m_debugOut;			//µ÷ÊÔÃüÁîµÄÊä³ö
-	long m_nRemainCmdNum;       //Á¬ĞøÖ´ĞĞµÄÖ¸ÁîÊı
+	long m_nWorkMode;           //è¿è¡Œæ¨¡å¼
+//	FILE* m_debugOut;			//è°ƒè¯•å‘½ä»¤çš„è¾“å‡º
+	long m_nRemainCmdNum;       //è¿ç»­æ‰§è¡Œçš„æŒ‡ä»¤æ•°
 
 	
-//	void (*m_pInputFn)(long &lCmdID, long& p1, long& p2, char* p3);//ÊäÈëº¯Êı
-//	long* m_BreakPoint;         //¶ÏµãÁĞ±í
-//	long m_lBreakPtNum;         //¶Ïµã¸öÊı
+//	void (*m_pInputFn)(long &lCmdID, long& p1, long& p2, char* p3);//è¾“å…¥å‡½æ•°
+//	long* m_BreakPoint;         //æ–­ç‚¹åˆ—è¡¨
+//	long m_lBreakPtNum;         //æ–­ç‚¹ä¸ªæ•°
 
 	// breakpoint list
 	bp_list	m_BpList;
@@ -229,10 +229,10 @@ public:
 	CVirtualMachine();
 	virtual ~CVirtualMachine();
 
-	//Ìí¼ÓÍâ²¿¿É·ÃÎÊµØÖ·¿Õ¼ä
+	//æ·»åŠ å¤–éƒ¨å¯è®¿é—®åœ°å€ç©ºé—´
 	void AddExternalSpace(unsigned char* start, unsigned long size);
 
-	//´«Èë²ÎÊı
+	//ä¼ å…¥å‚æ•°
 	long AttachParam(BYTE* pParam, int size_t);
 	BOOL Run();
 	void LoadFunction(CFunction* pFunc);
@@ -243,7 +243,7 @@ public:
 	CObjTable m_objTable;		// loaded Objects
 	CObjectInst*  LoadObject(CClassDes* c);
 
-	//ÒÔÏÂ³ÉÔ±ÓÃÓÚµ÷ÊÔ
+	//ä»¥ä¸‹æˆå‘˜ç”¨äºè°ƒè¯•
 	void SetWorkMode(int mode);
 	void SetDbgCmd(long lCmdID, long p1, long p2, char* p3);
 //	void SetDbgOut(FILE* dbgout){if (dbgout) m_debugOut = dbgout;};
@@ -257,16 +257,16 @@ private:
 
 	void _LoadFunc(CFunction *pFunc);
 	
-	//ÉèÖÃºÍÉ¾³ı¶Ïµã
+	//è®¾ç½®å’Œåˆ é™¤æ–­ç‚¹
 	BOOL SetBreakPoint(long line);
 	BOOL DelBreakPoint(long line);
 	
-	//ÑéÖ¤µØÖ·ÊÇ·ñÔÚ¿ÉÓÃµØÖ··¶Î§ÄÚ
-	//¿ÉÓÃµØÖ·¿Õ¼ä: Õû¸öĞéÄâ»ú µÄĞéÄâÄÚ´æ, ¼Ä´æÆ÷, ÇëÇóÊı¾İ¿éºÍÍâ²¿¿ÉÓÃµØÖ·¿Õ¼ä
+	//éªŒè¯åœ°å€æ˜¯å¦åœ¨å¯ç”¨åœ°å€èŒƒå›´å†…
+	//å¯ç”¨åœ°å€ç©ºé—´: æ•´ä¸ªè™šæ‹Ÿæœº çš„è™šæ‹Ÿå†…å­˜, å¯„å­˜å™¨, è¯·æ±‚æ•°æ®å—å’Œå¤–éƒ¨å¯ç”¨åœ°å€ç©ºé—´
 	BOOL ValidateAddress(unsigned char* address);
-	//Ô¤´¦ÀíË«×Ö½ÚÖ¸Áî
+	//é¢„å¤„ç†åŒå­—èŠ‚æŒ‡ä»¤
 	BOOL Preprocess2(PCOMMAND cmd, int &op1mode, int &op2mode, int &op1reflvl, int &op2reflvl, unsigned char * &dest, unsigned char* &src);//
-	//Ô¤´¦Àíµ¥×Ö½ÚÖ¸Áî
+	//é¢„å¤„ç†å•å­—èŠ‚æŒ‡ä»¤
 	BOOL Preprocess1(PCOMMAND cmd, int &op1mode, int &op1reflvl, unsigned char* &dest,  BOOL bValidate = TRUE);
 //	void CallPubFunc(void* pParamBlock);
 

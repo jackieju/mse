@@ -17,11 +17,11 @@
 
 typedef struct _tagCOMMAND
 {
-	long  opcode;       //Ö¸ÁîÂë
-	long  address_mode; //Ñ°Ö··½Ê½
-	char opnum;        //²Ù×÷ÊıµÄÊı
-	long  op[4];        //²Ù×÷Êı±í
-	int  line;         //Ô´´úÂëÖĞµÄÎ»ÖÃ
+	long  opcode;       //æŒ‡ä»¤ç 
+	long  address_mode; //å¯»å€æ–¹å¼
+	char opnum;        //æ“ä½œæ•°çš„æ•°
+	long  op[4];        //æ“ä½œæ•°è¡¨
+	int  line;         //æºä»£ç ä¸­çš„ä½ç½®
 }COMMAND, *PCOMMAND;
 
 typedef struct _tagPubFuncParam

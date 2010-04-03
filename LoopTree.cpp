@@ -59,12 +59,12 @@ bool CLoopTree::AddContinue(int nContinue)
 
 
 /*
-   º¯ÊýÃû³Æ     : CLoopTree::SetExit
-   º¯Êý¹¦ÄÜ	    : ÉèÖÃ³ö¿Ú²¢»ØÐ´ËùÓÐµÄbreakºÍcontinueÓï¾ä
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : 
-   ±àÐ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 4 - 23
+   å‡½æ•°åç§°     : CLoopTree::SetExit
+   å‡½æ•°åŠŸèƒ½	    : è®¾ç½®å‡ºå£å¹¶å›žå†™æ‰€æœ‰çš„breakå’Œcontinueè¯­å¥
+   å˜é‡è¯´æ˜Ž     : 
+   è¿”å›žå€¼       : 
+   ç¼–å†™äºº       : å±…å«åŽ
+   å®Œæˆæ—¥æœŸ     : 2001 - 4 - 23
 */
 void CLoopTree::SetExit(int nExit)
 {

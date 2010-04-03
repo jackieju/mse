@@ -10,7 +10,7 @@
 #endif // _MSC_VER > 1000
 
 #include "Function.h"
-#define MAX_BREAKCONTINUE 256//最多有256个break, continue
+#define MAX_BREAKCONTINUE 256//鏈�澶氭湁256涓猙reak, continue
 class CLoopTree  
 {
 public:

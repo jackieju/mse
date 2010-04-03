@@ -10,15 +10,15 @@
 #endif // _MSC_VER > 1000
 #define MAX_FUNCNAME_LENGTH 128
 
-//´æ·Å¹«ÓÃº¯ÊıĞÅÏ¢µÄ½á¹¹
+//å­˜æ”¾å…¬ç”¨å‡½æ•°ä¿¡æ¯çš„ç»“æ„
 typedef struct _tagFunctionEntry
 {
-	long pfn;                       //º¯ÊıÖ¸Õë
-	char szName[MAX_FUNCNAME_LENGTH];  //º¯ÊıÃû
-	/*unsigned int uMaxParamNum;	       //×î¶à²ÎÊı¸öÊı 
-	unsigned int uMinParamNum;         //×îÉÙ²ÎÊı¸öÊı*/
-	//ÔİÊ±¹æ¶¨ËùÓĞµÄº¯Êı²ÎÊı¸öÊı±ØĞëÒ»¶¨, ¼´²»Ö§³Ö²ÎÊı¸öÊı²»¶¨µÄº¯Êı
-	char cParamNum;                    //²ÎÊı¸öÊı
+	long pfn;                       //å‡½æ•°æŒ‡é’ˆ
+	char szName[MAX_FUNCNAME_LENGTH];  //å‡½æ•°å
+	/*unsigned int uMaxParamNum;	       //æœ€å¤šå‚æ•°ä¸ªæ•° 
+	unsigned int uMinParamNum;         //æœ€å°‘å‚æ•°ä¸ªæ•°*/
+	//æš‚æ—¶è§„å®šæ‰€æœ‰çš„å‡½æ•°å‚æ•°ä¸ªæ•°å¿…é¡»ä¸€å®š, å³ä¸æ”¯æŒå‚æ•°ä¸ªæ•°ä¸å®šçš„å‡½æ•°
+	char cParamNum;                    //å‚æ•°ä¸ªæ•°
 }FUNCTIONENTRY;
 #define FUNCNUM 20
 

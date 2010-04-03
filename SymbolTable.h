@@ -9,43 +9,43 @@
 #include "datatype.h"
 
 class cParser;
-//·ûºÅ±íµÄ±íÏî½á¹¹
+//ç¬¦å·è¡¨çš„è¡¨é¡¹ç»“æ„
 typedef struct _tagSymbolTableEle
 {
-	TYPEDES type;			//ÀàĞÍÃèÊö
+	TYPEDES type;			//ç±»å‹æè¿°
 	int address;			//offset
 	int size_t;				//size of bytes
 	char szName[42];		//name
 }SYMBOLTABLEELE;
 /**
-	¶ÔÏóÃû³Æ	: CSymbolTable
-	¶ÔÏóÃèÊö	: ·ûºÅ±íÀà
-	ÖØÒªº¯Êı	: 
+	å¯¹è±¡åç§°	: CSymbolTable
+	å¯¹è±¡æè¿°	: ç¬¦å·è¡¨ç±»
+	é‡è¦å‡½æ•°	: 
 
-	SYMBOLTABLEELE* GetSym(char *szName);  //¸ù¾İÃû³ÆÈ¡·ûºÅÏî
-	int GetSymboByAddress(int address);    //¸ù¾İµØÖ·È¡·ûºÅµÄ±íĞòºÅ
-	int GetSymAddress(char* szName);       //¸ù¾İÃû³ÆÈ¡·ûºÅµÄ±íĞòºÅ
-	bool AddSymbol(char *szName, TYPEDES dt);//Ìí¼Ó·ûºÅ
+	SYMBOLTABLEELE* GetSym(char *szName);  //æ ¹æ®åç§°å–ç¬¦å·é¡¹
+	int GetSymboByAddress(int address);    //æ ¹æ®åœ°å€å–ç¬¦å·çš„è¡¨åºå·
+	int GetSymAddress(char* szName);       //æ ¹æ®åç§°å–ç¬¦å·çš„è¡¨åºå·
+	bool AddSymbol(char *szName, TYPEDES dt);//æ·»åŠ ç¬¦å·
 	CSymbolTable();                        
 
-	±àĞ´ÈË		: ¾ÓÎÀ»ª
-	Íê³ÉÈÕÆÚ	: 2001 - 8 - 21
+	ç¼–å†™äºº		: å±…å«å
+	å®Œæˆæ—¥æœŸ	: 2001 - 8 - 21
 **/
 
 class cParser;
 class CSymbolTable  
 {
 public:
-	int m_nMaxCount;                      //µ±Ç°±íµÄ³¤¶È
-	int m_nSymbolCount;                   //µ±Ç°·ûºÅ¸öÊı
-	int m_nTotalSize;                     //µ±Ç°ËùÓĞ·ûºÅÕ¼ÓÃµÄÄÚ´æ×ÜÊı
-	SYMBOLTABLEELE* tableEntry;           //·ûºÅ±í
+	int m_nMaxCount;                      //å½“å‰è¡¨çš„é•¿åº¦
+	int m_nSymbolCount;                   //å½“å‰ç¬¦å·ä¸ªæ•°
+	int m_nTotalSize;                     //å½“å‰æ‰€æœ‰ç¬¦å·å ç”¨çš„å†…å­˜æ€»æ•°
+	SYMBOLTABLEELE* tableEntry;           //ç¬¦å·è¡¨
 	cParser* m_pParser;
 
-	SYMBOLTABLEELE* GetSym(char *szName);  //¸ù¾İÃû³ÆÈ¡·ûºÅÏî
-	int GetSymboByAddress(int address);    //¸ù¾İµØÖ·È¡·ûºÅµÄ±íĞòºÅ
-	int GetSymAddress(char* szName);       //¸ù¾İÃû³ÆÈ¡·ûºÅµÄ±íĞòºÅ
-	bool AddSymbol(char *szName, TYPEDES dt);//Ìí¼Ó·ûºÅ
+	SYMBOLTABLEELE* GetSym(char *szName);  //æ ¹æ®åç§°å–ç¬¦å·é¡¹
+	int GetSymboByAddress(int address);    //æ ¹æ®åœ°å€å–ç¬¦å·çš„è¡¨åºå·
+	int GetSymAddress(char* szName);       //æ ¹æ®åç§°å–ç¬¦å·çš„è¡¨åºå·
+	bool AddSymbol(char *szName, TYPEDES dt);//æ·»åŠ ç¬¦å·
 	CSymbolTable();                        
 	virtual ~CSymbolTable();
 };

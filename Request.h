@@ -28,90 +28,90 @@
 
 typedef struct _tagREQPARAM
 {
-    char dataType;       //²ÎÊıµÄÀàĞÍ
-	long unitsize;    //Êı¾İµÄµ¥Î»³¤¶È
-	char arraydim;       //Êı×éÎ¬Êı(×î´óËÄÎ¬)
-	long  arraysize[4];   //Êı×é³¤¶È
-	unsigned char* content;       //ÄÚÈİ	
-	long   contentSize;   //ÄÚÈİµÄ³¤¶È
-	long   bufferSize;    //contentÄÚ´æ¿éµÄ´óĞ¡
+    char dataType;       //å‚æ•°çš„ç±»å‹
+	long unitsize;    //æ•°æ®çš„å•ä½é•¿åº¦
+	char arraydim;       //æ•°ç»„ç»´æ•°(æœ€å¤§å››ç»´)
+	long  arraysize[4];   //æ•°ç»„é•¿åº¦
+	unsigned char* content;       //å†…å®¹	
+	long   contentSize;   //å†…å®¹çš„é•¿åº¦
+	long   bufferSize;    //contentå†…å­˜å—çš„å¤§å°
 	unsigned char* pCurrent;
 }REQPARAM;
 
-//Ìí¼Ó¼òµ¥Êı¾İ
+//æ·»åŠ ç®€å•æ•°æ®
 #define PARAM_LONG(req, data) req.AddParam(dtLong, 0, 0, data, sizeof(long), sizeof(dtLong))
 #define PARAM_INT(req, data)  req.AddParam(dtInt, 0, 0, data, sizeof(long), sizeof(long))
 #define PARAM_CHAR(req, data) req.AddParam(dtChar, 0, 0, data, sizeof(dtChar), sizeof(dtChar))
 #define PARAM_SHORT(req, data) req.AddParam(dtShort, 0, 0, data, sizeof(dtShort), sizeof(dtShort))
 #define PARAM_STRING(req, data) req.AddParam(dtString, 0, 0, data, strlen(data), strlen(data))
 #define PARAM_STRUCT(req, data, size ) req.AddParam(dtObject, 0, 0, data, size, size)
-/*Ìí¼ÓÒ»¸ö¸´ÔÓÀàĞÍµÄÊı×é
+/*æ·»åŠ ä¸€ä¸ªå¤æ‚ç±»å‹çš„æ•°ç»„
 1. 	CreateParam(dataType, pindex, lEleSize, arraydim, arraysize[4]);
-2.  SetArrayParam()Èç¹û²»Ö¸¶¨Î»ÖÃÔòÌí¼ÓÔÚÄ©Î²
+2.  SetArrayParam()å¦‚æœä¸æŒ‡å®šä½ç½®åˆ™æ·»åŠ åœ¨æœ«å°¾
 */
-/*Ìí¼ÓÒ»¸öÁ¬ĞøµÄÊı×é
-AddParam(ÀàĞÍ£¬ dim£¬ dimarray£¬ data£¬ size)
+/*æ·»åŠ ä¸€ä¸ªè¿ç»­çš„æ•°ç»„
+AddParam(ç±»å‹ï¼Œ dimï¼Œ dimarrayï¼Œ dataï¼Œ size)
 
 */
 
 /**
-   ¶ÔÏóÃû³Æ     : CRequest
-   ¶ÔÏóÃèÊö	    : ÇëÇóÀà, ·â×°ÁËÇëÇóµÄÉú³ÉºÍ½âÎöµÈ²Ù×÷
-   ÖØÒªº¯Êı     :
+   å¯¹è±¡åç§°     : CRequest
+   å¯¹è±¡æè¿°	    : è¯·æ±‚ç±», å°è£…äº†è¯·æ±‚çš„ç”Ÿæˆå’Œè§£æç­‰æ“ä½œ
+   é‡è¦å‡½æ•°     :
 	//reset
 	void Reset();
-£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­
-£­£­	´´½¨ÇëÇóµÄµÄ½Ó¿Ú
-£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­
-	//Ìí¼ÓÒ»¸ö¼òµ¥²ÎÊı, ¿ÉÒÔÊÇlong, float, string, short
+ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
+ï¼ï¼	åˆ›å»ºè¯·æ±‚çš„çš„æ¥å£
+ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
+	//æ·»åŠ ä¸€ä¸ªç®€å•å‚æ•°, å¯ä»¥æ˜¯long, float, string, short
 	BOOL AddSimpleParam(char dataType, unsigned char* content, long* index);
-	//ÉèÖÃ²ÎÊı(Êı×é»ò·ÇÊı×é£©µÄÖµ
+	//è®¾ç½®å‚æ•°(æ•°ç»„æˆ–éæ•°ç»„ï¼‰çš„å€¼
 	BOOL SetArrayContent(long lIndex, char type, unsigned char *content, long array[] = NULL, long lStructSize = 0); 
-	//½¨Á¢Ò»¸ö¿ÕµÄ²ÎÊı
+	//å»ºç«‹ä¸€ä¸ªç©ºçš„å‚æ•°
 	BOOL CreateParam(char dataType, long* index, long lStructSize = 0, char arraydim = 0, long arraysize[4] = NULL);
-	//´ÓÊı¾İ¿é·ÖÎö³öÇëÇóµÄÄÚÈİ
+	//ä»æ•°æ®å—åˆ†æå‡ºè¯·æ±‚çš„å†…å®¹
 	long LoadRequest(BYTE* pRequest);
-	//Ìí¼ÓÒ»¸ö½á¹¹Êı¾İ
+	//æ·»åŠ ä¸€ä¸ªç»“æ„æ•°æ®
 	BOOL AddStructedParam(unsigned char *content, long lSize, long* index);	
-	//ÉèÖÃÇëÇóµÄ½Å±¾º¯Êı
+	//è®¾ç½®è¯·æ±‚çš„è„šæœ¬å‡½æ•°
 	void SetFuncID(char* szID);
-	//È¡ÇëÇóµÄ´óĞ¡
+	//å–è¯·æ±‚çš„å¤§å°
 	long GetRequestSize();
-	//È¡ÇëÇóÊı¾İ¿é
+	//å–è¯·æ±‚æ•°æ®å—
 	unsigned char* GetRequest();
-	//Éú³ÉÇëÇóÊı¾İ¿é
+	//ç”Ÿæˆè¯·æ±‚æ•°æ®å—
 	long GenerateRequest();
-	//Ìí¼Ó²ÎÊı
+	//æ·»åŠ å‚æ•°
 	BOOL AddParam(
-	char dataType,       //²ÎÊıµÄÀàĞÍ	
-	char arraydim,       //Êı×éÎ¬Êı(×î´óËÄÎ¬)
-	long  arraysize[4],   //Êı×é³¤¶È
-	BYTE* content,       //ÄÚÈİ	
+	char dataType,       //å‚æ•°çš„ç±»å‹	
+	char arraydim,       //æ•°ç»„ç»´æ•°(æœ€å¤§å››ç»´)
+	long  arraysize[4],   //æ•°ç»„é•¿åº¦
+	BYTE* content,       //å†…å®¹	
 	long lContentSize
 	, long unitsize);
-£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­
-£­£­	»ñÈ¡ÇëÇóĞÅÏ¢µÄ½Ó¿Ú
-£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­
-	//È¡´íÎóÃèÊö
+ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
+ï¼ï¼	è·å–è¯·æ±‚ä¿¡æ¯çš„æ¥å£
+ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
+	//å–é”™è¯¯æè¿°
 	char* GetErrMsg();
-	//È¡²ÎÊı¸öÊı
+	//å–å‚æ•°ä¸ªæ•°
 	long GetParamNum();
-	//È¡²ÎÊıÁĞ±í
+	//å–å‚æ•°åˆ—è¡¨
 	REQPARAM* GetParamList();
-	//È¡ÇëÇóµÄ½Å±¾º¯ÊıID
+	//å–è¯·æ±‚çš„è„šæœ¬å‡½æ•°ID
 	char* GetFuncID();
-	//¼ÆËã¼òµ¥Êı¾İÀàĞÍµÄ´óĞ¡, ²»ÄÜ¼ÆËã½á¹¹ÀàĞÍµÄ´óĞ¡
+	//è®¡ç®—ç®€å•æ•°æ®ç±»å‹çš„å¤§å°, ä¸èƒ½è®¡ç®—ç»“æ„ç±»å‹çš„å¤§å°
 	long typesize(char cType);
  
  
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 7 - 18
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 7 - 18
 
-£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­
-£­£­	Ê¹ÓÃÖ¸ÄÏ
-£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­£­
-	1. Ìí¼ÓlongĞÍ²ÎÊı	long param
-	long index;	// ²ÎÊıĞòºÅ
+ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
+ï¼ï¼	ä½¿ç”¨æŒ‡å—
+ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼ï¼
+	1. æ·»åŠ longå‹å‚æ•°	long param
+	long index;	// å‚æ•°åºå·
 	if (!m_request->AddSimpleParam(dtLong, (unsigned char*)&param, &index))
 	{
 		sprintf(m_szErrMsg, "add Long parameter <%ld> failed", param);
@@ -120,9 +120,9 @@ AddParam(ÀàĞÍ£¬ dim£¬ dimarray£¬ data£¬ size)
 		return RC_REQOP;
 	}
 
-	2. Ìí¼ÓstringĞÍ²ÎÊıchar* param
+	2. æ·»åŠ stringå‹å‚æ•°char* param
 	CString str = param;
-	long index;	// ²ÎÊıĞòºÅ
+	long index;	// å‚æ•°åºå·
 	const char *szString = LPCTSTR(str);
 	if (!m_request->AddSimpleParam(dtString, (unsigned char*)szString, &index))
 	{
@@ -131,8 +131,8 @@ AddParam(ÀàĞÍ£¬ dim£¬ dimarray£¬ data£¬ size)
 		throw new CPSClientExp(m_szErrMsg, RC_REQOP, __FILE__, __LINE__);
 		return RC_REQOP;
 	}
-	3. Ìí¼ÓfloatĞÍµÄ²ÎÊıfloat param
-	long index;		// ²ÎÊıĞòºÅ
+	3. æ·»åŠ floatå‹çš„å‚æ•°float param
+	long index;		// å‚æ•°åºå·
 	if (!m_request->AddSimpleParam(dtFloat, (unsigned char*)&param, &index))
 	{
 		sprintf(m_szErrMsg, "add float parameter <%f> failed", param);
@@ -141,8 +141,8 @@ AddParam(ÀàĞÍ£¬ dim£¬ dimarray£¬ data£¬ size)
 		return RC_REQOP;
 	}
 
-	4. Ìí¼ÓshortĞÍ²ÎÊı
-	long index;		// ²ÎÊıĞòºÅ
+	4. æ·»åŠ shortå‹å‚æ•°
+	long index;		// å‚æ•°åºå·
 	if (!m_request->AddSimpleParam(dtShort, (unsigned char*)&param, &index))
 	{
 		sprintf(m_szErrMsg, "CPSRequest::AddParamShort: add Short parameter <%d> failed, current parameter number=%d", param, m_request->GetParamNum());
@@ -151,19 +151,19 @@ AddParam(ÀàĞÍ£¬ dim£¬ dimarray£¬ data£¬ size)
 		return RC_REQOP;
 	}
 	
-	5. Ìí¼ÓÊı×é
-	µÚÒ»²½. Ìí¼ÓÊı×é¿Õ¼ä(Ò»Î¬Êı×é), Êı×é´óĞ¡Îªlong dim, ×î´ó¿ÉÒÔÊ¹ÓÃËÄÎ¬Êı×é
+	5. æ·»åŠ æ•°ç»„
+	ç¬¬ä¸€æ­¥. æ·»åŠ æ•°ç»„ç©ºé—´(ä¸€ç»´æ•°ç»„), æ•°ç»„å¤§å°ä¸ºlong dim, æœ€å¤§å¯ä»¥ä½¿ç”¨å››ç»´æ•°ç»„
 	long index;
 	long dimsize[4]; 
 	memset(dimsize, 0, sizeof(long)*4);
-	dimsize[0] = dim;	// µÚÒ»Î¬µÄ³¤¶È
-	if (!m_request->CreateParam(<ÔªËØµÄÊı¾İÀàĞÍ¿ÉÒÔÊÇdtLong, dtString, dtShort, dtfloat>, &index, 0(Èç¹ûÊÇ½á¹¹Êı×éµÄ»°£¬ ½á¹¹µÄ´óĞ¡), 1(Êı×éÎ¬Êı), dimsize(Êı×éÃèÊö)))
+	dimsize[0] = dim;	// ç¬¬ä¸€ç»´çš„é•¿åº¦
+	if (!m_request->CreateParam(<å…ƒç´ çš„æ•°æ®ç±»å‹å¯ä»¥æ˜¯dtLong, dtString, dtShort, dtfloat>, &index, 0(å¦‚æœæ˜¯ç»“æ„æ•°ç»„çš„è¯ï¼Œ ç»“æ„çš„å¤§å°), 1(æ•°ç»„ç»´æ•°), dimsize(æ•°ç»„æè¿°)))
 	{
 		LOG50("create param failed, when add dtString array")
 		throw new CPSClientExp("create param failed, when add dtSting array", RC_REQOP, __FILE__, __LINE__);
 		return RC_REQOP;
 	}
-	µÚ¶ş²½. Ìí¼ÓÊı×éÔªËØfloat element(¼ÙÉèÊÇfloatĞÍµÄÊı×é)
+	ç¬¬äºŒæ­¥. æ·»åŠ æ•°ç»„å…ƒç´ float element(å‡è®¾æ˜¯floatå‹çš„æ•°ç»„)
 	long index;
 	index = m_request->GetParamNum() - 1;
 	char sMsg[100];
@@ -185,27 +185,27 @@ class CRequest
 public:
 
 	void Reset();
-	BOOL SetArrayContent(long lIndex, char type, unsigned char *content, long array[] = NULL, long lStructSize = 0);//ÉèÖÃ²ÎÊı(Êı×é»ò·ÇÊı×é£©µÄÖµ 
-//	BOOL StructContent(long lIndex, char type, unsigned char *content);//ÉèÖÃ²ÎÊı(Êı×é»ò·ÇÊı×é£©µÄÖµ 
+	BOOL SetArrayContent(long lIndex, char type, unsigned char *content, long array[] = NULL, long lStructSize = 0);//è®¾ç½®å‚æ•°(æ•°ç»„æˆ–éæ•°ç»„ï¼‰çš„å€¼ 
+//	BOOL StructContent(long lIndex, char type, unsigned char *content);//è®¾ç½®å‚æ•°(æ•°ç»„æˆ–éæ•°ç»„ï¼‰çš„å€¼ 
 
 #if 0	
-	/*Ìí¼Ó²ÎÊı¿Õ¼ä, Ò²¿ÉÒÔÍ¬Ê±Éè¶¨ÄÚÈİ
-	char dataType     - Êı¾İÀàĞÍ
-	BYTE *content     - Êı¾İÄÚÈİ, Èç¹û=nullÔòÖ»·ÖÅäÄÚ´æ²»ÉèÖÃÄÚÈİ
-	char arraydim     - Êı×éµÄÎ¬Êı, Èç¹û=0Ôò²»ÊÇÊı×é
-	long arraysize[]  - Êı×é¸÷Î¬µÄ´óĞ¡.Èç¹û= NULL , Ôò²»ÊÇÊı×é
+	/*æ·»åŠ å‚æ•°ç©ºé—´, ä¹Ÿå¯ä»¥åŒæ—¶è®¾å®šå†…å®¹
+	char dataType     - æ•°æ®ç±»å‹
+	BYTE *content     - æ•°æ®å†…å®¹, å¦‚æœ=nullåˆ™åªåˆ†é…å†…å­˜ä¸è®¾ç½®å†…å®¹
+	char arraydim     - æ•°ç»„çš„ç»´æ•°, å¦‚æœ=0åˆ™ä¸æ˜¯æ•°ç»„
+	long arraysize[]  - æ•°ç»„å„ç»´çš„å¤§å°.å¦‚æœ= NULL , åˆ™ä¸æ˜¯æ•°ç»„
 	*/
-	BOOL AddArrayParam(char dataType, long* index, BYTE *content = NULL, char arraydim = 0, long arraysize[4] = NULL);//Ìí¼Ó²ÎÊı¿Õ¼ä, Ò²¿ÉÒÔÍ¬Ê±Éè¶¨ÄÚÈİ
+	BOOL AddArrayParam(char dataType, long* index, BYTE *content = NULL, char arraydim = 0, long arraysize[4] = NULL);//æ·»åŠ å‚æ•°ç©ºé—´, ä¹Ÿå¯ä»¥åŒæ—¶è®¾å®šå†…å®¹
 #endif
 
-	BOOL CreateParam(char dataType, long* index, long lStructSize = 0, char arraydim = 0, long arraysize[4] = NULL);//½¨Á¢Ò»¸ö¿ÕµÄ²ÎÊı
+	BOOL CreateParam(char dataType, long* index, long lStructSize = 0, char arraydim = 0, long arraysize[4] = NULL);//å»ºç«‹ä¸€ä¸ªç©ºçš„å‚æ•°
 
-	BOOL AddSimpleParam(char dataType, unsigned char* content, long* index);//Ìí¼ÓÒ»¸ö¼òµ¥Êı¾İ, ¿ÉÒÔÊÇlong, float, string, short
+	BOOL AddSimpleParam(char dataType, unsigned char* content, long* index);//æ·»åŠ ä¸€ä¸ªç®€å•æ•°æ®, å¯ä»¥æ˜¯long, float, string, short
 
-	long LoadRequest(BYTE* pRequest);//´ÓÊı¾İ¿é·ÖÎö³öÇëÇóµÄÄÚÈİ
+	long LoadRequest(BYTE* pRequest);//ä»æ•°æ®å—åˆ†æå‡ºè¯·æ±‚çš„å†…å®¹
 
 #ifdef __SUPPORT_OBJ
-	BOOL AddStructedParam(unsigned char *content, long lSize, long* index);	//Ìí¼ÓÒ»¸ö½á¹¹Êı¾İ
+	BOOL AddStructedParam(unsigned char *content, long lSize, long* index);	//æ·»åŠ ä¸€ä¸ªç»“æ„æ•°æ®
 #endif
 
 	BOOL SetFuncID(char* szID);
@@ -216,10 +216,10 @@ public:
 
 	long GenerateRequest();
 	BOOL AddParam(
-	char dataType,       //²ÎÊıµÄÀàĞÍ	
-	char arraydim,       //Êı×éÎ¬Êı(×î´óËÄÎ¬)
-	long  arraysize[4],   //Êı×é³¤¶È
-	BYTE* content,       //ÄÚÈİ	
+	char dataType,       //å‚æ•°çš„ç±»å‹	
+	char arraydim,       //æ•°ç»„ç»´æ•°(æœ€å¤§å››ç»´)
+	long  arraysize[4],   //æ•°ç»„é•¿åº¦
+	BYTE* content,       //å†…å®¹	
 	long lContentSize
 	, long unitsize);
 
@@ -249,13 +249,13 @@ public:
 		
 private:
 
-	REQPARAM* m_pParamList;    //²ÎÊı±í
-	long m_lParamListSize;   //²ÎÊı±í³¤¶È
-	long m_lIncreaseSize;    //ÁĞ±íµÄÔöÁ¿µ¥Î»
+	REQPARAM* m_pParamList;    //å‚æ•°è¡¨
+	long m_lParamListSize;   //å‚æ•°è¡¨é•¿åº¦
+	long m_lIncreaseSize;    //åˆ—è¡¨çš„å¢é‡å•ä½
 	long m_lParamNum;        //number of parameter
 	char m_szFuncID[21];
 	char m_szErrMsg[1024];
-	long m_lTotalSize;       //Êı¾İ¿é×Ü³¤
+	long m_lTotalSize;       //æ•°æ®å—æ€»é•¿
 	unsigned char* m_pRequestData;
 	
 public:

@@ -68,20 +68,20 @@ private:
 #pragma pack(1)
 typedef struct _tagPARAM
 {
-    char dataType;       //²ÎÊıµÄÀàĞÍ	
-	long unitsize;    //Êı¾İµÄµ¥Î»³¤¶È
-	char arraydim;       //Êı×éÎ¬Êı(×î´óËÄÎ¬)
-	long  arraysize[4];   //Êı×é³¤¶È
-	unsigned char* content;       //ÄÚÈİ	
-	int   contentSize;   //ÄÚÈİµÄ³¤¶È
+    char dataType;       //å‚æ•°çš„ç±»å‹	
+	long unitsize;    //æ•°æ®çš„å•ä½é•¿åº¦
+	char arraydim;       //æ•°ç»„ç»´æ•°(æœ€å¤§å››ç»´)
+	long  arraysize[4];   //æ•°ç»„é•¿åº¦
+	unsigned char* content;       //å†…å®¹	
+	int   contentSize;   //å†…å®¹çš„é•¿åº¦
 }PARAM;
 
 typedef struct _tagPARAMHDR
 {
-    char dataType;       //²ÎÊıµÄÀàĞÍ	
-	long unitsize;    //Êı¾İµÄµ¥Î»³¤¶È
-	char arrayDim;       //Êı×éÎ¬Êı(×î´óËÄÎ¬)
-	int  arraySize[4];   //Êı×é³¤¶È		'
+    char dataType;       //å‚æ•°çš„ç±»å‹	
+	long unitsize;    //æ•°æ®çš„å•ä½é•¿åº¦
+	char arrayDim;       //æ•°ç»„ç»´æ•°(æœ€å¤§å››ç»´)
+	int  arraySize[4];   //æ•°ç»„é•¿åº¦		'
 	unsigned char *content;
 }PARAMHDR;
 #pragma pack()

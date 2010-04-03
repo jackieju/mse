@@ -317,13 +317,13 @@ void CVirtualMachine::Reset()
 
 
 /*
-º¯ÊıÉùÃ÷£º	BOOL CVirtualMachine::LoadFunction(CFunction *pFunc)
-º¯Êı¹¦ÄÜ£º	¼ÓÔØ½Å±¾º¯Êı
-²ÎÊıËµÃ÷£º	
-			[IN]CFunction *pFunc	-	º¯ÊıÖ¸Õë
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-6-26
+å‡½æ•°å£°æ˜ï¼š	BOOL CVirtualMachine::LoadFunction(CFunction *pFunc)
+å‡½æ•°åŠŸèƒ½ï¼š	åŠ è½½è„šæœ¬å‡½æ•°
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]CFunction *pFunc	-	å‡½æ•°æŒ‡é’ˆ
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-6-26
 */
 void CVirtualMachine::LoadFunction(CFunction *pFunc)
 {
@@ -342,13 +342,13 @@ void CVirtualMachine::_LoadFunc(CFunction *pFunc)
 		throw new CVMMException("input CFuntion is null");	
 	
 	//	m_nWorkMode = pFunc->m_nWorkMode;
-	if (m_pCurCall != NULL) // ±£´æÏÖ³¡
+	if (m_pCurCall != NULL) // ä¿å­˜ç°åœº
 	{
 		m_pCurCall->IP = __IP;
 	}
 	
 
-	//·ÖÅäĞéÄâÄÚ´æ
+	//åˆ†é…è™šæ‹Ÿå†…å­˜
 	int TotalSize = pFunc->m_SymbolTable.m_nTotalSize + pFunc->m_nSSUsedSize;
 	CALLSTACKELE newStackEle;
 	memset(&newStackEle, sizeof(CALLSTACKELE), 0);
@@ -413,7 +413,7 @@ if (!Preprocess1(cmd, op1mode, op1reflvl, dest)) return FALSE;
 BOOL CVirtualMachine::_mov(PCOMMAND cmd)
 {
 	CMD_PREPROCESS2	
-		short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+		short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 //	opsize = __min((cmd->address_mode >> 14)&0x3 ,(cmd->address_mode >> 6)&0x3);
     if (((cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 6)&0x3;
@@ -433,7 +433,7 @@ BOOL CVirtualMachine::_mov(PCOMMAND cmd)
 BOOL CVirtualMachine::_add(PCOMMAND cmd)
 {	
 	CMD_PREPROCESS2
-		short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+		short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	//opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
 	if ( ((cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
 	    opsize = (cmd->address_mode >> 14)&0x3;
@@ -453,7 +453,7 @@ BOOL CVirtualMachine::_add(PCOMMAND cmd)
 BOOL CVirtualMachine::_mul(PCOMMAND cmd)
 {
 	CMD_PREPROCESS2
-		short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+		short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	//opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
 	if ( ((cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
 	    opsize = (cmd->address_mode >> 14)&0x3;
@@ -536,7 +536,7 @@ BOOL CVirtualMachine::_notr(PCOMMAND cmd)
 BOOL CVirtualMachine::_sub(PCOMMAND cmd)
 {
 	CMD_PREPROCESS2
-		short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+		short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 //	opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -558,7 +558,7 @@ BOOL CVirtualMachine::_div(PCOMMAND cmd)
 {
 	char szMsg[201] = "";
 	CMD_PREPROCESS2
-		short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+		short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	//opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -613,7 +613,7 @@ BOOL CVirtualMachine::_mod(PCOMMAND cmd)
 {
 	char szMsg[201] = "";
 	CMD_PREPROCESS2
-		short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+		short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	//  opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -665,12 +665,12 @@ BOOL CVirtualMachine::_mod(PCOMMAND cmd)
 }
 
 /*
-º¯ÊıÃû³Æ     : CVirtualMachine::_jz
-º¯Êı¹¦ÄÜ	    : Èç¹û__PSWµÄµÚÁãÎ»ÊÇ1, ¾ÍÌø×ª
-±äÁ¿ËµÃ÷     : 
-·µ»ØÖµ       : 
-±àĞ´ÈË       : ¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ     : 2001 - 5 - 11
+å‡½æ•°åç§°     : CVirtualMachine::_jz
+å‡½æ•°åŠŸèƒ½	    : å¦‚æœ__PSWçš„ç¬¬é›¶ä½æ˜¯1, å°±è·³è½¬
+å˜é‡è¯´æ˜     : 
+è¿”å›å€¼       : 
+ç¼–å†™äºº       : å±…å«å
+å®Œæˆæ—¥æœŸ     : 2001 - 5 - 11
 */
 BOOL CVirtualMachine::_jz(PCOMMAND cmd)
 {
@@ -684,12 +684,12 @@ BOOL CVirtualMachine::_jz(PCOMMAND cmd)
 
 
 /*
-º¯ÊıÃû³Æ     : CVirtualMachine::_jnz
-º¯Êı¹¦ÄÜ	    : Èç¹û__PSWµÄµÚÁãÎ»ÊÇ0, ¾ÍÌø×ª
-±äÁ¿ËµÃ÷     : 
-·µ»ØÖµ       : 
-±àĞ´ÈË       : ¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ     : 2001 - 5 - 11
+å‡½æ•°åç§°     : CVirtualMachine::_jnz
+å‡½æ•°åŠŸèƒ½	    : å¦‚æœ__PSWçš„ç¬¬é›¶ä½æ˜¯0, å°±è·³è½¬
+å˜é‡è¯´æ˜     : 
+è¿”å›å€¼       : 
+ç¼–å†™äºº       : å±…å«å
+å®Œæˆæ—¥æœŸ     : 2001 - 5 - 11
 */
 BOOL CVirtualMachine::_jnz(PCOMMAND cmd)
 {
@@ -807,7 +807,7 @@ BOOL CVirtualMachine::_endcallpub(PCOMMAND cmd)
 		{
 			pDataPt += 4- param->size;
 		}
-		/*		//Ö»¿¼ÂÇÒ»ÖØÖ¸Õë, ²»ÔÊĞíÓĞÖ¸ÕëµÄÖ¸Õë
+		/*		//åªè€ƒè™‘ä¸€é‡æŒ‡é’ˆ, ä¸å…è®¸æœ‰æŒ‡é’ˆçš„æŒ‡é’ˆ
 		if (param->reflvl > 0)
 		*((int*)(param->pData)) += (int)memory;
 		*/
@@ -1017,7 +1017,7 @@ BOOL CVirtualMachine::_callpub(PCOMMAND cmd)
 BOOL CVirtualMachine::_parampub(PCOMMAND cmd)
 {
 	CMD_PREPROCESS1
-	short opsize;// ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+	short opsize;// æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	
 	// get opsize
 	opsize= (cmd->address_mode >> 14)&0x3;
@@ -1037,7 +1037,7 @@ BOOL CVirtualMachine::_parampub(PCOMMAND cmd)
 	pCallInfo->paramPt->size = size;
 	pCallInfo->paramPt->reflvl = op1reflvl;
 	pCallInfo->lParamBlockSize += pCallInfo->paramPt->size;
-	// ×Ö½Ú¶ÔÆë
+	// å­—èŠ‚å¯¹é½
 	if (pCallInfo->paramPt->size < 4)
 	{
 		pCallInfo->lParamBlockSize+= 4-pCallInfo->paramPt->size;
@@ -1092,7 +1092,7 @@ BOOL CVirtualMachine::_callv(PCOMMAND cmd)
 BOOL CVirtualMachine::_paramv(PCOMMAND cmd)
 {
 	CMD_PREPROCESS1
-	short opsize;// ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+	short opsize;// æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	
 	// get opsize
 	opsize= (cmd->address_mode >> 14)&0x3;
@@ -1214,7 +1214,7 @@ BOOL CVirtualMachine::_endcallv(PCOMMAND cmd)
 BOOL CVirtualMachine::_test(PCOMMAND cmd)
 {
 	CMD_PREPROCESS2
-		short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+		short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	//	opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -1222,9 +1222,9 @@ BOOL CVirtualMachine::_test(PCOMMAND cmd)
         opsize = (cmd->address_mode >> 6)&0x3;
 	
 	
-	int op3 = cmd->op[2];//Ìõ¼ş
+	int op3 = cmd->op[2];//æ¡ä»¶
 	//0: == 1: != 2: >= 3:<= 4:> 5:< 6:&& 7:||
-    //Èç³ÉÁ¢ÔòÖÃ±êÖ¾Î»1, ²»³ÉÁ¢ÖÃÁã
+    //å¦‚æˆç«‹åˆ™ç½®æ ‡å¿—ä½1, ä¸æˆç«‹ç½®é›¶
 	char msg[201] = "";
 	switch (opsize)
 	{
@@ -1524,12 +1524,12 @@ BOOL CVirtualMachine::_ret(PCOMMAND cmd)
 
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL CVirtualMachine::Run()
-º¯Êı¹¦ÄÜ£º	¿ªÊ¼ÔËĞĞvm
-²ÎÊıËµÃ÷£º	
-·µ »Ø Öµ£º	BOOL  - ³É¹¦·µ»ØTRUE£¬ Ê§°Ü·µ»ØFALSE
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-3-19
+å‡½æ•°å£°æ˜ï¼š	BOOL CVirtualMachine::Run()
+å‡½æ•°åŠŸèƒ½ï¼š	å¼€å§‹è¿è¡Œvm
+å‚æ•°è¯´æ˜ï¼š	
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸè¿”å›TRUEï¼Œ å¤±è´¥è¿”å›FALSE
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-3-19
 **/
 BOOL CVirtualMachine::Run()
 {
@@ -1547,7 +1547,7 @@ BOOL CVirtualMachine::Run()
 	int nodebug = 0;
 	PCOMMAND pcmd = NULL;
 //	vector kk;
-	//·ÖÅä¶ÏµãÁĞ±í
+	//åˆ†é…æ–­ç‚¹åˆ—è¡¨
 //	m_BreakPoint = new long[m_pCurCall->pFunc->m_nCurrentCmdNum];
 //	memset(m_BreakPoint, -1, sizeof(long)*m_pCurCall->pFunc->m_nCurrentCmdNum);
 	m_BpList.clear();
@@ -1566,7 +1566,7 @@ BOOL CVirtualMachine::Run()
 		if (m_nWorkMode >= VM_MODE_DEBUG)
 		{
 
-			if (__IP == 0 || (__IP > 0 && pcmd->line != m_pCurCall->pFunc->m_pCmdTable[__IP - 1].line ) )// ±ÜÃâ´òÓ¡ÏàÍ¬µÄĞĞ
+			if (__IP == 0 || (__IP > 0 && pcmd->line != m_pCurCall->pFunc->m_pCmdTable[__IP - 1].line ) )// é¿å…æ‰“å°ç›¸åŒçš„è¡Œ
 			{
 				snprintf(msg, 200, "SE::%s IP: %d line: %d", m_pCurCall->pFunc->m_szName, __IP, pcmd->line);
 				nLOG(msg, 500);
@@ -1681,7 +1681,7 @@ BOOL CVirtualMachine::Run()
 		if (m_nRemainCmdNum > 0)
 			m_nRemainCmdNum--;
 
-		//ÊÇ·ñÊÇ¶Ïµã
+		//æ˜¯å¦æ˜¯æ–­ç‚¹
 		int index;
 		for (index = 0; index < m_BpList.size(); index++)
 		{
@@ -1697,10 +1697,10 @@ BOOL CVirtualMachine::Run()
 			if (m_nRemainCmdNum > 0)
 				continue;
 		}
-		//ÊÇ¶Ïµã»ò²»ÊÇ¶Ïµãµ«m_nRemainCmdNum == 0
+		//æ˜¯æ–­ç‚¹æˆ–ä¸æ˜¯æ–­ç‚¹ä½†m_nRemainCmdNum == 0
 		//      ||
 		//      \/
-		//¼ì²â²¢ÔËĞĞµ÷ÊÔÃüÁî
+		//æ£€æµ‹å¹¶è¿è¡Œè°ƒè¯•å‘½ä»¤
 
 		m_bIsDebugBreak = TRUE;
 
@@ -1730,22 +1730,22 @@ BOOL CVirtualMachine::Run()
 		
 				switch (m_lDbgCmdID)
 				{
-				case DBGCMD_NULL:	//Ã»ÓĞÃüÁî	
+				case DBGCMD_NULL:	//æ²¡æœ‰å‘½ä»¤	
 					break;
-				case DBGCMD_FORWARD:   	//ÏòÇ°Ö´ĞĞnÌõÓï
+				case DBGCMD_FORWARD:   	//å‘å‰æ‰§è¡Œnæ¡è¯­
 					if (m_lDbgCmdP1 == 0)
 						m_lDbgCmdP1 = 1;
 					m_nRemainCmdNum = m_lDbgCmdP1;
 					break;
-				case DBGCMD_HALT: 	//Í£Ö¹ÔËĞĞ
+				case DBGCMD_HALT: 	//åœæ­¢è¿è¡Œ
 				//	IsRunning = FALSE;
 					m_ToStop.Set();
 					m_nRemainCmdNum = 1;
 					break;
-				case DBGCMD_MEM:  	//ÏÔÊ¾ÄÚ´æ
+				case DBGCMD_MEM:  	//æ˜¾ç¤ºå†…å­˜
 					{
-						long bytenum;//ÒªÏÔÊ¾µÄ×Ö½ÚÊı
-						long bytestart;//ÏÔÊ¾µÄ¿ªÊ¼×Ö½Ú
+						long bytenum;//è¦æ˜¾ç¤ºçš„å­—èŠ‚æ•°
+						long bytestart;//æ˜¾ç¤ºçš„å¼€å§‹å­—èŠ‚
 						char sTempMsg[201] = "";
 //						int j;
 						
@@ -1776,9 +1776,9 @@ BOOL CVirtualMachine::Run()
 								strcat(msg, "\r\n");
 							}
 						}
-						break;////////break¿ÉÒÔÔÚÀïÃæÂğ?
+						break;////////breakå¯ä»¥åœ¨é‡Œé¢å—?
 					}
-				case DBGCMD_REG:				//ÏÔÊ¾¼Ä´æÆ÷
+				case DBGCMD_REG:				//æ˜¾ç¤ºå¯„å­˜å™¨
 					{					
 						strlwr(m_szDbgCmdP3);
 						if (strlen(m_szDbgCmdP3) == 0)
@@ -1807,7 +1807,7 @@ BOOL CVirtualMachine::Run()
 						}
 						break;
 					}
-				case DBGCMD_BP:   	//ÏÔÊ¾ËùÓĞ¶Ïµã
+				case DBGCMD_BP:   	//æ˜¾ç¤ºæ‰€æœ‰æ–­ç‚¹
 					{
 						int i;
 //						int count;
@@ -1821,7 +1821,7 @@ BOOL CVirtualMachine::Run()
 						}
 						break;
 					}
-				case DBGCMD_SP:   	//ÉèÖÃ¶Ïµã
+				case DBGCMD_SP:   	//è®¾ç½®æ–­ç‚¹
 					if (SetBreakPoint(m_lDbgCmdP1))
 					{
 						//snprintf(msg, 1000,"set break point success.\n");
@@ -1832,7 +1832,7 @@ BOOL CVirtualMachine::Run()
 						lDbgRet = -1;
 					}
 					break;
-				case DBGCMD_DP:   //É¾³ı¶Ïµã
+				case DBGCMD_DP:   //åˆ é™¤æ–­ç‚¹
 					if (DelBreakPoint(m_lDbgCmdP1))
 					{
 						//	snprintf(msg, 1000, "delete break point success.\n");
@@ -1843,7 +1843,7 @@ BOOL CVirtualMachine::Run()
 						lDbgRet = -1;
 					}
 					break;
-				case DBGCMD_GO://È¡Ïûµ¥²½
+				case DBGCMD_GO://å–æ¶ˆå•æ­¥
 					m_nRemainCmdNum = 0xffffffff;
 					break;
 				default:
@@ -1853,7 +1853,7 @@ BOOL CVirtualMachine::Run()
 					}
 				}
 
-				//Çå³ıÃüÁî
+				//æ¸…é™¤å‘½ä»¤
 				m_lDbgCmdID = m_lDbgCmdP1 = m_lDbgCmdP1 = 0;
 				memset(m_szDbgCmdP3, 0, 1024);
 				CVirtualMachine::m_sDbgOutMsg = msg;
@@ -2079,14 +2079,14 @@ BOOL CVirtualMachine::OutputMemToFile(char* szFileName)
 
 
 /*
-º¯ÊıÃû³Æ     : CVirtualMachine::AttachParam
-º¯Êı¹¦ÄÜ	    : 
-BYTE *pParam:  ²ÎÊıµÄµØÖ·, ×¢Òâ²»ÊÇ²ÎÊıµÄÄÚÈİ
-int size_t  :  ²ÎÊıÄÚÈİµÄ³¤¶È
-±äÁ¿ËµÃ÷     : 
-·µ»ØÖµ       : 
-±àĞ´ÈË       : ¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ     : 2001 - 4 - 27
+å‡½æ•°åç§°     : CVirtualMachine::AttachParam
+å‡½æ•°åŠŸèƒ½	    : 
+BYTE *pParam:  å‚æ•°çš„åœ°å€, æ³¨æ„ä¸æ˜¯å‚æ•°çš„å†…å®¹
+int size_t  :  å‚æ•°å†…å®¹çš„é•¿åº¦
+å˜é‡è¯´æ˜     : 
+è¿”å›å€¼       : 
+ç¼–å†™äºº       : å±…å«å
+å®Œæˆæ—¥æœŸ     : 2001 - 4 - 27
 */
 long CVirtualMachine::AttachParam(BYTE *pParam, int size_t)
 {
@@ -2113,17 +2113,17 @@ long CVirtualMachine::AttachParam(BYTE *pParam, int size_t)
 
 
 /*
-º¯ÊıÉùÃ÷£º	BOOL CVirtualMachine::Preprocess1(PCOMMAND cmd, int &op1mode, int &op1reflvl, unsigned char* &dest, BOOL bValidate)
-º¯Êı¹¦ÄÜ£º	Ö¸ÁîÔ¤´¦Àí£¨µ¥²Ù×÷ÊıÖ¸Áî£©
-²ÎÊıËµÃ÷£º	
-			[IN]PCOMMAND cmd	-	Ö¸ÁîÄÚÈİ
-			[OUT]int &op1mode	-	²Ù×÷Êı1µÄÑ°Ö··½Ê½×Ö
-			[OUT]int &op1reflvl	-	²Ù×÷Êı1µÄ¼ä½Ó¼¶±ğ
-			[OUT]unsigned char* &dest	-	Êµ¼ÊµØÖ·	
-			[IN]BOOL bValidate	-	ÊÇ·ñ½øĞĞµØÖ·ÑéÖ¤
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-6-26
+å‡½æ•°å£°æ˜ï¼š	BOOL CVirtualMachine::Preprocess1(PCOMMAND cmd, int &op1mode, int &op1reflvl, unsigned char* &dest, BOOL bValidate)
+å‡½æ•°åŠŸèƒ½ï¼š	æŒ‡ä»¤é¢„å¤„ç†ï¼ˆå•æ“ä½œæ•°æŒ‡ä»¤ï¼‰
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]PCOMMAND cmd	-	æŒ‡ä»¤å†…å®¹
+			[OUT]int &op1mode	-	æ“ä½œæ•°1çš„å¯»å€æ–¹å¼å­—
+			[OUT]int &op1reflvl	-	æ“ä½œæ•°1çš„é—´æ¥çº§åˆ«
+			[OUT]unsigned char* &dest	-	å®é™…åœ°å€	
+			[IN]BOOL bValidate	-	æ˜¯å¦è¿›è¡Œåœ°å€éªŒè¯
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-6-26
 */
 BOOL CVirtualMachine::Preprocess1(PCOMMAND cmd, int &op1mode, int &op1reflvl, unsigned char* &dest, BOOL bValidate)
 {
@@ -2348,13 +2348,13 @@ void CVirtualMachine::SetWorkMode(int mode)
 
 
 /*
-º¯ÊıÉùÃ÷£º	BOOL CVirtualMachine::ValidateAddress(unsigned char* address)
-º¯Êı¹¦ÄÜ£º	ÑéÖ¤µØÖ·ÊÇ·ñºÏ·¨
-²ÎÊıËµÃ÷£º	
-			[IN]unsigned char* address	-	µØÖ·
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-6-26
+å‡½æ•°å£°æ˜ï¼š	BOOL CVirtualMachine::ValidateAddress(unsigned char* address)
+å‡½æ•°åŠŸèƒ½ï¼š	éªŒè¯åœ°å€æ˜¯å¦åˆæ³•
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]unsigned char* address	-	åœ°å€
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-6-26
 */
 BOOL CVirtualMachine::ValidateAddress(unsigned char* address)
 {
@@ -2407,7 +2407,7 @@ BOOL CVirtualMachine::_cast(PCOMMAND cmd)
 {
 	char msg[201] = "";
 	CMD_PREPROCESS2
-	long op3 = cmd->op[2];//×ª»»²Ù×÷µÄÀàĞÍ
+	long op3 = cmd->op[2];//è½¬æ¢æ“ä½œçš„ç±»å‹
 	switch (op3)
 	{
 		//integer -> float
@@ -2470,7 +2470,7 @@ BOOL CVirtualMachine::_fadd(PCOMMAND cmd)
 {
 	char msg[201] = "";
 	CMD_PREPROCESS2
-	short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+	short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 	//	opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -2494,7 +2494,7 @@ BOOL CVirtualMachine::_fadd(PCOMMAND cmd)
 BOOL CVirtualMachine::_fsub(PCOMMAND cmd)
 {
 	CMD_PREPROCESS2
-	short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+	short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 //	opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -2520,7 +2520,7 @@ BOOL CVirtualMachine::_fsub(PCOMMAND cmd)
 BOOL CVirtualMachine::_fmul(PCOMMAND cmd)
 {
 	CMD_PREPROCESS2
-	short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+	short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 //	opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -2546,7 +2546,7 @@ BOOL CVirtualMachine::_fdiv(PCOMMAND cmd)
 {
 	char szMsg[201] = "";
 	CMD_PREPROCESS2
-	short opsize;//ÊÇ×Ö½Ú²Ù×÷, ×Ö²Ù×÷, »¹Ë«×Ö²Ù×÷
+	short opsize;//æ˜¯å­—èŠ‚æ“ä½œ, å­—æ“ä½œ, è¿˜åŒå­—æ“ä½œ
 //	opsize= __max( (cmd->address_mode >> 14)&0x3, (cmd->address_mode >> 6)&0x3);
     if (( (cmd->address_mode >> 14)&0x3)>((cmd->address_mode >> 6)&0x3))
         opsize = (cmd->address_mode >> 14)&0x3;
@@ -2594,16 +2594,16 @@ BOOL CVirtualMachine::_loadlib(PCOMMAND cmd){
 }
 
 /*
-   º¯ÊıÃû³Æ     : CVirtualMachine::SetDbgCmd
-   º¯Êı¹¦ÄÜ	    : ´«Èëµ÷ÊÔÃüÁî
-   ±äÁ¿ËµÃ÷     : 
-   long lCmdID  : debugÃüÁîµÄID
-   long p1      : ²ÎÊı1
-   long p2      : ²ÎÊı2
-   char* p3		: ²ÎÊı3(³¤¶È²»³¬¹ı1024byte, °üÀ¨\0)
-   ·µ»ØÖµ       : ÎŞ
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 6 - 12
+   å‡½æ•°åç§°     : CVirtualMachine::SetDbgCmd
+   å‡½æ•°åŠŸèƒ½	    : ä¼ å…¥è°ƒè¯•å‘½ä»¤
+   å˜é‡è¯´æ˜     : 
+   long lCmdID  : debugå‘½ä»¤çš„ID
+   long p1      : å‚æ•°1
+   long p2      : å‚æ•°2
+   char* p3		: å‚æ•°3(é•¿åº¦ä¸è¶…è¿‡1024byte, åŒ…æ‹¬\0)
+   è¿”å›å€¼       : æ— 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 6 - 12
 */
 void CVirtualMachine::SetDbgCmd(long lCmdID, long p1, long p2, char* p3)
 {
@@ -2618,12 +2618,12 @@ void CVirtualMachine::SetDbgCmd(long lCmdID, long p1, long p2, char* p3)
 
 
 /*
-   º¯ÊıÃû³Æ     : CVirtualMachine::SetBreakPoint
-   º¯Êı¹¦ÄÜ	    : 
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : 
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 6 - 13
+   å‡½æ•°åç§°     : CVirtualMachine::SetBreakPoint
+   å‡½æ•°åŠŸèƒ½	    : 
+   å˜é‡è¯´æ˜     : 
+   è¿”å›å€¼       : 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 6 - 13
 */
 BOOL CVirtualMachine::SetBreakPoint(long line)
 {
@@ -2633,7 +2633,7 @@ BOOL CVirtualMachine::SetBreakPoint(long line)
 	long IP;
 	long i;
 
-	//µÃµ½¸ÄĞĞµÚÒ»ÌõÖ¸ÁîµÄIP
+	//å¾—åˆ°æ”¹è¡Œç¬¬ä¸€æ¡æŒ‡ä»¤çš„IP
 	for (i = 0; i< m_pCurCall->pFunc->m_nCurrentCmdNum; i++)
 	{
 		if (m_pCurCall->pFunc->m_pCmdTable[i].line > line)
@@ -2645,11 +2645,11 @@ BOOL CVirtualMachine::SetBreakPoint(long line)
 		}
 	}
 
-	//IPÊÇ·ñÔÚÖ¸ÁîÊı·¶Î§ÄÚ
+	//IPæ˜¯å¦åœ¨æŒ‡ä»¤æ•°èŒƒå›´å†…
 	if (IP >= m_pCurCall->pFunc->m_nCurrentCmdNum)
 		return FALSE;
 
-	//²éÕÒÊÇ·ñÖØ¸´
+	//æŸ¥æ‰¾æ˜¯å¦é‡å¤
 	for (i = 0; i< m_BpList.size(); i++)
 	{
 		if (m_BpList[i].lIP == IP)
@@ -2667,12 +2667,12 @@ BOOL CVirtualMachine::SetBreakPoint(long line)
 }
 
 /*
-   º¯ÊıÃû³Æ     : CVirtualMachine::DelBreakPoint
-   º¯Êı¹¦ÄÜ	    : 
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : 
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 6 - 13
+   å‡½æ•°åç§°     : CVirtualMachine::DelBreakPoint
+   å‡½æ•°åŠŸèƒ½	    : 
+   å˜é‡è¯´æ˜     : 
+   è¿”å›å€¼       : 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 6 - 13
 */
 BOOL CVirtualMachine::DelBreakPoint(long line)
 {

@@ -27,17 +27,17 @@ const long CExp::stat_user_defined		= 100;
 
 
 /**
-º¯ÊıÉùÃ÷£º	CExp::CExp(long lCode, char* sMsg, char* file, long nLine,  long lState)
-º¯Êı¹¦ÄÜ£º	constructor
-²ÎÊıËµÃ÷£º	
-			[IN]long lCode	-	Òì³£´úÂë
-			[IN]char* sMsg	-	Òì³£ĞÅÏ¢(optional)
-			[IN]char* file	-	·¢ÉúÒì³£µÄsourceÎÄ¼ş(optional)
-			[IN]long nLine	-	·¢ÉúÒì³£µÄËùÔÚĞĞºÅ(optional)
-			[IN]long lState	-	×´Ì¬´úÂë, ÓÃÓÚÃèÊö·¢ÉúÒì³£Ê±µÄÏµÍ³×´Ì¬(optional)
-·µ »Ø Öµ£º	 - 
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2003-4-23
+å‡½æ•°å£°æ˜ï¼š	CExp::CExp(long lCode, char* sMsg, char* file, long nLine,  long lState)
+å‡½æ•°åŠŸèƒ½ï¼š	constructor
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]long lCode	-	å¼‚å¸¸ä»£ç 
+			[IN]char* sMsg	-	å¼‚å¸¸ä¿¡æ¯(optional)
+			[IN]char* file	-	å‘ç”Ÿå¼‚å¸¸çš„sourceæ–‡ä»¶(optional)
+			[IN]long nLine	-	å‘ç”Ÿå¼‚å¸¸çš„æ‰€åœ¨è¡Œå·(optional)
+			[IN]long lState	-	çŠ¶æ€ä»£ç , ç”¨äºæè¿°å‘ç”Ÿå¼‚å¸¸æ—¶çš„ç³»ç»ŸçŠ¶æ€(optional)
+è¿” å› å€¼ï¼š	 - 
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2003-4-23
 **/
 CExp::CExp(long lCode, char* sMsg, char* file, long nLine,  long lState, long lLevel)
 {
@@ -70,13 +70,13 @@ CExp::~CExp()
 
 
 /**
-º¯ÊıÉùÃ÷£º	char* Show()
-º¯Êı¹¦ÄÜ£º	output all mag to string
-²ÎÊıËµÃ÷£º	
-·µ »Ø Öµ£º	char*  - String contain the exception content, 
+å‡½æ•°å£°æ˜ï¼š	char* Show()
+å‡½æ•°åŠŸèƒ½ï¼š	output all mag to string
+å‚æ•°è¯´æ˜ï¼š	
+è¿” å› å€¼ï¼š	char*  - String contain the exception content, 
 			the string should be deleted after use, otherwise resource will be leaked.
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2003-4-23
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2003-4-23
 **/
 char* CExp::Show()
 {

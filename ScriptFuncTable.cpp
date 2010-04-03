@@ -41,13 +41,13 @@ CScriptFuncTable::~CScriptFuncTable()
 
 
 /*
-º¯ÊýÉùÃ÷£º	BOOL CScriptFuncTable::AddFunction(CFunction *pfn)
-º¯Êý¹¦ÄÜ£º	Ìí¼ÓÐÂµÄfunciton, ²¢°´×ÖÄ¸ÅÅÐò
-²ÎÊýËµÃ÷£º	
-			[IN]CFunction *pfn	-	ÒªÌí¼ÓµÄº¯ÊýÖ¸Õë
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊ§°Ü
-±à Ð´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-6-26
+å‡½æ•°å£°æ˜Žï¼š	BOOL CScriptFuncTable::AddFunction(CFunction *pfn)
+å‡½æ•°åŠŸèƒ½ï¼š	æ·»åŠ æ–°çš„funciton, å¹¶æŒ‰å­—æ¯æŽ’åº
+å‚æ•°è¯´æ˜Žï¼š	
+			[IN]CFunction *pfn	-	è¦æ·»åŠ çš„å‡½æ•°æŒ‡é’ˆ
+è¿” å›ž å€¼ï¼š	BOOL  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«åŽ
+å®Œæˆæ—¥æœŸï¼š	2001-6-26
 */
 bool CScriptFuncTable::AddFunction(CFunction *pfn)
 {
@@ -214,12 +214,12 @@ void CScriptFuncTable::WriteUnlock()
 
 
 /*
-   º¯ÊýÃû³Æ     : CScriptFuncTable::GetFunction
-   º¯Êý¹¦ÄÜ	    : ¸ù¾ÝIDÈ¥º¯Êý, Ä¿Ç°id¾ÍÊÇº¯ÊýÃû, ÓÃ¶þ·Ö·¨²éÕÒ
-   ±äÁ¿ËµÃ÷     :
-   ·µ»ØÖµ       :
-   ±àÐ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 5 - 14
+   å‡½æ•°åç§°     : CScriptFuncTable::GetFunction
+   å‡½æ•°åŠŸèƒ½	    : æ ¹æ®IDåŽ»å‡½æ•°, ç›®å‰idå°±æ˜¯å‡½æ•°å, ç”¨äºŒåˆ†æ³•æŸ¥æ‰¾
+   å˜é‡è¯´æ˜Ž     :
+   è¿”å›žå€¼       :
+   ç¼–å†™äºº       : å±…å«åŽ
+   å®Œæˆæ—¥æœŸ     : 2001 - 5 - 14
 */
 CFunction* CScriptFuncTable::GetFunction(char *szID, long* index)
 {
@@ -275,12 +275,12 @@ void CScriptFuncTable::ReleaseFunc()
 
 
 /*
-   º¯ÊýÃû³Æ     : CScriptFuncTable::SetFunctionMode
-   º¯Êý¹¦ÄÜ	    : ÉèÖÃÄ³¸öfunctionµÄÔËÐÐÄ£Ê½
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : >=0 ¸Ãº¯ÊýÔ­À´µÄÄ£Ê½; <0 ÕÒ²»µ½¸Ãº¯Êý
-   ±àÐ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 5 - 18
+   å‡½æ•°åç§°     : CScriptFuncTable::SetFunctionMode
+   å‡½æ•°åŠŸèƒ½	    : è®¾ç½®æŸä¸ªfunctionçš„è¿è¡Œæ¨¡å¼
+   å˜é‡è¯´æ˜Ž     : 
+   è¿”å›žå€¼       : >=0 è¯¥å‡½æ•°åŽŸæ¥çš„æ¨¡å¼; <0 æ‰¾ä¸åˆ°è¯¥å‡½æ•°
+   ç¼–å†™äºº       : å±…å«åŽ
+   å®Œæˆæ—¥æœŸ     : 2001 - 5 - 18
 */
 long CScriptFuncTable::SetFunctionMode(char* szFuncID, long lMode)
 {
@@ -298,13 +298,13 @@ long CScriptFuncTable::SetFunctionMode(char* szFuncID, long lMode)
 
 
 /*
-º¯ÊýÉùÃ÷£º	BOOL CScriptFuncTable::Clear(long lTime)
-º¯Êý¹¦ÄÜ£º	ÊÍ·Å±í¿Õ¼ä
-²ÎÊýËµÃ÷£º	
-			[IN]long lTime	-	µÈ´ýµÄ×î´óÊ±¼ä
-·µ »Ø Öµ£º	BOOL  - 
-±à Ð´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-7-6
+å‡½æ•°å£°æ˜Žï¼š	BOOL CScriptFuncTable::Clear(long lTime)
+å‡½æ•°åŠŸèƒ½ï¼š	é‡Šæ”¾è¡¨ç©ºé—´
+å‚æ•°è¯´æ˜Žï¼š	
+			[IN]long lTime	-	ç­‰å¾…çš„æœ€å¤§æ—¶é—´
+è¿” å›ž å€¼ï¼š	BOOL  - 
+ç¼– å†™ äººï¼š	å±…å«åŽ
+å®Œæˆæ—¥æœŸï¼š	2001-7-6
 */
 bool CScriptFuncTable::Clear(long lTime)
 {

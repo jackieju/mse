@@ -90,15 +90,15 @@ BOOL CPubFuncTable::AddFunction(long pfn, char *szName, char cParamNum)
 
 
 /*
-   º¯ÊıÃû³Æ     : CPubFuncTable::FindFuncByName
-   º¯Êı¹¦ÄÜ	    : ¸ù¾İÃû×ÖÕÒº¯ÊıĞÅÏ¢
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       :
-   -1: Ã»ÕÒµ½
-   -2: ²ÎÊı´íÎó
-   >=0: º¯ÊıĞÅÏ¢Êı×éÏÂ±ê
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 4 - 24
+   å‡½æ•°åç§°     : CPubFuncTable::FindFuncByName
+   å‡½æ•°åŠŸèƒ½	    : æ ¹æ®åå­—æ‰¾å‡½æ•°ä¿¡æ¯
+   å˜é‡è¯´æ˜     : 
+   è¿”å›å€¼       :
+   -1: æ²¡æ‰¾åˆ°
+   -2: å‚æ•°é”™è¯¯
+   >=0: å‡½æ•°ä¿¡æ¯æ•°ç»„ä¸‹æ ‡
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 4 - 24
 */
 int CPubFuncTable::FindFuncByName(char *szName)
 {
@@ -117,16 +117,16 @@ int CPubFuncTable::FindFuncByName(char *szName)
 }
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL SE_AddPubFunction(HMODULE hDll, char* fnName, char* szName, char cParamNum)
-º¯Êı¹¦ÄÜ£º	´ÓDLLÖĞloadº¯ÊıµØÖ·µ½º¯ÊıÖ¸Õë±í¡£
-²ÎÊıËµÃ÷£º	
-			[IN]HMODULE hDll	-	Íâ²¿º¯Êı¿â
-			[IN]char* fnName	-	loadµÄº¯ÊıÃû£¬ ¸Ãº¯ÊıÃû±ØĞëÔÚÍâ²¿º¯Êı¿âÖĞ±»export³ö¡£
-			[IN]char* szName	-	º¯ÊıÔÚ½Å±¾ÖĞ±»Ê¹ÓÃÊ±µÄÃû³Æ
-			[IN]char cParamNum	-	º¯Êı²ÎÊı¸öÊı
-·µ »Ø Öµ£º	BOOL  - 
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-3-14
+å‡½æ•°å£°æ˜ï¼š	BOOL SE_AddPubFunction(HMODULE hDll, char* fnName, char* szName, char cParamNum)
+å‡½æ•°åŠŸèƒ½ï¼š	ä»DLLä¸­loadå‡½æ•°åœ°å€åˆ°å‡½æ•°æŒ‡é’ˆè¡¨ã€‚
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]HMODULE hDll	-	å¤–éƒ¨å‡½æ•°åº“
+			[IN]char* fnName	-	loadçš„å‡½æ•°åï¼Œ è¯¥å‡½æ•°åå¿…é¡»åœ¨å¤–éƒ¨å‡½æ•°åº“ä¸­è¢«exportå‡ºã€‚
+			[IN]char* szName	-	å‡½æ•°åœ¨è„šæœ¬ä¸­è¢«ä½¿ç”¨æ—¶çš„åç§°
+			[IN]char cParamNum	-	å‡½æ•°å‚æ•°ä¸ªæ•°
+è¿” å› å€¼ï¼š	BOOL  - 
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-3-14
 **/
 BOOL CPubFuncTable::AddPubFunction(HMODULE hDll, char* fnName, char* szName, char cParamNum)
 {
@@ -149,14 +149,14 @@ BOOL CPubFuncTable::AddPubFunction(HMODULE hDll, char* fnName, char* szName, cha
 
 
 /**
-º¯ÊıÉùÃ÷£º	long SE_LoadLib(char* szFileName)
-º¯Êı¹¦ÄÜ£º	´Óº¯Êı±íloadÍâ²¿º¯Êı
-²ÎÊıËµÃ÷£º	
-			[IN]char* szDLLName		-	Íâ²¿dll
-			[IN]char* szFileName	-	¸ÃdllµÄ½Ó¿ÚËµÃ÷ÎÄ¼ş
-·µ »Ø Öµ£º	long  - 0³É¹¦, ·ÇÁãÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-3-14
+å‡½æ•°å£°æ˜ï¼š	long SE_LoadLib(char* szFileName)
+å‡½æ•°åŠŸèƒ½ï¼š	ä»å‡½æ•°è¡¨loadå¤–éƒ¨å‡½æ•°
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]char* szDLLName		-	å¤–éƒ¨dll
+			[IN]char* szFileName	-	è¯¥dllçš„æ¥å£è¯´æ˜æ–‡ä»¶
+è¿” å› å€¼ï¼š	long  - 0æˆåŠŸ, éé›¶å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-3-14
 **/
 long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 {
@@ -166,7 +166,7 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 		return -1;
 
 	char szMsg[300];
-	HMODULE	hDll = NULL;			// dll¾ä±ú
+	HMODULE	hDll = NULL;			// dllå¥æŸ„
 #ifndef WIN32
 
 	hDll = (HMODULE)dlopen(szDLLName, RTLD_NOW/*RTLD_LAZY*/);

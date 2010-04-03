@@ -13,79 +13,79 @@
 
 /*typedef struct _tagData
 {
-	long size_t;              //Ê¹ÓÃµÄ³¤¶È
-	long MaxSize_t;           //×Ü³¤¶È
-	unsigned char *m_pData;   //Êı¾İ¿Õ¼ä
+	long size_t;              //ä½¿ç”¨çš„é•¿åº¦
+	long MaxSize_t;           //æ€»é•¿åº¦
+	unsigned char *m_pData;   //æ•°æ®ç©ºé—´
 }DATA;
 */
 typedef struct _tagExpressionDigit
 {
 	long digit;
-	int  type;            //0: ³£Á¿ 1: ±äÁ¿µØÖ· 2:¼Ä´æÆ÷
+	int  type;            //0: å¸¸é‡ 1: å˜é‡åœ°å€ 2:å¯„å­˜å™¨
 	TYPEDES dtType;
 	_tagExpressionDigit* pPrev;
-}EXPRESSIONDIGIT;//±í´ïÊ½Ê¹ÓÃµÄ²Ù×÷ÊıÕ»µÄ½Úµã
+}EXPRESSIONDIGIT;//è¡¨è¾¾å¼ä½¿ç”¨çš„æ“ä½œæ•°æ ˆçš„èŠ‚ç‚¹
 
-#define CMDTABLEINITSIZE 20                //Ö¸ÁîÊı×éµÄ³õÊ¼³¤¶È
-#define DATASEGMENTINITSIZE 30             //Êı¾İ¶ÎµÄ³õÊ¼³¤¶È
+#define CMDTABLEINITSIZE 20                //æŒ‡ä»¤æ•°ç»„çš„åˆå§‹é•¿åº¦
+#define DATASEGMENTINITSIZE 30             //æ•°æ®æ®µçš„åˆå§‹é•¿åº¦
 
 class CSymbolTable;
 class CFunction  
 {
 public:
 	static long OutCmd(COMMAND* pcmd, char *buffer);
-	long OutupCmd(long index, char* buffer);           //Êä³öÖ¸ÁîÄÚÈİ
-	bool AddCommand(COMMAND& cmd);                     //Ìí¼ÓÖ¸Áî
-	int GetSymbolAddress(char* szName);                //¸ù¾İÃû³ÆÈ¡·ûºÅµØÖ· 
-	void Output(char* szName);                         //Êä³öº¯Êı
-	bool AddCommand(long opcode, long address_mode, long opnum, long *opTable, long lineNum);//Ìí¼ÓÖ¸Áî
-	bool AddVal(char* szName, TYPEDES type);           //Ïò·ûºÅ±íÌí¼Ó±äÁ¿
-	int AddStaticData(int size_t, unsigned char* pData);       //Ïò·ûºÅ±íÌí¼Ó³£Á¿
+	long OutupCmd(long index, char* buffer);           //è¾“å‡ºæŒ‡ä»¤å†…å®¹
+	bool AddCommand(COMMAND& cmd);                     //æ·»åŠ æŒ‡ä»¤
+	int GetSymbolAddress(char* szName);                //æ ¹æ®åç§°å–ç¬¦å·åœ°å€ 
+	void Output(char* szName);                         //è¾“å‡ºå‡½æ•°
+	bool AddCommand(long opcode, long address_mode, long opnum, long *opTable, long lineNum);//æ·»åŠ æŒ‡ä»¤
+	bool AddVal(char* szName, TYPEDES type);           //å‘ç¬¦å·è¡¨æ·»åŠ å˜é‡
+	int AddStaticData(int size_t, unsigned char* pData);       //å‘ç¬¦å·è¡¨æ·»åŠ å¸¸é‡
 	CFunction();
 	virtual ~CFunction();
 
 //	void SetAX(long val);
-//	BOOL MoveCmd(unsigned int uFrom, unsigned int uTo);//²»ÄÜÊ¹ÓÃ¸Ã¹¦ÄÜ£¬ ÒòÎªËı»áµ¼ÖÂÌø×ªÓï¾ä³ö´í
-	//long AX, BX, CX, DX;                    //¼Ä´æÆ÷
+//	BOOL MoveCmd(unsigned int uFrom, unsigned int uTo);//ä¸èƒ½ä½¿ç”¨è¯¥åŠŸèƒ½ï¼Œ å› ä¸ºå¥¹ä¼šå¯¼è‡´è·³è½¬è¯­å¥å‡ºé”™
+	//long AX, BX, CX, DX;                    //å¯„å­˜å™¨
 	
 #define VM_MODE_NORMAL 0
 #define VM_MODE_DEBUG  1
 #define VM_MODE_STEPDEBUG 2
 	int m_nWorkMode;
 	
-	int m_iParamNum;					//²ÎÊı¸öÊı
-	int m_iParamTotalSize;				//²ÎÊı¿Õ¼ä³¤¶È
-	char m_szName[21];					//º¯ÊıÃû³Æ
+	int m_iParamNum;					//å‚æ•°ä¸ªæ•°
+	int m_iParamTotalSize;				//å‚æ•°ç©ºé—´é•¿åº¦
+	char m_szName[21];					//å‡½æ•°åç§°
 
-	PCOMMAND m_pCmdTable;				   //Ö¸Áî±í
-	int m_nCurrentCmdNum;                  //µ±Ç°µÄÃüÁîÊı
-	int m_nCmdTableSize;                   //Ö¸ÁîÊı×éµÄµ±Ç°×î´ó³¤¶È
+	PCOMMAND m_pCmdTable;				   //æŒ‡ä»¤è¡¨
+	int m_nCurrentCmdNum;                  //å½“å‰çš„å‘½ä»¤æ•°
+	int m_nCmdTableSize;                   //æŒ‡ä»¤æ•°ç»„çš„å½“å‰æœ€å¤§é•¿åº¦
 	
-	CSymbolTable m_SymbolTable;           //Êı¾İ¶Î·ûºÅ±í
+	CSymbolTable m_SymbolTable;           //æ•°æ®æ®µç¬¦å·è¡¨
 
-//	CSymbolTable m_pointTable;            //Ö¸Õë±äÁ¿·ûºÅ±í
+//	CSymbolTable m_pointTable;            //æŒ‡é’ˆå˜é‡ç¬¦å·è¡¨
 
-	unsigned char* m_staticSegment;                 //³£Á¿¶Î
-	int   m_nSSUsedSize;                     //ÒÔÊ¹ÓÃµÄ³¤¶È
-	int   m_nSSCurMaxSize;                   //Ä¿Ç°µÄÊı¾İ¿é´óĞ¡
-#define STATICSEGINCSIZE  1024       //³£Á¿¶ÎµÄÔöÁ¿
+	unsigned char* m_staticSegment;                 //å¸¸é‡æ®µ
+	int   m_nSSUsedSize;                     //ä»¥ä½¿ç”¨çš„é•¿åº¦
+	int   m_nSSCurMaxSize;                   //ç›®å‰çš„æ•°æ®å—å¤§å°
+#define STATICSEGINCSIZE  1024       //å¸¸é‡æ®µçš„å¢é‡
 
-//	DATA m_dataSegment;                   //Êı¾İ¶Î
+//	DATA m_dataSegment;                   //æ•°æ®æ®µ
 	
-//	DATA m_StackSegment;                  //¶ÑÕ»¶Î
+//	DATA m_StackSegment;                  //å †æ ˆæ®µ
 
 
 public:
-		//ÔËËãÊıÕ»
+		//è¿ç®—æ•°æ ˆ
 	EXPRESSIONDIGIT m_ExpDigit;
-   	EXPRESSIONDIGIT* m_pExpDigitPt;//Õ»Ö¸Õë
+   	EXPRESSIONDIGIT* m_pExpDigitPt;//æ ˆæŒ‡é’ˆ
 	/*
-   º¯ÊıÃû³Æ     : cParser::ClearExpStack
-   º¯Êı¹¦ÄÜ	    : Çå¿Õ±í´ïÊ½Õ»
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : 
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 4 - 17
+   å‡½æ•°åç§°     : cParser::ClearExpStack
+   å‡½æ•°åŠŸèƒ½	    : æ¸…ç©ºè¡¨è¾¾å¼æ ˆ
+   å˜é‡è¯´æ˜     : 
+   è¿”å›å€¼       : 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 4 - 17
 */
 void ClearExpStack()
 {

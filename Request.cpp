@@ -55,7 +55,7 @@
 #include "Request.h"
 #include "se_interface.h"
 
-//extern void (* g_pLogFunc)(char* sMsg, char* sFile, long nLine, long nLevel);		// ÈÕÖ¾¼ÇÂ¼º¯ÊıÖ¸Õë
+//extern void (* g_pLogFunc)(char* sMsg, char* sFile, long nLine, long nLevel);		// æ—¥å¿—è®°å½•å‡½æ•°æŒ‡é’ˆ
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
 //////////////////////////////////////////////////////////////////////
@@ -163,12 +163,12 @@ CRequest::~CRequest()
 }
 
 /*
-   º¯ÊıÃû³Æ     : CRequest::AddParam
-   º¯Êı¹¦ÄÜ	    : ÊÖ¹¤Ìí¼Ó²ÎÊı
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : 
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 5 - 24
+   å‡½æ•°åç§°     : CRequest::AddParam
+   å‡½æ•°åŠŸèƒ½	    : æ‰‹å·¥æ·»åŠ å‚æ•°
+   å˜é‡è¯´æ˜     : 
+   è¿”å›å€¼       : 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 5 - 24
 */
 BOOL CRequest::AddParam(char dataType, char arraydim, long arraysize[4], BYTE* content,	long lContentSize, long unitsize)
 {
@@ -177,7 +177,7 @@ BOOL CRequest::AddParam(char dataType, char arraydim, long arraysize[4], BYTE* c
 	if (arraydim < 0 || arraydim >4)
 		return FALSE;
 
-	//ÊÇ·ñÓĞ¿Õ¼ä
+	//æ˜¯å¦æœ‰ç©ºé—´
 	if (m_lParamNum == m_lParamListSize)
 	{
 		REQPARAM* pTemp = new REQPARAM[m_lParamNum + m_lIncreaseSize];
@@ -217,12 +217,12 @@ BOOL CRequest::AddParam(char dataType, char arraydim, long arraysize[4], BYTE* c
 
 
 /**
-º¯ÊıÉùÃ÷£º	__int32 CRequest::GenerateRequest()
-º¯Êı¹¦ÄÜ£º	Éú³ÉÇëÇóÊı¾İ¿é
-²ÎÊıËµÃ÷£º	
-·µ »Ø Öµ£º	__int32  - ³É¹¦·µ»Ø0£¬ Ê§°Ü·µ»Ø·ÇÁã
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-7-18
+å‡½æ•°å£°æ˜ï¼š	__int32 CRequest::GenerateRequest()
+å‡½æ•°åŠŸèƒ½ï¼š	ç”Ÿæˆè¯·æ±‚æ•°æ®å—
+å‚æ•°è¯´æ˜ï¼š	
+è¿” å› å€¼ï¼š	__int32  - æˆåŠŸè¿”å›0ï¼Œ å¤±è´¥è¿”å›éé›¶
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-7-18
 **/
 long CRequest::GenerateRequest()
 {
@@ -243,7 +243,7 @@ long CRequest::GenerateRequest()
 	{
 		return -1;
 	}
-	m_lTotalSize += idSize + sizeof(char) + sizeof(long)/*²ÎÊıÊı¾İ¿é³¤¶È*/ + sizeof(char)/*parameter number*/;
+	m_lTotalSize += idSize + sizeof(char) + sizeof(long)/*å‚æ•°æ•°æ®å—é•¿åº¦*/ + sizeof(char)/*parameter number*/;
 
 	for (i = 0; i< this->m_lParamNum; i++)
 	{
@@ -278,9 +278,9 @@ long CRequest::GenerateRequest()
 		p++;		
 		memcpy(p, m_pParamList[i].arraysize, sizeof(long)*4);
 		p += sizeof(long)*4;
-		//¿½±´Êı¾İ
+		//æ‹·è´æ•°æ®
 		switch (m_pParamList[i].dataType)
-		{//Ö÷»úĞòµ½ÍøÂçĞò
+		{//ä¸»æœºåºåˆ°ç½‘ç»œåº
 		case dtFloat:
 		case dtLong:
 		case dtULong:
@@ -360,24 +360,24 @@ BOOL CRequest::SetFuncID(char *szID)
 
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL CRequest::AddSimpleParam(char dataType, unsigned char *content, long* index)
-º¯Êı¹¦ÄÜ£º	Ìí¼ÓÒ»¸ö¼òµ¥²ÎÊı, ¿ÉÒÔÊÇlong, float, string, short
-²ÎÊıËµÃ÷£º	
-			[IN]char dataType	-	Êı¾İÀàĞÍ	
-			[IN]unsigned char* content	-	Êı¾İÖµ
-			[OUT]long* index	-	´´½¨µÄ²ÎÊıĞòºÅ
-·µ »Ø Öµ£º	BOOL  - ³É¹¦·µ»ØTRUE, Ê§°Ü·´»ØFALSE
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-3-15
+å‡½æ•°å£°æ˜ï¼š	BOOL CRequest::AddSimpleParam(char dataType, unsigned char *content, long* index)
+å‡½æ•°åŠŸèƒ½ï¼š	æ·»åŠ ä¸€ä¸ªç®€å•å‚æ•°, å¯ä»¥æ˜¯long, float, string, short
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]char dataType	-	æ•°æ®ç±»å‹	
+			[IN]unsigned char* content	-	æ•°æ®å€¼
+			[OUT]long* index	-	åˆ›å»ºçš„å‚æ•°åºå·
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸè¿”å›TRUE, å¤±è´¥åå›FALSE
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-3-15
 **/
 BOOL CRequest::AddSimpleParam(char dataType, unsigned char *content, long* index)
 {
 #ifdef __SUPPORT_OBJ
 	if (dataType == dtGeneral)
-		return FALSE;//½á¹¹ÌåÓ¦Ê¹ÓÃAddStructedParam()
+		return FALSE;//ç»“æ„ä½“åº”ä½¿ç”¨AddStructedParam()
 #endif
 	*index = -1;
-	//ÊÇ·ñÓĞ¿Õ¼ä
+	//æ˜¯å¦æœ‰ç©ºé—´
 	if (m_lParamNum == m_lParamListSize)
 	{
 		REQPARAM* pTemp = new REQPARAM[m_lParamNum + m_lIncreaseSize];
@@ -426,12 +426,12 @@ BOOL CRequest::InsertSimpleParam(char dataType, unsigned char *content, LONG lIn
 {
 #ifdef __SUPPORT_OBJ
 	if (dataType == dtGeneral)
-		return FALSE;//½á¹¹ÌåÓ¦Ê¹ÓÃAddStructedParam()
+		return FALSE;//ç»“æ„ä½“åº”ä½¿ç”¨AddStructedParam()
 #endif
 	if (lIndex > m_lParamNum)
 		return FALSE;
 
-	//ÊÇ·ñÓĞ¿Õ¼ä
+	//æ˜¯å¦æœ‰ç©ºé—´
 	if (m_lParamNum == m_lParamListSize)
 	{
 		REQPARAM* pTemp = new REQPARAM[m_lParamNum + m_lIncreaseSize];
@@ -486,26 +486,26 @@ BOOL CRequest::InsertSimpleParam(char dataType, unsigned char *content, LONG lIn
 
 #if 0
 /*
-	º¯ÊıÃû³Æ     : CRequest::AddArrayParam
-	º¯Êı¹¦ÄÜ	    : Ìí¼Ó²ÎÊı¿Õ¼ä, Ò²¿ÉÒÔÍ¬Ê±Éè¶¨ÄÚÈİ
-	±äÁ¿ËµÃ÷     : 
-			char dataType     - Êı¾İÀàĞÍ
-			BYTE *content     - Êı¾İÄÚÈİ, Èç¹û=nullÔòÖ»·ÖÅäÄÚ´æ²»ÉèÖÃÄÚÈİ
-			char arraydim     - Êı×éµÄÎ¬Êı, Èç¹û=0Ôò²»ÊÇÊı×é
-			long arraysize[]  - Êı×é¸÷Î¬µÄ´óĞ¡.Èç¹û= NULL , Ôò²»ÊÇÊı×é
-   ·µ»ØÖµ       : 
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 5 - 24
+	å‡½æ•°åç§°     : CRequest::AddArrayParam
+	å‡½æ•°åŠŸèƒ½	    : æ·»åŠ å‚æ•°ç©ºé—´, ä¹Ÿå¯ä»¥åŒæ—¶è®¾å®šå†…å®¹
+	å˜é‡è¯´æ˜     : 
+			char dataType     - æ•°æ®ç±»å‹
+			BYTE *content     - æ•°æ®å†…å®¹, å¦‚æœ=nullåˆ™åªåˆ†é…å†…å­˜ä¸è®¾ç½®å†…å®¹
+			char arraydim     - æ•°ç»„çš„ç»´æ•°, å¦‚æœ=0åˆ™ä¸æ˜¯æ•°ç»„
+			long arraysize[]  - æ•°ç»„å„ç»´çš„å¤§å°.å¦‚æœ= NULL , åˆ™ä¸æ˜¯æ•°ç»„
+   è¿”å›å€¼       : 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 5 - 24
 */
 BOOL CRequest::AddArrayParam(char dataType, long *index, BYTE *content, char arraydim, long arraysize[])
 {
 	if (arraydim < 0 || arraydim >4)
 		return FALSE;
 	if (dataType == dtGeneral)
-		return FALSE;//½á¹¹Êı×éÓ¦Ê¹ÓÃCreateParam()ºÍSetArrayContent();
+		return FALSE;//ç»“æ„æ•°ç»„åº”ä½¿ç”¨CreateParam()å’ŒSetArrayContent();
 
 	*index = -1;
-	//ÊÇ·ñÓĞ¿Õ¼ä
+	//æ˜¯å¦æœ‰ç©ºé—´
 	if (m_lParamNum == m_lParamListSize)
 	{
 		REQPARAM* pTemp = new REQPARAM[m_lParamNum + m_lIncreaseSize];
@@ -531,7 +531,7 @@ BOOL CRequest::AddArrayParam(char dataType, long *index, BYTE *content, char arr
 		memcpy(&m_pParamList[m_lParamNum].arraysize, arraysize, arraydim*sizeof(long));
 
 	if (arraydim == 0)
-	{//·ÇÊı×é²ÎÊı, Ö±½ÓÊ¹ÓÃ
+	{//éæ•°ç»„å‚æ•°, ç›´æ¥ä½¿ç”¨
 		//computer size
 		if (dataType == dtString)
 			m_pParamList[m_lParamNum].contentSize = strlen((const char*)content)+1;
@@ -551,7 +551,7 @@ BOOL CRequest::AddArrayParam(char dataType, long *index, BYTE *content, char arr
 		}
 	}
 	else if (dataType != dtString)
-	{//·Ç×Ö·û´®Êı×éµÄÊı×é, ¿ÉÒÔÖ±½ÓÉèÖÃ, Ò²¿ÉÒÔÖ»·ÖÅäÄÚ´æ
+	{//éå­—ç¬¦ä¸²æ•°ç»„çš„æ•°ç»„, å¯ä»¥ç›´æ¥è®¾ç½®, ä¹Ÿå¯ä»¥åªåˆ†é…å†…å­˜
 		long size = typesize(dataType);
 		int i;
 		for (i = 0; i< arraydim; i++)
@@ -571,7 +571,7 @@ BOOL CRequest::AddArrayParam(char dataType, long *index, BYTE *content, char arr
 		}
 	}
 	else if (content != NULL)
-	{//×Ó·û´®Êı×é, ÇÒÄÚÈİ²»Îª¿Õ
+	{//å­ç¬¦ä¸²æ•°ç»„, ä¸”å†…å®¹ä¸ä¸ºç©º
 		SetArrayContent(m_lParamNum, dtString, content, NULL, 0);
 	}
 	*index = m_lParamNum;
@@ -582,17 +582,17 @@ BOOL CRequest::AddArrayParam(char dataType, long *index, BYTE *content, char arr
 
 
 /*
-   º¯ÊıÃû³Æ     : CRequest::SetArrayContent
-   º¯Êı¹¦ÄÜ	    : Éè¶¨Êı×éµÄÄÚÈİ
-   ±äÁ¿ËµÃ÷     : 
-			long lIndex: ²ÎÊıË÷Òı
-			char type:   ²ÎÊıÀàĞÍ
-			unsigned char *content: ²ÎÊıÄÚÈİ
-			long array[]: ²ÎÊıÔÚÊı×éÖĞµÄÎ»ÖÃ, Èç¹û=NULL, Ìí¼ÓÔÚÄ©Î²
-			long lStructSize: ½á¹¹µÄ´óĞ¡£¬ Ä¬ÈÏÎªÁã£¬ µ±dataTypeÎªdtGeneralÊÇÓĞĞ§
-   ·µ»ØÖµ       : ³É¹¦·µ»ØTRUE£¬ Ê§°Ü·µ»ØFALSE
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 5 - 24
+   å‡½æ•°åç§°     : CRequest::SetArrayContent
+   å‡½æ•°åŠŸèƒ½	    : è®¾å®šæ•°ç»„çš„å†…å®¹
+   å˜é‡è¯´æ˜     : 
+			long lIndex: å‚æ•°ç´¢å¼•
+			char type:   å‚æ•°ç±»å‹
+			unsigned char *content: å‚æ•°å†…å®¹
+			long array[]: å‚æ•°åœ¨æ•°ç»„ä¸­çš„ä½ç½®, å¦‚æœ=NULL, æ·»åŠ åœ¨æœ«å°¾
+			long lStructSize: ç»“æ„çš„å¤§å°ï¼Œ é»˜è®¤ä¸ºé›¶ï¼Œ å½“dataTypeä¸ºdtGeneralæ˜¯æœ‰æ•ˆ
+   è¿”å›å€¼       : æˆåŠŸè¿”å›TRUEï¼Œ å¤±è´¥è¿”å›FALSE
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 5 - 24
 */
 BOOL CRequest::SetArrayContent(long lIndex, char type, unsigned char *content, long array[], long lStructSize)
 {
@@ -623,7 +623,7 @@ BOOL CRequest::SetArrayContent(long lIndex, char type, unsigned char *content, l
 	{
 		size = strlen((const char*)content)+1;
 		if (m_pParamList[lIndex].contentSize + size > m_pParamList[lIndex].bufferSize)
-		{//Ôö¼Ó¿Õ¼ä
+		{//å¢åŠ ç©ºé—´
 			unsigned char* temp = new unsigned char[m_pParamList[lIndex].bufferSize + size*2];
 			if (m_pParamList[lIndex].content)
 			{
@@ -641,12 +641,12 @@ BOOL CRequest::SetArrayContent(long lIndex, char type, unsigned char *content, l
 #ifdef __SUPPORT_OBJ
 	else if (type == dtGeneral)
 	{
-		//µ¥Î»³¤¶È
+		//å•ä½é•¿åº¦
 		size = lStructSize;
 		
 		if (array)
 		{
-			//Ö¸¶¨Î»ÖÃ
+			//æŒ‡å®šä½ç½®
 			int i;
 			for (i = 0; i< this->m_pParamList[lIndex].arraydim; i++)
 			{
@@ -661,7 +661,7 @@ BOOL CRequest::SetArrayContent(long lIndex, char type, unsigned char *content, l
 			memcpy(m_pParamList[lIndex].content+size, content, lStructSize);
 			m_pParamList[lIndex].pCurrent = m_pParamList[lIndex].content+size+lStructSize;
 		}
-		else//Ö±½ÓÌí¼ÓÔÚÄ©Î²
+		else//ç›´æ¥æ·»åŠ åœ¨æœ«å°¾
 		{	
 			if ( lStructSize + m_pParamList[lIndex].pCurrent - m_pParamList[lIndex].content> m_pParamList[lIndex].bufferSize)
 			{
@@ -676,12 +676,12 @@ BOOL CRequest::SetArrayContent(long lIndex, char type, unsigned char *content, l
 #endif
 	else
 	{			
-		//µ¥Î»³¤¶È
+		//å•ä½é•¿åº¦
 		size = typesize(type);
 		
 		if (array)
 		{
-			//Ö¸¶¨Î»ÖÃ
+			//æŒ‡å®šä½ç½®
 			int i;
 			for (i = 0; i< this->m_pParamList[lIndex].arraydim; i++)
 			{
@@ -696,7 +696,7 @@ BOOL CRequest::SetArrayContent(long lIndex, char type, unsigned char *content, l
 			memcpy(m_pParamList[lIndex].content+size, content, typesize(type));
 			m_pParamList[lIndex].pCurrent = m_pParamList[lIndex].content+size+typesize(type);
 		}
-		else//Ö±½ÓÌí¼ÓÔÚÄ©Î²
+		else//ç›´æ¥æ·»åŠ åœ¨æœ«å°¾
 		{	
 			if ( typesize(type) + m_pParamList[lIndex].pCurrent - m_pParamList[lIndex].content> m_pParamList[lIndex].bufferSize)
 			{
@@ -715,21 +715,21 @@ BOOL CRequest::SetArrayContent(long lIndex, char type, unsigned char *content, l
 #ifdef __SUPPORT_OBJ
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL CRequest::AddStructedParam(unsigned char *content, long lSize, long* index)
-º¯Êı¹¦ÄÜ£º	Ìí¼Ó½á¹¹ÀàĞÍµÄ²ÎÊı
-²ÎÊıËµÃ÷£º	
-			[IN]unsigned char *content	-	²ÎÊıÄÚÈİ
-			[IN]long lSize				-	´óĞ¡
-			[OUT]long* index			-	¸Ã²ÎÊıÔÚ²ÎÊıÁĞ±íÖĞµÄË÷Òı
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊÇ°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-7-18
+å‡½æ•°å£°æ˜ï¼š	BOOL CRequest::AddStructedParam(unsigned char *content, long lSize, long* index)
+å‡½æ•°åŠŸèƒ½ï¼š	æ·»åŠ ç»“æ„ç±»å‹çš„å‚æ•°
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]unsigned char *content	-	å‚æ•°å†…å®¹
+			[IN]long lSize				-	å¤§å°
+			[OUT]long* index			-	è¯¥å‚æ•°åœ¨å‚æ•°åˆ—è¡¨ä¸­çš„ç´¢å¼•
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸæˆ–æ˜¯è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-7-18
 **/
 BOOL CRequest::AddStructedParam(unsigned char *content, long lSize, long* index)
 {
 	*index = -1;
 
-	//ÊÇ·ñÓĞ¿Õ¼ä
+	//æ˜¯å¦æœ‰ç©ºé—´
 	if (m_lParamNum == m_lParamListSize)
 	{
 		REQPARAM* pTemp = new REQPARAM[m_lParamNum + m_lIncreaseSize];
@@ -772,17 +772,17 @@ BOOL CRequest::AddStructedParam(unsigned char *content, long lSize, long* index)
 
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL CRequest::CreateParam(char dataType, long* index, long lStructSize, char arraydim, long arraysize[4])
-º¯Êı¹¦ÄÜ£º	½¨Á¢Ò»¸ö¿ÕµÄ²ÎÊı
-²ÎÊıËµÃ÷£º	
-			[IN]char dataType	-	Êı¾İÀàĞÍ
-			[OUT]long* index	-	¸Ã²ÎÊıÔÚ²ÎÊıÁĞ±íÖĞµÄË÷Òı
-			[IN]long lStructSize	-	½á¹¹ÀàĞÍµÄ´óĞ¡
-			[IN]char arraydim	-	Êı×éµÄÎ¬Êı
-			[IN]long arraysize[4]	-	Êı×éÃ¿Ò»Î¬µÄ³¤¶È
-·µ »Ø Öµ£º	BOOL  - 
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-7-18
+å‡½æ•°å£°æ˜ï¼š	BOOL CRequest::CreateParam(char dataType, long* index, long lStructSize, char arraydim, long arraysize[4])
+å‡½æ•°åŠŸèƒ½ï¼š	å»ºç«‹ä¸€ä¸ªç©ºçš„å‚æ•°
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]char dataType	-	æ•°æ®ç±»å‹
+			[OUT]long* index	-	è¯¥å‚æ•°åœ¨å‚æ•°åˆ—è¡¨ä¸­çš„ç´¢å¼•
+			[IN]long lStructSize	-	ç»“æ„ç±»å‹çš„å¤§å°
+			[IN]char arraydim	-	æ•°ç»„çš„ç»´æ•°
+			[IN]long arraysize[4]	-	æ•°ç»„æ¯ä¸€ç»´çš„é•¿åº¦
+è¿” å› å€¼ï¼š	BOOL  - 
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-7-18
 **/
 BOOL CRequest::CreateParam(char dataType, long* index, long lStructSize, char arraydim, long arraysize[4])
 {
@@ -791,7 +791,7 @@ BOOL CRequest::CreateParam(char dataType, long* index, long lStructSize, char ar
 	if (arraydim < 0 || arraydim >4)
 		return FALSE;
 
-	//ÊÇ·ñÓĞ¿Õ¼ä
+	//æ˜¯å¦æœ‰ç©ºé—´
 	if (m_lParamNum == m_lParamListSize)
 	{
 		REQPARAM* pTemp = new REQPARAM[m_lParamNum + m_lIncreaseSize];
@@ -821,9 +821,9 @@ BOOL CRequest::CreateParam(char dataType, long* index, long lStructSize, char ar
 		memcpy(&m_pParamList[m_lParamNum].arraysize, arraysize, arraydim*sizeof(long));
 
 	if (dataType != dtString)
-	{//·Ç×Ö·û´®¿ÉÒÔÔ¤ÏÈ·ÖÅäÄÚ´æ
+	{//éå­—ç¬¦ä¸²å¯ä»¥é¢„å…ˆåˆ†é…å†…å­˜
 
-		//Êı×éÔªËØµÄ³¤¶È
+		//æ•°ç»„å…ƒç´ çš„é•¿åº¦
 		long size;
 #ifdef __SUPPORT_OBJ
 		if (dataType == dtGeneral)
@@ -840,15 +840,15 @@ BOOL CRequest::CreateParam(char dataType, long* index, long lStructSize, char ar
 				size *= arraysize[i];		
 			}
 		}
-		//ÄÚÈİ³¤¶È
+		//å†…å®¹é•¿åº¦
 		m_pParamList[m_lParamNum].contentSize = size;
-		//·ÖÅäÄÚ´æ
+		//åˆ†é…å†…å­˜
 		m_pParamList[m_lParamNum].content = new unsigned char[size];
 		if (m_pParamList[m_lParamNum].content == NULL)
 			return FALSE;
-		//current Ö¸Õë
+		//current æŒ‡é’ˆ
 		m_pParamList[m_lParamNum].pCurrent = m_pParamList[m_lParamNum].content;
-		//bufferµÄÊµ¼Ê´óĞ¡
+		//bufferçš„å®é™…å¤§å°
 		m_pParamList[m_lParamNum].bufferSize = m_pParamList[m_lParamNum].contentSize;
 	}
 	*index = m_lParamNum;
@@ -858,13 +858,13 @@ BOOL CRequest::CreateParam(char dataType, long* index, long lStructSize, char ar
 
 
 /*
-º¯ÊıÉùÃ÷£º	long LoadRequest(BYTE* pRequest)
-º¯Êı¹¦ÄÜ£º	´ÓÊı¾İ¿é·ÖÎö³öÇëÇóµÄÄÚÈİ
-²ÎÊıËµÃ÷£º	
-			[IN]BYTE* pRequest	-	Êı¾İ¿éÖ¸Õë
-·µ »Ø Öµ£º	long  - 
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-6-21
+å‡½æ•°å£°æ˜ï¼š	long LoadRequest(BYTE* pRequest)
+å‡½æ•°åŠŸèƒ½ï¼š	ä»æ•°æ®å—åˆ†æå‡ºè¯·æ±‚çš„å†…å®¹
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]BYTE* pRequest	-	æ•°æ®å—æŒ‡é’ˆ
+è¿” å› å€¼ï¼š	long  - 
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-6-21
 */
 long CRequest::LoadRequest(BYTE* pRequest)
 {
@@ -875,8 +875,8 @@ long CRequest::LoadRequest(BYTE* pRequest)
 	int  iParamBlkSize = 0;
 	int index = 0;
 	char paramNum  = 0;
-	BYTE* pReadyParam = NULL;//ÓÉ²ÎÊıÊı×éºÏ²¢³ÉµÄ×îºóµÄ²ÎÊı¿é
-	int   paramsize = 0;         //²ÎÊı¿éµÄ×îºó³¤¶È
+	BYTE* pReadyParam = NULL;//ç”±å‚æ•°æ•°ç»„åˆå¹¶æˆçš„æœ€åçš„å‚æ•°å—
+	int   paramsize = 0;         //å‚æ•°å—çš„æœ€åé•¿åº¦
 	BYTE* pBlock = NULL;
 
 	//reset this	
@@ -967,7 +967,7 @@ long CRequest::LoadRequest(BYTE* pRequest)
 		m_pParamList[i].content = point;
 
 		if (m_pParamList[i].dataType == dtString)
-		{//Èç¹ûÊÇ×Ö·û´® 
+		{//å¦‚æœæ˜¯å­—ç¬¦ä¸² 
 			int strnum = 1;
 			for (j = 0; j < m_pParamList[i].arraydim; j++)
 			{
@@ -992,7 +992,7 @@ long CRequest::LoadRequest(BYTE* pRequest)
 #endif
 		else
 		{
-		//Èç¹û²»ÊÇ×Ö·û´®
+		//å¦‚æœä¸æ˜¯å­—ç¬¦ä¸²
 			m_pParamList[i].contentSize = typesize(m_pParamList[i].dataType);
 			for (j = 0; j < m_pParamList[i].arraydim; j++)
 			{
@@ -1106,12 +1106,12 @@ long CRequest::typesize(char cType)
 
 
 /**
-º¯ÊıÉùÃ÷£º	char* CRequest::GetErrMsg()
-º¯Êı¹¦ÄÜ£º	È¡´íÎóĞÅÏ¢
-²ÎÊıËµÃ÷£º	
-·µ »Ø Öµ£º	char*  - ´íÎóĞÅÏ¢
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-7-18
+å‡½æ•°å£°æ˜ï¼š	char* CRequest::GetErrMsg()
+å‡½æ•°åŠŸèƒ½ï¼š	å–é”™è¯¯ä¿¡æ¯
+å‚æ•°è¯´æ˜ï¼š	
+è¿” å› å€¼ï¼š	char*  - é”™è¯¯ä¿¡æ¯
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-7-18
 **/
 char* CRequest::GetErrMsg()
 {

@@ -8,8 +8,8 @@
 
 typedef struct _tagObjMemDes
 {
-	TYPEDES dt;				//Êı¾İÀàĞÍ
-	char szName[64];		//Ãû³Æ
+	TYPEDES dt;				//æ•°æ®ç±»å‹
+	char szName[64];		//åç§°
 	long offset;			//offset
 }OBJMEMDES;
 class cParser;
@@ -18,10 +18,10 @@ class CClassDes{
 private:
 
 	// primitive members
-	//OBJMEMDES *m_MemberTable;	// ³ÉÔ±ÁĞ±í
-	//long m_lTableSize;			// buffer´óĞ¡
-	//long m_lMemberNum;			// ³ÉÔ±Êı
-	//long m_lCurSize;			// µ±Ç°objµÄ´óĞ¡
+	//OBJMEMDES *m_MemberTable;	// æˆå‘˜åˆ—è¡¨
+	//long m_lTableSize;			// bufferå¤§å°
+	//long m_lMemberNum;			// æˆå‘˜æ•°
+	//long m_lCurSize;			// å½“å‰objçš„å¤§å°
 
 	CSymbolTable m_memberTable;
 	cParser *m_pParser;

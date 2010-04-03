@@ -31,10 +31,10 @@ typedef struct _tagTypeDes
 {
 	long type;      //datatype
 //	int size_t;
-	long refLevel;  //ÓĞ¶àÉÙ¿ÅĞÇ Àı:charÎª0, char*Îª1, char**Îª2
-	long dim;       //Èç¹ûÊÇÊı×é, ±íÊ¾ËüµÄÎ¬Êı
-	long dimsize[8];  //Ã¿Ò»Î¬µÄ´óĞ¡, ×î´ó8Î¬
-	long objID;    //obectµÄÀàĞÍ£¬ ³õÊ¼ÖµÎª0
+	long refLevel;  //æœ‰å¤šå°‘é¢—æ˜Ÿ ä¾‹:charä¸º0, char*ä¸º1, char**ä¸º2
+	long dim;       //å¦‚æœæ˜¯æ•°ç»„, è¡¨ç¤ºå®ƒçš„ç»´æ•°
+	long dimsize[8];  //æ¯ä¸€ç»´çš„å¤§å°, æœ€å¤§8ç»´
+	long objID;    //obectçš„ç±»å‹ï¼Œ åˆå§‹å€¼ä¸º0
 	_tagTypeDes(){
 		type = dtGeneral;
 		refLevel = 0;// not used in web game c

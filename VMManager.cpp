@@ -17,8 +17,8 @@
   Revision By: Weihua Ju
   Revised on 2003-5-8 15:06:19
   Comments: 
-  CVMManager::UnPrepareVMÖĞÃ»ÓĞdelete request
-  compilerµÄCVMManagerÓĞĞ¹Â©, Îö¹¹Ê±Ã»ÓĞÉ¾³ıvm_poolÖĞµÄvm
+  CVMManager::UnPrepareVMä¸­æ²¡æœ‰delete request
+  compilerçš„CVMManageræœ‰æ³„æ¼, ææ„æ—¶æ²¡æœ‰åˆ é™¤vm_poolä¸­çš„vm
  ************************************/
 
 
@@ -168,13 +168,13 @@ long CVMManager::PrePareVM(RUNSRCIPT_STR* pStruct)
 	long		lWorkMode = pStruct->lWorkMode;
 
 	char szMsg[301] = "";
-//	std::list<char**>	arStr;	// ±£´ænewµÄ×Ö·û´®Ö¸ÕëÊı×é
+//	std::list<char**>	arStr;	// ä¿å­˜newçš„å­—ç¬¦ä¸²æŒ‡é’ˆæ•°ç»„
 //	long lStrNum = 0;
 
 	int i, j;
 	long index = 0;
-	REQPARAM* pParamList = NULL;	// ÇëÇó²ÎÊıÁ´±í
-	int   paramsize = 0;			//²ÎÊı¿éµÄ×îºó³¤¶È
+	REQPARAM* pParamList = NULL;	// è¯·æ±‚å‚æ•°é“¾è¡¨
+	int   paramsize = 0;			//å‚æ•°å—çš„æœ€åé•¿åº¦
 	BYTE* pBlock = NULL;			// parameter block passed to vm
 	char** strArray = NULL;
 	long lParamHeaderSize = sizeof(PARAMHDR);

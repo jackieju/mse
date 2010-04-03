@@ -9,9 +9,9 @@
 #define err_user_base  -100000	// base of sub class error code value
 
 /**
-	¶ÔÏóÃû³Æ	: CExp
-	¶ÔÏóÃèÊö	: Í¨ÓÃÒì³£Àà, ·â×°ÁËÏµÍ³³öÏÖµÄÒì³£, Ã¿¸öÏµÍ³»òÄ£¿é¿ÉÒÔÅÉÉú×Ô¼ºµÄÒì³£Àà
-	ÖØÒªº¯Êı	: 
+	å¯¹è±¡åç§°	: CExp
+	å¯¹è±¡æè¿°	: é€šç”¨å¼‚å¸¸ç±», å°è£…äº†ç³»ç»Ÿå‡ºç°çš„å¼‚å¸¸, æ¯ä¸ªç³»ç»Ÿæˆ–æ¨¡å—å¯ä»¥æ´¾ç”Ÿè‡ªå·±çš„å¼‚å¸¸ç±»
+	é‡è¦å‡½æ•°	: 
 				CExp(long lCode = 0, char* sMsg = "", char* file = NULL, long nLine = -1, long lState = CExp::stat_null);
 				virtual	~CExp();
 				virtual const char* what();
@@ -25,8 +25,8 @@
 				static void throwup(CExp* e, long lCode = 0, char* sMsg = "", char* file = NULL, long nLine = -1, long lState = CExp::stat_null);
 				char* Show();
 
-	±àĞ´ÈË		: ¾ÓÎÀ»ª
-	Íê³ÉÈÕÆÚ	: 2003 - 4 - 23
+	ç¼–å†™äºº		: å±…å«å
+	å®Œæˆæ—¥æœŸ	: 2003 - 4 - 23
 **/
 class CExp : public std::exception
 {

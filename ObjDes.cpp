@@ -34,7 +34,7 @@ BOOL CObjDes::AddMember(char *szName, TYPEDES& dt)
 		nLOG("member name too long", 300);
 		return FALSE;
 	}
-	//检查是否重定义
+	//妫�鏌ユ槸鍚﹂噸瀹氫箟
 	for (int i= 0; i< this->m_lMemberNum; i++)
 	{
 		if (!strcmp(this->m_MemberTable[i].szName, szName))

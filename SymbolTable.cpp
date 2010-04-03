@@ -29,14 +29,14 @@ CSymbolTable::~CSymbolTable()
 
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
-º¯Êı¹¦ÄÜ£º	Ìí¼Ó·ûºÅÏî
-²ÎÊıËµÃ÷£º	
-			[IN]char *szName	-	·ûºÅÃû
-			[IN]TYPEDES dt		-	ÀàĞÍÃèÊö
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-8-21
+å‡½æ•°å£°æ˜ï¼š	BOOL CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
+å‡½æ•°åŠŸèƒ½ï¼š	æ·»åŠ ç¬¦å·é¡¹
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]char *szName	-	ç¬¦å·å
+			[IN]TYPEDES dt		-	ç±»å‹æè¿°
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-8-21
 **/
 bool CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
 {
@@ -44,20 +44,20 @@ bool CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
 	if (size_t < 0)
 		return FALSE;
 
-	if (dt.dim>0)//ÊÇÊı×é
+	if (dt.dim>0)//æ˜¯æ•°ç»„
 	{
 		for (int i = 0; i< dt.dim; i++)
 		{
 			size_t *= dt.dimsize[i];
 		}
 	}
-/*	int size16;//°´16bit×Ö¶ÔÆëºóµÄ´óĞ¡
+/*	int size16;//æŒ‰16bitå­—å¯¹é½åçš„å¤§å°
 	size16 = size_t + (4 - size_t%4);
 */
-	int size16 = size_t;//Èç¹ûÒª°´16bit¶ÔÆëµÄ»°, Ä£°åº¯Êı±»µ÷ÓÃÊ±²ÎÊıµÄ´«ÈëÒ²±ØĞë°´16bit¶ÔÆë, ÕâÑù»áÔì³ÉÂé·³, ËùÒÔÏÖÔÚ²»¶ÔÆë
+	int size16 = size_t;//å¦‚æœè¦æŒ‰16bitå¯¹é½çš„è¯, æ¨¡æ¿å‡½æ•°è¢«è°ƒç”¨æ—¶å‚æ•°çš„ä¼ å…¥ä¹Ÿå¿…é¡»æŒ‰16bitå¯¹é½, è¿™æ ·ä¼šé€ æˆéº»çƒ¦, æ‰€ä»¥ç°åœ¨ä¸å¯¹é½
 	if (szName != NULL)
 	{
-		//²éÕÒÊÇ·ñ»áÖØ¶¨Òå
+		//æŸ¥æ‰¾æ˜¯å¦ä¼šé‡å®šä¹‰
 		for (int i = 0; i< this->m_nSymbolCount; i++)
 		{
 			if (!strcmp(this->tableEntry[i].szName, szName))
@@ -67,7 +67,7 @@ bool CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
 			}
 		}
 	}
-	//Èç¹ûÊı×é²»¹»³¤
+	//å¦‚æœæ•°ç»„ä¸å¤Ÿé•¿
 	if (this->m_nSymbolCount == this->m_nMaxCount)
 	{//if full
 		SYMBOLTABLEELE* pNew = new SYMBOLTABLEELE[this->m_nMaxCount + 64];
@@ -99,13 +99,13 @@ bool CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
 
 
 /**
-º¯ÊıÉùÃ÷£º	int CSymbolTable::GetSymAddress(char *szName)
-º¯Êı¹¦ÄÜ£º	¸ù¾İ·ûºÅÃû³ÆÈ¥·ûºÅµØÖ·
-²ÎÊıËµÃ÷£º	
-			[IN]char *szName	-	·ûºÅÃû³Æ
-·µ »Ø Öµ£º	int  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-8-21
+å‡½æ•°å£°æ˜ï¼š	int CSymbolTable::GetSymAddress(char *szName)
+å‡½æ•°åŠŸèƒ½ï¼š	æ ¹æ®ç¬¦å·åç§°å»ç¬¦å·åœ°å€
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]char *szName	-	ç¬¦å·åç§°
+è¿” å› å€¼ï¼š	int  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-8-21
 **/
 int CSymbolTable::GetSymAddress(char *szName)
 {
@@ -126,13 +126,13 @@ int CSymbolTable::GetSymAddress(char *szName)
 
 
 /**
-º¯ÊıÉùÃ÷£º	int CSymbolTable::GetSymboByAddress(int address)
-º¯Êı¹¦ÄÜ£º	¸ù¾İµØÖ·È¡·ûºÅÔÙÔÚ·ûºÅ±íÖĞĞòºÅ
-²ÎÊıËµÃ÷£º	
-			[IN]int address	-	µØÖ·
-·µ »Ø Öµ£º	int  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-8-21
+å‡½æ•°å£°æ˜ï¼š	int CSymbolTable::GetSymboByAddress(int address)
+å‡½æ•°åŠŸèƒ½ï¼š	æ ¹æ®åœ°å€å–ç¬¦å·å†åœ¨ç¬¦å·è¡¨ä¸­åºå·
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]int address	-	åœ°å€
+è¿” å› å€¼ï¼š	int  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-8-21
 **/
 int CSymbolTable::GetSymboByAddress(int address)
 {
@@ -147,13 +147,13 @@ int CSymbolTable::GetSymboByAddress(int address)
 
 
 /**
-º¯ÊıÉùÃ÷£º	SYMBOLTABLEELE* CSymbolTable::GetSym(char* szName)
-º¯Êı¹¦ÄÜ£º	¸ù¾İ·ûºÅÃûÈ¥·ûºÅĞÅÏ¢½á¹¹
-²ÎÊıËµÃ÷£º	
-			[IN]char* szName	-	·ûºÅÃû
-·µ »Ø Öµ£º	SYMBOLTABLEELE*  - ·ûºÅĞÅÏ¢½á¹¹
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2001-8-21
+å‡½æ•°å£°æ˜ï¼š	SYMBOLTABLEELE* CSymbolTable::GetSym(char* szName)
+å‡½æ•°åŠŸèƒ½ï¼š	æ ¹æ®ç¬¦å·åå»ç¬¦å·ä¿¡æ¯ç»“æ„
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]char* szName	-	ç¬¦å·å
+è¿” å› å€¼ï¼š	SYMBOLTABLEELE*  - ç¬¦å·ä¿¡æ¯ç»“æ„
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2001-8-21
 **/
 SYMBOLTABLEELE* CSymbolTable::GetSym(char* szName)
 {

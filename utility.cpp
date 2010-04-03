@@ -320,13 +320,13 @@ long Sprintf (
 */
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL CheckDir(const char* strDir, bool bDir)
-º¯Êı¹¦ÄÜ£º	¼ì²éÂ·¾¶ÊÇ·ñ´æÔÚ£¬ Èç¹û²»´æÔÚ¾ÍÉú³ÉÂ·¾¶
-²ÎÊıËµÃ÷£º	
-			[IN]const char* strDir	-	Â·¾¶Ãû(Èç¹ûÊÇÄ¿Â¼ÃûÔò×îºóÒ»¶¨Òª¼Ó'/')
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-3-3
+å‡½æ•°å£°æ˜ï¼š	BOOL CheckDir(const char* strDir, bool bDir)
+å‡½æ•°åŠŸèƒ½ï¼š	æ£€æŸ¥è·¯å¾„æ˜¯å¦å­˜åœ¨ï¼Œ å¦‚æœä¸å­˜åœ¨å°±ç”Ÿæˆè·¯å¾„
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]const char* strDir	-	è·¯å¾„å(å¦‚æœæ˜¯ç›®å½•ååˆ™æœ€åä¸€å®šè¦åŠ '/')
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-3-3
 **/
 bool CheckPath(const char* strDir)
 {
@@ -406,17 +406,17 @@ bool IsFileExist(char* fileName, WIN32_FIND_DATA &FileInfo)
 #endif
 
 /**
-º¯ÊıÉùÃ÷£º	void Log(char* filename, char* msg, char* sourcefile, long line, char* format)
-º¯Êı¹¦ÄÜ£º	Êä³ö¸ñÊ½×Ö·û´®µ½ÎÄ¼ş, ×¢ÒâÎÄ¼şµÄÂ·¾¶ÖĞ²»ÒªÖ»Ğ´Ò»¸ö'\', ¸ñÊ½ÖĞĞè×ÔĞĞÌí¼Ó»Ø³µ.
-²ÎÊıËµÃ÷£º
-			[IN]char* filename		-	ÎÄ¼şÃû
-			[IN]char* msg			-	Ëù¼ÇÂ¼µÄÄÚÈİÕıÎÄ
-			[IN]char* sourcefile	-	·¢ÉúlogµÄÔ´ÎÄ¼şÃû
-			[IN]long line			-	log·¢ÉúµÄĞĞÊı
-			[IN]char* format		-	log¸ñÊ½(¿ÉÒÔÊÇ"%s; file=%s; line=%05d")
-·µ »Ø Öµ£º	void  - ¿Õ
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-1-4
+å‡½æ•°å£°æ˜ï¼š	void Log(char* filename, char* msg, char* sourcefile, long line, char* format)
+å‡½æ•°åŠŸèƒ½ï¼š	è¾“å‡ºæ ¼å¼å­—ç¬¦ä¸²åˆ°æ–‡ä»¶, æ³¨æ„æ–‡ä»¶çš„è·¯å¾„ä¸­ä¸è¦åªå†™ä¸€ä¸ª'\', æ ¼å¼ä¸­éœ€è‡ªè¡Œæ·»åŠ å›è½¦.
+å‚æ•°è¯´æ˜ï¼š
+			[IN]char* filename		-	æ–‡ä»¶å
+			[IN]char* msg			-	æ‰€è®°å½•çš„å†…å®¹æ­£æ–‡
+			[IN]char* sourcefile	-	å‘ç”Ÿlogçš„æºæ–‡ä»¶å
+			[IN]long line			-	logå‘ç”Ÿçš„è¡Œæ•°
+			[IN]char* format		-	logæ ¼å¼(å¯ä»¥æ˜¯"%s; file=%s; line=%05d")
+è¿” å› å€¼ï¼š	void  - ç©º
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-1-4
 **/
 
 void SystemLog(char* filename, char* msg, char* sourcefile, long line, char* format)
@@ -568,14 +568,14 @@ unsigned char* ReadFile(char* szFileName, long &len)
 		return NULL;
 	}
 	
-	// ÒÆµ½ÎÄ¼şÎ²
+	// ç§»åˆ°æ–‡ä»¶å°¾
 	if (fseek(file, 0, SEEK_END) != 0)
 	{
 		fclose(file);
 		return NULL;
 	}
 	
-	// È¡µÃÎÄ¼ş³¤¶È
+	// å–å¾—æ–‡ä»¶é•¿åº¦
 	long size = 0;
 	size = ftell(file);
 	if (size <= 0)
@@ -584,7 +584,7 @@ unsigned char* ReadFile(char* szFileName, long &len)
 		return NULL;
 	}
 	
-	// ÒÆ»ØÎÄ¼şÍ·£¬×¼±¸¶ÁÎÄ¼ş
+	// ç§»å›æ–‡ä»¶å¤´ï¼Œå‡†å¤‡è¯»æ–‡ä»¶
 	if (fseek(file, 0, SEEK_SET) != 0)
 	{
 		fclose(file);
@@ -656,19 +656,19 @@ int CalcDayDiff(int a, int b)
 	if (year_a != year_b)
 	{
 		
-		// ÖĞ¼äÏà²îÃ¿ÄêµÄÌìÊıÖ®ºÍ
+		// ä¸­é—´ç›¸å·®æ¯å¹´çš„å¤©æ•°ä¹‹å’Œ
 		for (i = year_a-1; i>year_b; i--)
 		{
 			year_diff += (i%4?366:365);
 		}
 		
-		// bÄêÊÇ·ñÎªÈóÄê
+		// bå¹´æ˜¯å¦ä¸ºæ¶¦å¹´
 		extra_day=year_b%4?0:1;
 		
-		// ¼ÓÉÏÕâÒ»ÔÂµÄÌìÊı
+		// åŠ ä¸Šè¿™ä¸€æœˆçš„å¤©æ•°
 		year_diff += month[month_b-1] + (month_b==2?extra_day:0) - day_b;
 		
-		// ¼ÓÉÏÆäÓàÔÂµÄÌìÊı
+		// åŠ ä¸Šå…¶ä½™æœˆçš„å¤©æ•°
 		for (i = month_b+1; i <= 12; i++)
 		{
 			year_diff += month[i-1];
@@ -676,17 +676,17 @@ int CalcDayDiff(int a, int b)
 				year_diff+=extra_day;
 		}
 		
-		// aÄêÊÇ·ñÈòÄê
+		// aå¹´æ˜¯å¦é—°å¹´
 		
 		extra_day = year_a%4?0:1;
 		
-		// ¼ÓÉÏaµÄÌìÊı
+		// åŠ ä¸Šaçš„å¤©æ•°
 		year_diff += day_a;
 		
-		// aÄêµÄÔÂ·İ
+		// aå¹´çš„æœˆä»½
 		i = month_a;
 		
-		// ¼ÓÉÏaÄêµÄÃ¿ÔÂÌìÊıÖ®ºÍ
+		// åŠ ä¸Šaå¹´çš„æ¯æœˆå¤©æ•°ä¹‹å’Œ
 		for (i--; i > 0 ; i--)
 		{
 			year_diff += month[i-1];

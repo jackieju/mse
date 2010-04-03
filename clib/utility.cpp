@@ -326,13 +326,13 @@ long Sprintf (
 */
 
 /**
-º¯ÊıÉùÃ÷£º	BOOL CheckDir(const char* strDir, bool bDir)
-º¯Êı¹¦ÄÜ£º	¼ì²éÂ·¾¶ÊÇ·ñ´æÔÚ£¬ Èç¹û²»´æÔÚ¾ÍÉú³ÉÂ·¾¶, Èç¹ûÊÇÒ»¸öµ¥¶ÀµÄÎÄ¼şÃû£¬ ÔòºöÂÔ
-²ÎÊıËµÃ÷£º	
-			[IN]const char* strDir	-	Â·¾¶Ãû(Èç¹ûÊÇÄ¿Â¼ÃûÔò×îºóÒ»¶¨Òª¼Ó'/')
-·µ »Ø Öµ£º	BOOL  - ³É¹¦»òÊ§°Ü
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-3-3
+å‡½æ•°å£°æ˜ï¼š	BOOL CheckDir(const char* strDir, bool bDir)
+å‡½æ•°åŠŸèƒ½ï¼š	æ£€æŸ¥è·¯å¾„æ˜¯å¦å­˜åœ¨ï¼Œ å¦‚æœä¸å­˜åœ¨å°±ç”Ÿæˆè·¯å¾„, å¦‚æœæ˜¯ä¸€ä¸ªå•ç‹¬çš„æ–‡ä»¶åï¼Œ åˆ™å¿½ç•¥
+å‚æ•°è¯´æ˜ï¼š	
+			[IN]const char* strDir	-	è·¯å¾„å(å¦‚æœæ˜¯ç›®å½•ååˆ™æœ€åä¸€å®šè¦åŠ '/')
+è¿” å› å€¼ï¼š	BOOL  - æˆåŠŸæˆ–å¤±è´¥
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-3-3
 **/
 bool JUJU::CheckPath(const char* strDir)
 {
@@ -427,17 +427,17 @@ bool JUJU::CheckPath(const char* strDir)
 #endif
 
 /**
-º¯ÊıÉùÃ÷£º	void Log(char* filename, char* msg, char* sourcefile, long line, char* format)
-º¯Êı¹¦ÄÜ£º	Êä³ö¸ñÊ½×Ö·û´®µ½ÎÄ¼ş, ×¢ÒâÎÄ¼şµÄÂ·¾¶ÖĞ²»ÒªÖ»Ğ´Ò»¸ö'\', ¸ñÊ½ÖĞĞè×ÔĞĞÌí¼Ó»Ø³µ.
-²ÎÊıËµÃ÷£º
-			[IN]char* filename		-	ÎÄ¼şÃû
-			[IN]char* msg			-	Ëù¼ÇÂ¼µÄÄÚÈİÕıÎÄ
-			[IN]char* sourcefile	-	·¢ÉúlogµÄÔ´ÎÄ¼şÃû
-			[IN]long line			-	log·¢ÉúµÄĞĞÊı
-			[IN]char* format		-	log¸ñÊ½(¿ÉÒÔÊÇ"%s; file=%s; line=%05d")
-·µ »Ø Öµ£º	void  - ¿Õ
-±à Ğ´ ÈË£º	¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ£º	2002-1-4
+å‡½æ•°å£°æ˜ï¼š	void Log(char* filename, char* msg, char* sourcefile, long line, char* format)
+å‡½æ•°åŠŸèƒ½ï¼š	è¾“å‡ºæ ¼å¼å­—ç¬¦ä¸²åˆ°æ–‡ä»¶, æ³¨æ„æ–‡ä»¶çš„è·¯å¾„ä¸­ä¸è¦åªå†™ä¸€ä¸ª'\', æ ¼å¼ä¸­éœ€è‡ªè¡Œæ·»åŠ å›è½¦.
+å‚æ•°è¯´æ˜ï¼š
+			[IN]char* filename		-	æ–‡ä»¶å
+			[IN]char* msg			-	æ‰€è®°å½•çš„å†…å®¹æ­£æ–‡
+			[IN]char* sourcefile	-	å‘ç”Ÿlogçš„æºæ–‡ä»¶å
+			[IN]long line			-	logå‘ç”Ÿçš„è¡Œæ•°
+			[IN]char* format		-	logæ ¼å¼(å¯ä»¥æ˜¯"%s; file=%s; line=%05d")
+è¿” å› å€¼ï¼š	void  - ç©º
+ç¼– å†™ äººï¼š	å±…å«å
+å®Œæˆæ—¥æœŸï¼š	2002-1-4
 **/
 
 void JUJU::SystemLog(char* filename, char* msg, char* sourcefile, long line, char* format)
@@ -590,14 +590,14 @@ unsigned char* JUJU::ReadFile(char* szFileName, long &len)
 		return NULL;
 	}
 	
-	// ÒÆµ½ÎÄ¼şÎ²
+	// ç§»åˆ°æ–‡ä»¶å°¾
 	if (fseek(file, 0, SEEK_END) != 0)
 	{
 		fclose(file);
 		return NULL;
 	}
 	
-	// È¡µÃÎÄ¼ş³¤¶È
+	// å–å¾—æ–‡ä»¶é•¿åº¦
 	long size = 0;
 	size = ftell(file);
 	if (size <= 0)
@@ -606,7 +606,7 @@ unsigned char* JUJU::ReadFile(char* szFileName, long &len)
 		return NULL;
 	}
 	
-	// ÒÆ»ØÎÄ¼şÍ·£¬×¼±¸¶ÁÎÄ¼ş
+	// ç§»å›æ–‡ä»¶å¤´ï¼Œå‡†å¤‡è¯»æ–‡ä»¶
 	if (fseek(file, 0, SEEK_SET) != 0)
 	{
 		fclose(file);

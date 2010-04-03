@@ -48,12 +48,12 @@ CFunction::~CFunction()
 
 
 /*
-   º¯ÊýÃû³Æ     : CFunction::AddVal
-   º¯Êý¹¦ÄÜ	    : Îª±äÁ¿·ÖÅäÄÚ´æ
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : Ö¸ÕëÔÚ±äÁ¿±íÖÐµÄindex
-   ±àÐ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 4 - 12
+   å‡½æ•°åç§°     : CFunction::AddVal
+   å‡½æ•°åŠŸèƒ½	    : ä¸ºå˜é‡åˆ†é…å†…å­˜
+   å˜é‡è¯´æ˜Ž     : 
+   è¿”å›žå€¼       : æŒ‡é’ˆåœ¨å˜é‡è¡¨ä¸­çš„index
+   ç¼–å†™äºº       : å±…å«åŽ
+   å®Œæˆæ—¥æœŸ     : 2001 - 4 - 12
 */
 bool CFunction::AddVal(char* szName, TYPEDES type)
 {
@@ -62,12 +62,12 @@ bool CFunction::AddVal(char* szName, TYPEDES type)
 int CFunction::AddStaticData(int size_t, BYTE* pData)
 {
 
-	int size16;//°´16bit×Ö¶ÔÆëºóµÄ´óÐ¡
+	int size16;//æŒ‰16bitå­—å¯¹é½åŽçš„å¤§å°
 	size16 = size_t + (4 - size_t%4);
 
 	int start = m_nSSUsedSize;
 
-	//Èç¹ûÊý×é²»¹»³¤
+	//å¦‚æžœæ•°ç»„ä¸å¤Ÿé•¿
 	while (m_nSSUsedSize + size16 > this->m_nSSCurMaxSize)
 	{  //if full
 		BYTE* pNew = new BYTE[m_nSSCurMaxSize + STATICSEGINCSIZE];
