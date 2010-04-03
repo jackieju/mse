@@ -13,6 +13,7 @@
 #ifndef -->ParserClass_INCLUDE
 #define -->ParserClass_INCLUDE
 
+#include "clib.h"
 #include <string>
 #include <vector>
 #include "cr_parse.hpp"
@@ -52,7 +53,7 @@ typedef struct _tagExpressionOp
 {
 	int opcode;
 	_tagExpressionOp *pPrev;
-}EXPRESSIONOP;//±í´ïÊ½Õ»Ê¹ÓÃµÄ²Ù×÷Õ»µÄ½Úµã
+}EXPRESSIONOP;//è¡¨è¾¾å¼æ ˆä½¿ç”¨çš„æ“ä½œæ ˆçš„èŠ‚ç‚¹
 #define ADDCOMMAND0(code){\
 	long _op_[4];\
 	memset(_op_, 0, 4*sizeof(long));\
@@ -105,9 +106,9 @@ public:
 	BOOL init(CClassDesTable *table, CPubFuncTable* pft);
 	void destroy();
 
-	int UnitSize(TYPEDES& type);                //Êµ¼ÊÊı¾İÀàĞÍµÄsize
-	//void Init(CClassTable *table, CPubFuncTable* ptf);                                       //³õÊ¼»¯
-	void SetPubFuncTable(CPubFuncTable* pTable);       //ÉèÖÃ½Å±¾½«Ê¹ÓÃµÄ»ù±¾º¯Êı±í
+	int UnitSize(TYPEDES& type);                //å®é™…æ•°æ®ç±»å‹çš„size
+	//void Init(CClassTable *table, CPubFuncTable* ptf);                                       //åˆå§‹åŒ–
+	void SetPubFuncTable(CPubFuncTable* pTable);       //è®¾ç½®è„šæœ¬å°†ä½¿ç”¨çš„åŸºæœ¬å‡½æ•°è¡¨
     CClassDes *getCurClassDes(){
                     return m_pCurClassDes;
                     }
@@ -118,12 +119,12 @@ public:
 
     char* GetCurrSym(){
 		szCurrSymName[0] = 0;
-		Scanner->GetName(&Scanner->CurrSym, szCurrSymName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ;
+		Scanner->GetName(&Scanner->CurrSym, szCurrSymName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°;
 		return szCurrSymName;
 	}
     char* GetNextSym(){
 		szNextSymName[0] = 0;
-		Scanner->GetName(&Scanner->CurrSym, szNextSymName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ;
+		Scanner->GetName(&Scanner->CurrSym, szNextSymName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°;
 		return szNextSymName;
 	}
 private:
@@ -132,12 +133,12 @@ private:
     char szCurrSymName[MAX_IDENTIFIER_LENGTH];
     char szNextSymName[MAX_IDENTIFIER_LENGTH];
 
-	// class ÃèÊö±í
+	// class æè¿°è¡¨
 	CClassDesTable *m_classTable;
     CClassDes *m_pCurClassDes;
 
-	long m_lClassDesNum;				//¶¨ÒåµÄclassÃèÊö¸öÊı
-	long m_lClassDesTableSize;		//ÁĞ±í´óĞ¡
+	long m_lClassDesNum;				//å®šä¹‰çš„classæè¿°ä¸ªæ•°
+	long m_lClassDesTableSize;		//åˆ—è¡¨å¤§å°
 	BOOL AddClass(CClassDes& obj);
 	//long GetClassIdByName(char *szName);
 
@@ -145,9 +146,9 @@ private:
 
 
 
-	//Ò»Ôª²Ù×÷·ûÕ»
+	//ä¸€å…ƒæ“ä½œç¬¦æ ˆ
 	EXPRESSIONOP m_ExpOp;
-	EXPRESSIONOP* m_pExpOpPt;//Õ»Ö¸Õë
+	EXPRESSIONOP* m_pExpOpPt;//æ ˆæŒ‡é’ˆ
 
 	CLoopTree* m_curloop;
 	CLoopTree* m_LoopTree;
@@ -166,8 +167,8 @@ private:
 	void PushDigit(long digit, long type, TYPEDES dtType);
 	BOOL AllocVar(PTYPEDES type, char* szName);
 
-	BOOL PopOp(int* op);    //popÒ»Ôª²Ù×÷·û
-	void PushExpOp(int op); //pushÒ»Ôª²Ù×÷·û
+	BOOL PopOp(int* op);    //popä¸€å…ƒæ“ä½œç¬¦
+	void PushExpOp(int op); //pushä¸€å…ƒæ“ä½œç¬¦
 // <-  add by jackie
 
   public:

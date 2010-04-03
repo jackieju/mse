@@ -7,12 +7,13 @@ objs = $(srcs:.cpp=.o)
 CC   = g++ 
 
 
-OBJ  = VMManager.o CCompiler.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o StdAfx.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o$(RES)
+OBJ  = VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o StdAfx.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o$(RES)
 #OBJ  = $(objs) $(RES)
 #OBJ  = $(objs)
 BIN  = libSE.so.1.0
 SOBIN=$(BIN:.so.1.0=.so)
-CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -W -Wall -Iclib -Ios -D_MACOS -I./
+CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./
+# -Wfatal-errors
 
 .PHONY: all all-before all-after clean clean-custom
 
@@ -24,13 +25,14 @@ clean: clean-custom
 
 DLLWRAP=g++
 
-
+cocoR/cp.cpp: cocoR/msec.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
+	cd cocoR && ./cocor -A -F -X -S -G -C -L c.atg
 
 CCompiler.o: CCompiler.cpp
 	$(CC) -c CCompiler.cpp -o CCompiler.o $(CFLAGS)
 
-cp.o: cp.cpp
-	$(CC) -c cp.cpp -o cp.o $(CFLAGS)
+cp.o: cocoR/cp.cpp
+	$(CC) -c cocoR/cp.cpp -o cp.o $(CFLAGS)
 
 CR_ABS.o: CR_ABS.cpp
 	$(CC) -c CR_ABS.cpp -o CR_ABS.o $(CFLAGS)

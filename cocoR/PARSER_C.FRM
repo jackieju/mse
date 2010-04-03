@@ -10,6 +10,7 @@
 //      Eliminated redundant ";" in some places
 //****************************************************************
 
+#include "clib.h"
 #include -->TokensHeader
 
 -->UserDeclarations
@@ -32,7 +33,7 @@ void -->ParserClass::destroy(){
 }
 void -->ParserClass::Get()
 { do {
-    Sym = Scanner->Get();
+    Sym = Scanner->Get();//aa
     Scanner->NextSym.SetSym(Sym);
     if (Sym <= MAXT) Error->ErrorDist ++;
     else {
@@ -138,13 +139,13 @@ BOOL cParser::PopOp(int *op)
 
 
 /*
-   º¯ÊıÃû³Æ     : cParser::PushExpOp
-   º¯Êı¹¦ÄÜ	    : Ò»ÔªÔËËã·ûÈëÕ»
-   ±äÁ¿ËµÃ÷     : 
-   int op: ÔËËã·û
-   ·µ»ØÖµ       : 
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 6 - 6
+   å‡½æ•°åç§°     : cParser::PushExpOp
+   å‡½æ•°åŠŸèƒ½	    : ä¸€å…ƒè¿ç®—ç¬¦å…¥æ ˆ
+   å˜é‡è¯´æ˜     : 
+   int op: è¿ç®—ç¬¦
+   è¿”å›å€¼       : 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 6 - 6
 */
 void cParser::PushExpOp(int op)
 {
@@ -320,15 +321,15 @@ int cParser::UnitSize(TYPEDES &type)
 
 
 /*
-º¯ÊıÃû³Æ     : cParser::NeedCast
-º¯Êı¹¦ÄÜ	    : ÅĞ¶ÏÊÇ·ñĞèÒªÀàĞÍ×ª»», ²¢·µ»Ø×ª»»ÂëºÍÒª×ª»»µÄÔËËãÊı
-±äÁ¿ËµÃ÷     : 
-TYPEDES dt1 : ÔËËãÊı1
-TYPEDES dt2 : ÔËËãÊı2
-char &casted : [OUT]Òª±»×ª»»µÄÔËËãÊı 
-·µ»ØÖµ       : Òª½øĞĞµÄÀàĞÍ×ª»»´úºÅ, -1±íÊ¾²»ĞèÒª×ª»»
-±àĞ´ÈË       : ¾ÓÎÀ»ª
-Íê³ÉÈÕÆÚ     : 2001 - 6 - 8
+å‡½æ•°åç§°     : cParser::NeedCast
+å‡½æ•°åŠŸèƒ½	    : åˆ¤æ–­æ˜¯å¦éœ€è¦ç±»å‹è½¬æ¢, å¹¶è¿”å›è½¬æ¢ç å’Œè¦è½¬æ¢çš„è¿ç®—æ•°
+å˜é‡è¯´æ˜     : 
+TYPEDES dt1 : è¿ç®—æ•°1
+TYPEDES dt2 : è¿ç®—æ•°2
+char &casted : [OUT]è¦è¢«è½¬æ¢çš„è¿ç®—æ•° 
+è¿”å›å€¼       : è¦è¿›è¡Œçš„ç±»å‹è½¬æ¢ä»£å·, -1è¡¨ç¤ºä¸éœ€è¦è½¬æ¢
+ç¼–å†™äºº       : å±…å«å
+å®Œæˆæ—¥æœŸ     : 2001 - 6 - 8
 */
 long cParser::NeedCast(TYPEDES dt1, TYPEDES dt2, char &casted)
 {
@@ -339,7 +340,7 @@ long cParser::NeedCast(TYPEDES dt1, TYPEDES dt2, char &casted)
 	memcpy(&DT2, &dt2, sizeof(TYPEDES));
 
 	/*
-	//Èç¹ûÊÇÖ¸Õë, Ôò²»ÄÜ½øĞĞ×ª»»
+	//å¦‚æœæ˜¯æŒ‡é’ˆ, åˆ™ä¸èƒ½è¿›è¡Œè½¬æ¢
 	if (DT1.refLevel > 0 || DT2.refLevel > 0)
 		return -1;
 
@@ -348,10 +349,10 @@ long cParser::NeedCast(TYPEDES dt1, TYPEDES dt2, char &casted)
 	{
 		return -1;
 	}
-	//Ö¸Õë¶¼×ª»»³Élong
+	//æŒ‡é’ˆéƒ½è½¬æ¢æˆlong
 	if (DT1.refLevel > 0)
 	{
-		//Ö¸Õë²»ÄÜÍ¬¸¡µã½øĞĞÔËËã 
+		//æŒ‡é’ˆä¸èƒ½åŒæµ®ç‚¹è¿›è¡Œè¿ç®— 
 		if (dt2.type ==dtFloat)
 		{
 			return -1;
@@ -362,7 +363,7 @@ long cParser::NeedCast(TYPEDES dt1, TYPEDES dt2, char &casted)
 
 	if (DT2.refLevel > 0)
 	{
-		//Ö¸Õë²»ÄÜÍ¬¸¡µã½øĞĞÔËËã 
+		//æŒ‡é’ˆä¸èƒ½åŒæµ®ç‚¹è¿›è¡Œè¿ç®— 
 		if (DT1.type == dtFloat)
 		{
 			return -1;
@@ -377,7 +378,7 @@ long cParser::NeedCast(TYPEDES dt1, TYPEDES dt2, char &casted)
 	///////////////////////////////
 /*	
 	original code:
-	//Èç¹ûÀàĞÍÏàÍ¬, ²»ĞèÒª×ª»»
+	//å¦‚æœç±»å‹ç›¸åŒ, ä¸éœ€è¦è½¬æ¢
 	if (DT1.type == DT2.type)
 		return -1;
 
@@ -505,7 +506,7 @@ long cParser::NeedCast(TYPEDES dt1, TYPEDES dt2, char &casted)
 			default:GenError(110);return -1;
 			}
 		}
-	case 0:// ¿Õ²Ù×÷Êı(dummy type)
+	case 0:// ç©ºæ“ä½œæ•°(dummy type)
 		return -1;
 	default:GenError(110);		
 	}
@@ -520,13 +521,13 @@ long cParser::NeedCast(TYPEDES dt1, TYPEDES dt2, char &casted)
 
 
 /*
-   º¯ÊıÃû³Æ     : cParser::AllocTempVar
-   º¯Êı¹¦ÄÜ	    : ·ÖÅäÒ»¸öÁÙÊ±±äÁ¿
-   ±äÁ¿ËµÃ÷     : 
-   long type	: ±äÁ¿µÄÀàĞÍ
-   ·µ»ØÖµ       : ±äÁ¿µÄµØÖ·, -1 ±íÊ¾Ê§°Ü
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 6 - 8
+   å‡½æ•°åç§°     : cParser::AllocTempVar
+   å‡½æ•°åŠŸèƒ½	    : åˆ†é…ä¸€ä¸ªä¸´æ—¶å˜é‡
+   å˜é‡è¯´æ˜     : 
+   long type	: å˜é‡çš„ç±»å‹
+   è¿”å›å€¼       : å˜é‡çš„åœ°å€, -1 è¡¨ç¤ºå¤±è´¥
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 6 - 8
 */
 long cParser::AllocTempVar(long type, long reflevel)
 {
@@ -544,24 +545,24 @@ long cParser::AllocTempVar(long type, long reflevel)
 }
 
 /*
-   º¯ÊıÃû³Æ     : cParser::Cast
-   º¯Êı¹¦ÄÜ	    : ×Ô¶¯ÀàĞÍ×ª»»
-   ±äÁ¿ËµÃ÷     : 
-   ·µ»ØÖµ       : 
-   ±àĞ´ÈË       : ¾ÓÎÀ»ª
-   Íê³ÉÈÕÆÚ     : 2001 - 6 - 11
+   å‡½æ•°åç§°     : cParser::Cast
+   å‡½æ•°åŠŸèƒ½	    : è‡ªåŠ¨ç±»å‹è½¬æ¢
+   å˜é‡è¯´æ˜     : 
+   è¿”å›å€¼       : 
+   ç¼–å†™äºº       : å±…å«å
+   å®Œæˆæ—¥æœŸ     : 2001 - 6 - 11
 */
 void cParser::Cast(long &op1, long &type1, TYPEDES &dt1, long &op2, long &type2, TYPEDES &dt2)
 {
-			long castcode = -1; //cast²Ù×÷Âë
-			char casted = 0;	//±»×ª»»ÀàĞÍµÄÔËËãÊı
+			long castcode = -1; //castæ“ä½œç 
+			char casted = 0;	//è¢«è½¬æ¢ç±»å‹çš„è¿ç®—æ•°
 			castcode = NeedCast(dt1, dt2, casted);
 			if (castcode != -1)
 			{
-				//ÀàĞÍ×ª»»
-				long temp;//ÁÙÊ±±äÁ¿µØÖ·, ´æ·Å×ª»»ºóµÄ±äÁ¿
-				long type;//Ä¿±êÀàĞÍ
-				long am;  //castÖ¸ÁîµÄÑ°Ö··½Ê½
+				//ç±»å‹è½¬æ¢
+				long temp;//ä¸´æ—¶å˜é‡åœ°å€, å­˜æ”¾è½¬æ¢åçš„å˜é‡
+				long type;//ç›®æ ‡ç±»å‹
+				long am;  //castæŒ‡ä»¤çš„å¯»å€æ–¹å¼
 				long* castedop = NULL;
 				if (casted == 1)
 				{
@@ -581,13 +582,13 @@ void cParser::Cast(long &op1, long &type1, TYPEDES &dt1, long &op2, long &type2,
 				else
 				{
 					am = 1 | (log2((int)(typesize(type, 0))<<6));
-					am = am << 8;//tempµÄÑ°Ö··½Ê½
+					am = am << 8;//tempçš„å¯»å€æ–¹å¼
 					if (casted == 1)
 					{			
 						long exchange = am>>8;						
-						am |= (type1&0x00ff) /*| (((type2&0x30)<<8)&0xff00)*/;//ÕûÌõÖ¸ÁîµÄÑ°Ö··½Ê½
+						am |= (type1&0x00ff) /*| (((type2&0x30)<<8)&0xff00)*/;//æ•´æ¡æŒ‡ä»¤çš„å¯»å€æ–¹å¼
 					ADDCOMMAND3(__cast, am, temp, *castedop, castcode)
-						//ĞŞ¸ÄÔËËãÊı
+						//ä¿®æ”¹è¿ç®—æ•°
 						op1 = temp;
 						type1 = exchange;
 						dt1.type = type;
@@ -595,9 +596,9 @@ void cParser::Cast(long &op1, long &type1, TYPEDES &dt1, long &op2, long &type2,
 					if (casted == 2)
 					{
 						long exchange = am >> 8;
-						am |= (type2&0xff) /*| (((type1&0x30)<<8)&0xff00)*/;//ÕûÌõÖ¸ÁîµÄÑ°Ö··½Ê½					
+						am |= (type2&0xff) /*| (((type1&0x30)<<8)&0xff00)*/;//æ•´æ¡æŒ‡ä»¤çš„å¯»å€æ–¹å¼					
 					ADDCOMMAND3(__cast, am, temp, *castedop, castcode)
-						//ĞŞ¸ÄÔËËãÊı
+						//ä¿®æ”¹è¿ç®—æ•°
 						op2 = temp;
 						type2 = exchange;
 						dt2.type = type;
@@ -810,7 +811,7 @@ void -->ParserClass::doVarDecl(PTYPEDES type, char* szFirstName)
 	              }
 	              */      
 
-	              int dimsize[64];//Êı×é×î´óÎ¬Êı64
+	              int dimsize[64];//æ•°ç»„æœ€å¤§ç»´æ•°64
 	              int i = 0;
 	              int arraysize = op;//total size
 	              dimsize[i] = op;
@@ -841,7 +842,7 @@ void -->ParserClass::doVarDecl(PTYPEDES type, char* szFirstName)
 }
 void -->ParserClass::pushResultAX(){
 	//push result
-	TYPEDES dt;//ÎŞĞ§
+	TYPEDES dt;//æ— æ•ˆ
 	memset(&dt, 0, sizeof(TYPEDES));
 	this->m_pMainFunction->PushDigit(_AX, 0x82,dt);
 }
@@ -863,15 +864,15 @@ bool -->ParserClass::doAssign()
     }
     else
     {
-            //ÀàĞÍ×ª»»
-            long castcode = -1; //cast²Ù×÷Âë
-            char casted = 0;        //±»×ª»»ÀàĞÍµÄÔËËãÊı
-            //ÀàĞÍ×ª»»
-            long temp;//ÁÙÊ±±äÁ¿µØÖ·, ´æ·Å×ª»»ºóµÄ±äÁ¿
-            long type;//Ä¿±êÀàĞÍ
+            //ç±»å‹è½¬æ¢
+            long castcode = -1; //castæ“ä½œç 
+            char casted = 0;        //è¢«è½¬æ¢ç±»å‹çš„è¿ç®—æ•°
+            //ç±»å‹è½¬æ¢
+            long temp;//ä¸´æ—¶å˜é‡åœ°å€, å­˜æ”¾è½¬æ¢åçš„å˜é‡
+            long type;//ç›®æ ‡ç±»å‹
             long level;
             long objid;
-            long am;  //castÖ¸ÁîµÄÑ°Ö··½Ê½
+            long am;  //castæŒ‡ä»¤çš„å¯»å€æ–¹å¼
             long* castedop = NULL;
             type = dt1.type;
             level = dt1.refLevel;
@@ -888,10 +889,10 @@ bool -->ParserClass::doAssign()
                             return false;
                     }
 
-                    if (DT1.refLevel > 0)//ÊÇÖ¸Õë
+                    if (DT1.refLevel > 0)//æ˜¯æŒ‡é’ˆ
                     {
-                            if (DT2.refLevel == 0 // ²»ÊÇÖ¸Õë
-                                    && DT2.type != dtLong //²»ÊÇ³¤ÕûĞÍ
+                            if (DT2.refLevel == 0 // ä¸æ˜¯æŒ‡é’ˆ
+                                    && DT2.type != dtLong //ä¸æ˜¯é•¿æ•´å‹
                                     && DT2.type != dtInt)
                             {
                                     GenError(110);
@@ -976,14 +977,14 @@ bool -->ParserClass::doAssign()
                     GenError(98);
             }
             else if (castcode != -1)
-            {//ĞèÒª×ª»»
+            {//éœ€è¦è½¬æ¢
 
                     am = 1 | (log2(UnitSize(dt1))<<6);
-                    am = am << 8;//tempµÄÑ°Ö··½Ê½
+                    am = am << 8;//tempçš„å¯»å€æ–¹å¼
                     long exchange = am >> 8;
-                    am |= (type2&0xff) /*| (((type2&0x30)<<8)&0xff00)*/;//ÕûÌõÖ¸ÁîµÄÑ°Ö··½Ê½                                        
+                    am |= (type2&0xff) /*| (((type2&0x30)<<8)&0xff00)*/;//æ•´æ¡æŒ‡ä»¤çš„å¯»å€æ–¹å¼                                        
                     ADDCOMMAND3(__cast, am, temp, *castedop, castcode)
-                    //ĞŞ¸ÄÔËËãÊı
+                    //ä¿®æ”¹è¿ç®—æ•°
                     type2 = exchange;
                     dt2.type = type;
                     op2 = temp;

@@ -11,13 +11,13 @@
 #ifdef WIN32
 using namespace stdext;
 #else
-#include <ext/hash_map>
+//#include <ext/hash_map>
 #endif
 
 class CClassTable {
 private:
 #ifdef _MACOS
-	hash_map<std::string, CClass*> m_table;
+	hash_map<char*, CClass*> m_table;
 #else
 	stdext::hash_map<std::string , CClass* > m_table;
 #endif
@@ -30,7 +30,9 @@ public:
 		return cc;
 	}
 	void addClass(CClass* c){
+		//std::string name = c->GetFullName();
 		m_table[c->GetFullName()] = c;
+		
 	}
 
 	CClass* getClass(char* szName){

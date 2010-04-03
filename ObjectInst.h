@@ -28,7 +28,7 @@ private:
 	CClass* cls;
 	int ref;
 #ifdef _MACOS
-	hash_map<std::string, CObjectInst*> members;
+	hash_map<char*, CObjectInst*> members;
 #else
 	stdext::hash_map<std::string, CObjectInst*> members;
 #endif

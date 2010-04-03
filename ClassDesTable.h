@@ -12,7 +12,7 @@ using namespace stdext;
 class CClassDesTable
 {
 private:
-	hash_map<std::string, CClassDes*> tables;
+	hash_map<char*, CClassDes*> tables;
 public: 
 	void addClass(CClassDes* ccd){
 		char* szName = ccd->GetFullName();

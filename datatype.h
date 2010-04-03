@@ -19,13 +19,13 @@
 #define dtString 9  //it is not used by compiler, but by request
 #define dtFloat 10
 #define dtStr 11
-#define dtLastType 11
-//#ifdef __SUPPORT_OBJ
-//#define dtObject 12
-//#define dtLastType 12
-//#else
 //#define dtLastType 11
-//#endif
+#ifdef __SUPPORT_OBJ
+#define dtObject 12
+#define dtLastType 12
+#else
+#define dtLastType 11
+#endif
 
 typedef struct _tagTypeDes
 {

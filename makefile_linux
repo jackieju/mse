@@ -30,7 +30,7 @@ CCompiler.o: CCompiler.cpp
 	$(CC) -c CCompiler.cpp -o CCompiler.o $(CFLAGS)
 
 cp.o: cp.cpp
-	$(CC) -c cp.cpp -o cp.o $(CFLAGS)
+	$(CC) -c cocoR/cp.cpp -o cp.o $(CFLAGS)
 
 CR_ABS.o: CR_ABS.cpp
 	$(CC) -c CR_ABS.cpp -o CR_ABS.o $(CFLAGS)

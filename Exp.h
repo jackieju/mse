@@ -42,7 +42,7 @@ private:
 public:
 	// constructor and desctor
 	CExp(long lCode = 0, char* sMsg = "", char* file = NULL, long nLine = -1, long lState = CExp::stat_null, long lLevel = 0);
-	virtual	~CExp();
+	virtual	~CExp() throw ();
 
 	virtual const char* what(){
 		return m_sMsg;

@@ -34,8 +34,8 @@ class CCompiler
 public:
 	CCompiler();
 	~CCompiler();
-//static  CScriptFuncTable functable[SCRIPTTABLE_NUM];
-//static long g_lActiveScriptTable;
+static  CScriptFuncTable functable[SCRIPTTABLE_NUM];
+static long g_lActiveScriptTable;
 	// table of classes, classes
 	static CClassDesTable classTable;
 	// external native function (print, log, ...)

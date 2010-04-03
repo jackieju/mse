@@ -245,7 +245,7 @@ public:
 	long GetTotalSize(){
 		return m_lTotalSize;
 	}
-	BOOL CRequest::InsertSimpleParam(char dataType, unsigned char *content, LONG lIndex);
+	BOOL InsertSimpleParam(char dataType, unsigned char *content, LONG lIndex);
 		
 private:
 

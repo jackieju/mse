@@ -1,5 +1,5 @@
 #include "clib.h"
-#include "io.h"
+//#include "io.h"
 #include "fcntl.h"
 #include "string.h"
 
@@ -131,7 +131,12 @@ BOOL CCompiler::Compile(char *szFileName)
 	strcpy(this->m_szSourceFile, szFileName);
 	
 	// open the source file S_src
+#ifdef _MACOS
+	// binary and text files has no difference in unix
+		if ((S_src = open(szFileName, O_RDONLY)) == -1) {
+#else
 	if ((S_src = open(szFileName, O_RDONLY | O_BINARY)) == -1) {
+#endif
 		fprintf(stderr, "Unable to open input file %s\n", szFileName);
 		sprintf(m_szErrMsg, "Unable to open input file %s\n", szFileName);		
 		return FALSE;

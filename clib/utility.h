@@ -55,8 +55,8 @@ typedef std::vector<std::string>			string_array;
 	{hr = x; if( FAILED(hr) || !p) goto CleanUp;}
 #endif	//CHECKRETURN
 
-#ifndef min
-#define min(a,b) (((a)<(b)) ? (a) : (b))
+#ifndef MIN 
+#define MIN(a,b) (((a)<(b)) ? (a) : (b))
 #endif	
 
 #ifndef InstanceOf
