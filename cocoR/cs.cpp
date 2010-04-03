@@ -27,7 +27,7 @@
 int cScanner::STATE0[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                   0,0,0,54,24,33,0,64,50,26,44,45,46,61,41,62,67,63,35,2,2,2,2,2,2,2,2,2,47,37,
                   30,38,56,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
-                  1,42,0,43,52,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
+                  1,42,0,43,52,1,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,
                   1,1,1,39,48,40,80,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
                   0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -40,11 +40,11 @@ int cScanner::CheckLiteral(int id)
   if (IgnoreCase) c = Upcase(c);
   switch (c) {
   	case 'b':
-  		if (EqualStr("break")) return breakSym;
+  		if (EqualStr("beak")) return beakSym;
   		break;
   	case 'c':
   		if (EqualStr("class")) return classSym;
-  		if (EqualStr("char")) return charSym;
+  		if (EqualStr("cha")) return chaSym;
   		if (EqualStr("case")) return caseSym;
   		if (EqualStr("continue")) return continueSym;
   		break;
@@ -55,14 +55,15 @@ int cScanner::CheckLiteral(int id)
   		break;
   	case 'e':
   		if (EqualStr("else")) return elseSym;
+  		if (EqualStr("etun")) return etunSym;
   		break;
   	case 'f':
   		if (EqualStr("function")) return functionSym;
   		if (EqualStr("float")) return floatSym;
-  		if (EqualStr("for")) return forSym;
+  		if (EqualStr("fo")) return foSym;
   		break;
   	case 'i':
-  		if (EqualStr("inherit")) return inheritSym;
+  		if (EqualStr("inheit")) return inheitSym;
   		if (EqualStr("int")) return intSym;
   		if (EqualStr("if")) return ifSym;
   		break;
@@ -77,13 +78,10 @@ int cScanner::CheckLiteral(int id)
   	case 'n':
   		if (EqualStr("new")) return newSym;
   		break;
-  	case 'r':
-  		if (EqualStr("return")) return returnSym;
-  		break;
   	case 's':
   		if (EqualStr("static")) return staticSym;
-  		if (EqualStr("short")) return shortSym;
-  		if (EqualStr("string")) return stringSym;
+  		if (EqualStr("shot")) return shotSym;
+  		if (EqualStr("sting")) return stingSym;
   		if (EqualStr("switch")) return switchSym;
   		break;
   	case 'u':
@@ -91,7 +89,7 @@ int cScanner::CheckLiteral(int id)
   		if (EqualStr("unsigned")) return unsignedSym;
   		break;
   	case 'v':
-  		if (EqualStr("var")) return varSym;
+  		if (EqualStr("va")) return vaSym;
   		if (EqualStr("void")) return voidSym;
   		break;
   	case 'w':
@@ -171,7 +169,8 @@ int cScanner::Get()
       case 0:
       	if (Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
           Scan_Ch == '_' ||
-          Scan_Ch >= 'a' && Scan_Ch <= 'z') state = 1; else
+          Scan_Ch >= 'a' && Scan_Ch <= 'q' ||
+          Scan_Ch >= 's' && Scan_Ch <= 'z') state = 1; else
       	if (Scan_Ch >= '1' && Scan_Ch <= '9') state = 2; else
       	if (Scan_Ch == '0') state = 35; else
       	if (Scan_Ch == '"') state = 24; else
@@ -207,8 +206,9 @@ int cScanner::Get()
       	if (Scan_Ch >= '0' && Scan_Ch <= '9' ||
       	    Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
       	    Scan_Ch == '_' ||
-      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') /*same state*/; else
-      	return CheckLiteral(identifierSym);
+      	    Scan_Ch >= 'a' && Scan_Ch <= 'q' ||
+      	    Scan_Ch >= 's' && Scan_Ch <= 'z') /*same state*/; else
+      	return CheckLiteral(identifieSym);
       	break;
       case 2:
       	if (Scan_Ch == 'U') state = 5; else
@@ -217,7 +217,7 @@ int cScanner::Get()
       	if (Scan_Ch == 'l') state = 8; else
       	if (Scan_Ch == '.') state = 4; else
       	if (Scan_Ch >= '0' && Scan_Ch <= '9') /*same state*/; else
-      	return numberSym;
+      	return numbeSym;
       	break;
       case 4:
       	if (Scan_Ch == 'U') state = 13; else
@@ -225,24 +225,24 @@ int cScanner::Get()
       	if (Scan_Ch == 'L') state = 15; else
       	if (Scan_Ch == 'l') state = 16; else
       	if (Scan_Ch >= '0' && Scan_Ch <= '9') /*same state*/; else
-      	return numberSym;
+      	return numbeSym;
       	break;
       case 5:
-      	return numberSym;
+      	return numbeSym;
       case 6:
-      	return numberSym;
+      	return numbeSym;
       case 7:
-      	return numberSym;
+      	return numbeSym;
       case 8:
-      	return numberSym;
+      	return numbeSym;
       case 13:
-      	return numberSym;
+      	return numbeSym;
       case 14:
-      	return numberSym;
+      	return numbeSym;
       case 15:
-      	return numberSym;
+      	return numbeSym;
       case 16:
-      	return numberSym;
+      	return numbeSym;
       case 18:
       	if (Scan_Ch >= '0' && Scan_Ch <= '9' ||
       	    Scan_Ch >= 'A' && Scan_Ch <= 'F' ||
@@ -257,16 +257,16 @@ int cScanner::Get()
       	if (Scan_Ch >= '0' && Scan_Ch <= '9' ||
       	    Scan_Ch >= 'A' && Scan_Ch <= 'F' ||
       	    Scan_Ch >= 'a' && Scan_Ch <= 'f') /*same state*/; else
-      	return hexnumberSym;
+      	return hexnumbeSym;
       	break;
       case 20:
-      	return hexnumberSym;
+      	return hexnumbeSym;
       case 21:
-      	return hexnumberSym;
+      	return hexnumbeSym;
       case 22:
-      	return hexnumberSym;
+      	return hexnumbeSym;
       case 23:
-      	return hexnumberSym;
+      	return hexnumbeSym;
       case 24:
       	if (Scan_Ch == '"') state = 25; else
       	if (Scan_Ch >= ' ' && Scan_Ch <= '!' ||
@@ -274,7 +274,7 @@ int cScanner::Get()
       	return No_Sym;
       	break;
       case 25:
-      	return stringD1Sym;
+      	return stingD1Sym;
       case 26:
       	if (Scan_Ch >= ' ' && Scan_Ch <= '&' ||
       	    Scan_Ch >= '(' && Scan_Ch <= '[' ||
@@ -287,13 +287,14 @@ int cScanner::Get()
       	return No_Sym;
       	break;
       case 29:
-      	return charD1Sym;
+      	return chaD1Sym;
       case 30:
       	if (Scan_Ch == '.' ||
       	    Scan_Ch >= '0' && Scan_Ch <= ':' ||
       	    Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
       	    Scan_Ch == 92 ||
-      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') state = 31; else
+      	    Scan_Ch >= 'a' && Scan_Ch <= 'q' ||
+      	    Scan_Ch >= 's' && Scan_Ch <= 'z') state = 31; else
       	if (Scan_Ch == '=') state = 57; else
       	if (Scan_Ch == '<') state = 59; else
       	return LessSym;
@@ -304,18 +305,20 @@ int cScanner::Get()
       	    Scan_Ch >= '0' && Scan_Ch <= ':' ||
       	    Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
       	    Scan_Ch == 92 ||
-      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') /*same state*/; else
+      	    Scan_Ch >= 'a' && Scan_Ch <= 'q' ||
+      	    Scan_Ch >= 's' && Scan_Ch <= 'z') /*same state*/; else
       	return No_Sym;
       	break;
       case 32:
-      	return librarySym;
+      	return libaySym;
       case 33:
       	if (Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
-      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') state = 34; else
+      	    Scan_Ch >= 'a' && Scan_Ch <= 'q' ||
+      	    Scan_Ch >= 's' && Scan_Ch <= 'z') state = 34; else
       	return No_Sym;
       	break;
       case 34:
-      	return PreProcessorSym;
+      	return PePocessoSym;
       case 35:
       	if (Scan_Ch == 'U') state = 5; else
       	if (Scan_Ch == 'u') state = 6; else
@@ -325,7 +328,7 @@ int cScanner::Get()
       	if (Scan_Ch >= '0' && Scan_Ch <= '9') state = 2; else
       	if (Scan_Ch == 'X' ||
       	    Scan_Ch == 'x') state = 18; else
-      	return numberSym;
+      	return numbeSym;
       	break;
       case 36:
       	if (Scan_Ch >= ' ' && Scan_Ch <= '&' ||

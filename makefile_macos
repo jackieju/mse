@@ -26,7 +26,7 @@ clean: clean-custom
 DLLWRAP=g++
 
 cocoR/cp.cpp: cocoR/msec.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
-	cd cocoR && ./cocor -A -F -X -S -G -C -L c.atg
+	cd cocoR && ./cocor -A -F -X -S -G -C -L msec.atg
 
 CCompiler.o: CCompiler.cpp
 	$(CC) -c CCompiler.cpp -o CCompiler.o $(CFLAGS)

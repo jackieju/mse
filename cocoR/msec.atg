@@ -1,27 +1,27 @@
 COMPILER C
 
-/* An attempt to descibe a subset of C */
+/* An attempt to describe a subset of C */
 
 /////////////////////////////////
 // add by jackie juju
 #include "clib.h"
-#include <sting.h>
-#include <vecto>
-#include <sting>
+#include <string.h>
+#include <vector>
+#include <string>
 #include "datatype.h"
-#include "LoopTee.h"
+#include "LoopTree.h"
 #include "opcode.h"
 #include "os/CSS_LOCKEX.h"
-#include "SciptFuncTable.h"
+#include "ScriptFuncTable.h"
 #include "log.h"
 #include "PubFuncTable.h"
 #include "ClassDes.h"
-#include "compile.h"
+#include "compiler.h"
 #include "utility.h"
 
 #define CAST Cast(op1, type1, dt1, op2, type2, dt2);
 
-exten int typesize(int type);
+extern int typesize(int type);
 
 int log2(int x);
 
@@ -30,15 +30,15 @@ int log2(int x);
 /////////////////////////////////
 
 CHARACTERS
-  lette   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqstuvwxyz" .
+  letter   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
   digit    = "0123456789" .
   hexdigit = digit + "ABCDEFabcdef" .
   tab      = CHR(9) .
   eol      = CHR(10) .
-  files    = lette + digit + ":\." .
-  chas    = CHR(32) .. CHR(255) - "'" .
-  stings  = CHR(32) .. CHR(255) - '"'.
-  macos   = ANY - eol .
+  files    = letter + digit + ":\." .
+  chars    = CHR(32) .. CHR(255) - "'" .
+  strings  = CHR(32) .. CHR(255) - '"'.
+  macros   = ANY - eol .
 
 COMMENTS FROM "/*" TO "*/"
 COMMENTS FROM "//" TO eol
@@ -47,33 +47,33 @@ IGNORE
   tab + eol + CHR(13)
 
 TOKENS
-  identifie = ( "_" | lette) { "_" | lette | digit } .
-  numbe     = digit { digit } [ "." { digit }] [ "U" | "u" | "L" | "l" ] .
-  hexnumbe  = "0" ( "x" | "X" ) hexdigit { hexdigit } [ "U" | "u" | "L" | "l" ] .
-  sting1     = '"' { stings } '"' .
-  cha1       = "'" [ "\\" ] chas "'" .
-  libay    = "<" files { files } ">" .
+  identifier = ( "_" | letter) { "_" | letter | digit } .
+  number     = digit { digit } [ "." { digit }] [ "U" | "u" | "L" | "l" ] .
+  hexnumber  = "0" ( "x" | "X" ) hexdigit { hexdigit } [ "U" | "u" | "L" | "l" ] .
+  string1     = '"' { strings } '"' .
+  char1       = "'" [ "\\" ] chars "'" .
+  library    = "<" files { files } ">" .
 
 PRAGMAS
 
-  PePocesso = "#" ( lette ) .
+  PreProcessor = "#" ( letter ) .
 		    (.
-		 	// pocess #include       	    		    
-		cha st[256];
-		Scanne->GetName(&Scanne->NextSym, st, 255);
-		// get diective
-		cha* p = stch(st, ' ');
-		cha* diective = NULL;
-		cha* content = NULL;
+		 	// process #include       	    		    
+		char str[256];
+		Scanner->GetName(&Scanner->NextSym, str, 255);
+		// get directive
+		char* p = strchr(str, ' ');
+		char* directive = NULL;
+		char* content = NULL;
 		if ( p != NULL ){
 			*p=0; 
-			diective = st + sizeof(cha);
-			// poce include 
-			if (stcmp(st, "include") == 0){
+			directive = str + sizeof(char);
+			// proce include 
+			if (strcmp(str, "include") == 0){
 				// get content
-				p += sizeof(cha);
+				p += sizeof(char);
 				while ( (*p == ' ' || *p == '\t' ) && *p != '\0' ){
-					p += sizeof(cha);		
+					p += sizeof(char);		
 				}
 				if ( *p != '\0' )
 					content = p;
@@ -91,139 +91,139 @@ PRODUCTIONS
 
     C                    =      (. 
 	
-	 m_pCuClassDes = new CClassDes(this);
-	 std::sting className = JUJU::getFileName(cuFileName);
-	 m_pCuClassDes->SetName((cha*)className.c_st());
-	 m_classTable->addClass(m_pCuClassDes);
+	 m_pCurClassDes = new CClassDes(this);
+	 std::string className = JUJU::getFileName(curFileName);
+	 m_pCurClassDes->SetName((char*)className.c_str());
+	 m_classTable->addClass(m_pCurClassDes);
     
     .)
-   { Impot | LoadLib } [ Inheitance ]
+   { Import | LoadLib } [ Inheritance ]
 
     { Definition } EOF (. 
-	std::sting name = m_pCuClassDes->GetFullName();
+	std::string name = m_pCurClassDes->GetFullName();
 	name += ".class";
-	FILE* file = fopen(name.c_st(), "w");
-	std::sting *s = m_pCuClassDes->output();
-	fpintf(file, "%s", s->c_st());
+	FILE* file = fopen(name.c_str(), "w");
+	std::string *s = m_pCurClassDes->output();
+	fprintf(file, "%s", s->c_str());
 	SAFEDELETE(s);
 	fclose(file);
 
     .).
 
-  Impot = "use"(.cha szName[_MAX_PATH]= ""; .) ClassFullName<szName>
+  Import = "use"(.char szName[_MAX_PATH]= ""; .) ClassFullName<szName>
   (.
 	
 	CClassDes* cd = this->m_classTable->getClass(szName);
 	if (cd == NULL){
-		stcat(szName, ".c");
-						CCompile cc;
-			//	std::sting s = JUJU::getFilePath(c->getCuScFile())+szName;
+		strcat(szName, ".c");
+						CCompiler cc;
+			//	std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
 				cc.Compile(szName);
 	}
   .)";" .
   
-  LoadLib = "load" identifie 
+  LoadLib = "load" identifier 
   (.
-   	// load extenal libay 
-	std::sting lib = GetCuSym();
-	std::sting libfile = lib+".dll";
-	std::sting libintfile = lib+".int";
+   	// load external library 
+	std::string lib = GetCurrSym();
+	std::string libfile = lib+".dll";
+	std::string libintfile = lib+".int";
 #ifdef WIN32
-		m_PubFuncTable->LoadLib((cha*)libfile.c_st(), (cha*)libintfile.c_st());
+		m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
 #else
 	m_PubFuncTable->LoadLib(lib+".so", lib+".int");
 #endif
-/* fo the futhe if VM un in anothe pocess than compile un
-	int addess = m_pMainFunction->AddStaticData(lib.size()+1, (BYTE*)lib.c_st());
-	ADDCOMMAND1(__loadlib, DS, addess);
+/* for the further if VM run in another process than compiler run
+	int address = m_pMainFunction->AddStaticData(lib.size()+1, (BYTE*)lib.c_str());
+	ADDCOMMAND1(__loadlib, DS, address);
 */
   .)
    ";" .
   
-/* Vaiable and Type Definitions */
+/* Variable and Type Definitions */
 	
  
   Definition           =
    (
-   [ StoageClass ] (. PTYPEDES type = new TYPEDES; .) 
+   [ StorageClass ] (. PTYPEDES type = new TYPEDES; .) 
    [ Type<type> ]
    
    /*{ "*" } 
 (. 
-		if (type->type < dtFistType  || type->type > dtLastType)
+		if (type->type < dtFirstType  || type->type > dtLastType)
 		{
-			GenEo(99);
+			GenError(99);
 		}
 		
-		//ÊåáÈíàÁ±ªÂûã
-		while (Sym == StaSym) 
+		//÷∏’Î¿‡–Õ
+		while (Sym == StarSym) 
 		{
-			type->efLevel++;
+			type->refLevel++;
 			Get();
 		}
 .)
    */
-   identifie
+   identifier
 (.
-	cha szName[MAX_IDENTIFIER_LENGTH];
+	char szName[MAX_IDENTIFIER_LENGTH];
 	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
 .)
 (
    (
-		FunctionDefinition (.this->m_pCuClassDes->AddMembe(szName, *type);.)
-	   /*| (VaList< type,  szName> ";")*/
+		FunctionDefinition (.this->m_pCurClassDes->AddMember(szName, *type);.)
+	   /*| (VarList< type,  szName> ";")*/
 	)
 	|
-	( /* this is bug of coco, you have to keep numbe of OR facto less than 2, othewise it geneate switch-case with multi-"default"*/
-	   ("=" (.this->m_pCuClassDes->AddMembe(szName, *type);.)Expession (./*TODO*/.)";")
-	   | ";" (.this->m_pCuClassDes->AddMembe(szName, *type);.) 
+	( /* this is bug of cocor, you have to keep number of OR factor less than 2, otherwise it generate switch-case with multi-"default"*/
+	   ("=" (.this->m_pCurClassDes->AddMember(szName, *type);.)Expression (./*TODO*/.)";")
+	   | ";" (.this->m_pCurClassDes->AddMember(szName, *type);.) 
     ) 
    )
    ) 
    
    | ClassDef  .
                             
-  /* PePocess = Define | Include .
+  /* PreProcess = Define | Include .
   
- Define = "#define" identifie macos .
+ Define = "#define" identifier macros .
   
   Include = "#include" files .*/
   
-  Inheitance              = "inheit" identifie 
+  Inheritance              = "inherit" identifier 
   (.
   
-   // TODO get full name in cuent impoted classes, should not need to povide full name hee
-	cha* szName = GetCuSym();
+   // TODO get full name in current imported classes, should not need to provide full name here
+	char* szName = GetCurrSym();
 	CClassDes* cd = this->m_classTable->getClass(szName);
 	if (cd == NULL){
-		std::sting s = JUJU::getFilePath(c->getCuScFile())+szName;
-		stcpy(szName, s.c_st());
+		std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+		strcpy(szName, s.c_str());
 		cd = this->m_classTable->getClass(szName);
 		if (cd == NULL){
-				stcat(szName, ".c");
-				CCompile cc;                         
+				strcat(szName, ".c");
+				CCompiler cc;                         
 	            cc.Compile(szName);
 	    }
 	}
-	this->m_pCuClassDes->setPaent(szName);
+	this->m_pCurClassDes->setParent(szName);
   .) ";" .
   
 
-	ClassDef			= "class" identifie  
+	ClassDef			= "class" identifier  
 (.
  	// get name
-	cha *szName = new cha[MAX_IDENTIFIER_LENGTH];
+	char *szName = new char[MAX_IDENTIFIER_LENGTH];
 	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
 .)
 ClassBody	";" .
 	ClassBody			 = 
 	(.
-	// Âà©Áî®CFunctionÊù•Â≠òÊîæÁ±ªÊàêÂëò
-	CFunction* pSaved = this->m_pMainFunction;	// save cuent function
+	// ¿˚”√CFunction¿¥¥Ê∑≈¿‡≥…‘±
+	CFunction* pSaved = this->m_pMainFunction;	// save current function
 	CFunction function;
-	function.m_SymbolTable.m_pPase = this;
+	function.m_SymbolTable.m_pParser = this;
 	this->m_pMainFunction = &function;
 	
 	.)
@@ -232,35 +232,35 @@ ClassBody	";" .
 	
 	(.
 	/*
-	//Ê∑ªÂä†class
-	if (!Eo->Eos)
+	//ÃÌº”class
+	if (!Error->Errors)
 	{
 		CObjDes* pClass = new CObjDes(this);
 		pClass->SetName(szName);
 		if (!pClass)
 		{
-			REPORT_MEM_ERROR("Allcotion memoy failed")
+			REPORT_MEM_ERROR("Allcotion memory failed")
 		}
 		else
 		{
-			fo (int i = 0; i < function.m_SymbolTable.m_nSymbolCount; i++)
+			for (int i = 0; i < function.m_SymbolTable.m_nSymbolCount; i++)
 			{
-				if (!pClass->AddMembe(function.m_SymbolTable.tableEnty[i].szName, 
-					function.m_SymbolTable.tableEnty[i].type))
+				if (!pClass->AddMember(function.m_SymbolTable.tableEntry[i].szName, 
+					function.m_SymbolTable.tableEntry[i].type))
 				{
 					if (pClass)
 					{
 						delete pClass;
 						pClass = NULL;
 					}
-					GenEo(118);					
-					beak;
+					GenError(118);					
+					break;
 				}
 			}
 		}
 		if (!this->AddObj(*pClass))
 		{
-			GenEo(119);				
+			GenError(119);				
 			if (pClass)
 			{
 				delete pClass;
@@ -273,9 +273,9 @@ ClassBody	";" .
 	.
 
 
-  StoageClass         = /*"auto" | "exten" | "egiste" |*/
+  StorageClass         = /*"auto" | "extern" | "register" |*/
    "static" 
-   | "my" /* membe vaiable*/
+   | "my" /* member variable*/
    | "function"
    .
 
@@ -285,93 +285,93 @@ ClassBody	";" .
 	memset(type, 0, sizeof(TYPEDES));	
 .)*/
 
-( "va" | "mixed" )
+( "var" | "mixed" )
 (.
 		/*	#ifdef __SUPPORT_OBJ
-			cha szName[MAX_IDENTIFIER_LENGTH];
+			char szName[MAX_IDENTIFIER_LENGTH];
 			memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-			Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞			
-			type->type = dtGeneal;
+			Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆			
+			type->type = dtGeneral;
 			type->objID = GetObjIDByName(szName); 
 			if (type->objID == 0)
-				GenEo(120);
+				GenError(120);
 			#else
 			// TODO
-				GenEo(120);
+				GenError(120);
 			#endif
 */
-	type->type = dtGeneal; type->efLevel = 0;
+	type->type = dtGeneral; type->refLevel = 0;
 .)
 	|
-	 "shot" [ "int" ]
-(. 			 type->type = dtShot; type->efLevel = 0;	.)
+	 "short" [ "int" ]
+(. 			 type->type = dtShort; type->refLevel = 0;	.)
     | "long"  [ "int" | "float" ]
- (.			 type->type = dtLong; type->efLevel = 0; .)
-	| "unsigned" [ "cha" | "int" | "long" ]
-	| "cha"
-(. 			type->type = dtCha;			type->efLevel = 0; .)
+ (.			 type->type = dtLong; type->refLevel = 0; .)
+	| "unsigned" [ "char" | "int" | "long" ]
+	| "char"
+(. 			type->type = dtChar;			type->refLevel = 0; .)
 	| "int" 
-(.			 type->type = dtInt; type->efLevel = 0; .)	
+(.			 type->type = dtInt; type->refLevel = 0; .)	
 	| "float"		
-(. 			type->type = dtFloat;			type->efLevel = 0; .)
+(. 			type->type = dtFloat;			type->refLevel = 0; .)
 
-	| "double" | "void"  | "sting"
-(. type->type =  dtSt;            type->efLevel = 0;.)
+	| "double" | "void"  | "string"
+(. type->type =  dtStr;            type->refLevel = 0;.)
 	.
 
-  VaList<PTYPEDES type, cha* szFistName>   = 
-  AaySize
+  VarList<PTYPEDES type, char* szFirstName>   = 
+  ArraySize
 (.
-	doVaDecl(type, szFistName);
-	cha szName[MAX_IDENTIFIER_LENGTH];
-.)    [ "=" Expession (. doAssign(); .)] 
-{ ","  identifie
+	doVarDecl(type, szFirstName);
+	char szName[MAX_IDENTIFIER_LENGTH];
+.)    [ "=" Expression (. doAssign(); .)] 
+{ ","  identifier
 (.
 		memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
-		Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH);
+		Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
 		
 
 .)
 
-AaySize
+ArraySize
 (.
-		 doVaDecl(type, szName);
+		 doVarDecl(type, szName);
 .)
- [  "=" Expession (. 	doAssign(); .)] 
+ [  "=" Expression (. 	doAssign(); .)] 
   } .
 
-  AaySize            = { "[" [ ConstExpession ] "]" } .
+  ArraySize            = { "[" [ ConstExpression ] "]" } .
 
 /* Function Definitions */
 
   FunctionDefinition   = 
   (.
  	this->m_pMainFunction = new CFunction;
-	//fo test
+	//for test
 	long t = sizeof(CFunction);
-	m_pMainFunction->m_SymbolTable.m_pPase = this;
-	this->m_LoopTee->m_pFunc = m_pMainFunction;
+	m_pMainFunction->m_SymbolTable.m_pParser = this;
+	this->m_LoopTree->m_pFunc = m_pMainFunction;
 	
-	cha szName[MAX_IDENTIFIER_LENGTH];
+	char szName[MAX_IDENTIFIER_LENGTH];
 	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
 
-	if (stlen(szName) > 20)
-		GenEo(105);
+	if (strlen(szName) > 20)
+		GenError(105);
 	else
-		stcpy(m_pMainFunction->m_szName, szName);
+		strcpy(m_pMainFunction->m_szName, szName);
 		
 		
   .)
-  FunctionHeade FunctionBody  
+  FunctionHeader FunctionBody  
   (.
- 	if (!this->Eo->Eos)
+ 	if (!this->Error->Errors)
 	{
-		   cha path[_MAX_PATH];
-				if (stlen(m_szByteCodeFilePath) == 0 )
-					spintf(path, "%s.%s", this->m_pCuClassDes->GetFullName(),szName);
+		   char path[_MAX_PATH];
+				if (strlen(m_szByteCodeFilePath) == 0 )
+					sprintf(path, "%s.%s", this->m_pCurClassDes->GetFullName(),szName);
 				else
-					spintf(path, "%s%s%s.%s", m_szByteCodeFilePath, PATH_SEPARATOR_S, this->m_pCuClassDes->GetFullName(),szName);
+					sprintf(path, "%s%s%s.%s", m_szByteCodeFilePath, PATH_SEPARATOR_S, this->m_pCurClassDes->GetFullName(),szName);
 	            m_pMainFunction->Output(path);
 		
 	}else{
@@ -380,27 +380,27 @@ AaySize
 	 m_pMainFunction = NULL;
   .)
   .
-  FunctionHeade       = "(" [ FomalPaamList ] ")" 
+  FunctionHeader       = "(" [ FormalParamList ] ")" 
   (. 	
-  this->m_pMainFunction->m_iPaamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
-  if 	(!m_pCuClassDes->getFuncTable()->AddFunction(this->m_pMainFunction))
+  this->m_pMainFunction->m_iParamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
+  if 	(!m_pCurClassDes->getFuncTable()->AddFunction(this->m_pMainFunction))
 		{
-			GenEo(114);
+			GenError(114);
 		}		
  
   .).
-  FunctionBody         = CompoundStatement (.	ADDCOMMAND0(__et); .)  .
-  FomalPaamList      = FomalPaamete { "," FomalPaamete } .
-  FomalPaamete      = (. PTYPEDES type = new TYPEDES; .)
-  Type<type> { (. //test; .) "*" 		(. type->efLevel++; .)
+  FunctionBody         = CompoundStatement (.	ADDCOMMAND0(__ret); .)  .
+  FormalParamList      = FormalParameter { "," FormalParameter } .
+  FormalParameter      = (. PTYPEDES type = new TYPEDES; .)
+  Type<type> { (. //test; .) "*" 		(. type->refLevel++; .)
 
-  }  identifie  
+  }  identifier  
   (. 
-	cha szName[MAX_IDENTIFIER_LENGTH];
+	char szName[MAX_IDENTIFIER_LENGTH];
 	memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
-	Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH);
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
   .)
-  AaySize 
+  ArraySize 
 (. 
 	long op;
 	long type1;
@@ -409,21 +409,21 @@ AaySize
 	if (!m_pMainFunction->PopDigit(&op, &type1, &DT1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
 	{
 
-		if (type->objID > 0 && type->type == dtGeneal && type->efLevel == 0)//Â¶ÇÊûúÊòØÁªìÊûÑÔºå ÁîüÊàê‰ªñÁöÑÊåáÈíà
+		if (type->objID > 0 && type->type == dtGeneral && type->refLevel == 0)//»Áπ˚ «Ω·ππ£¨ …˙≥…À˚µƒ÷∏’Î
 		{
-			type->efLevel++;
+			type->refLevel++;
 		}
-		if (!AllocVa(type, szName))
-			GenEo(113);
+		if (!AllocVar(type, szName))
+			GenError(113);
 		else
-			m_pMainFunction->m_iPaamTotalSize += this->UnitSize(*type);
+			m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
 	}
 	else
 	{
 		
-		int dimsize[64];//Êï∞ÁªÑÊúÄÂ§ßÁª¥Êï∞64
+		int dimsize[64];// ˝◊È◊Ó¥ÛŒ¨ ˝64
 		int i = 0;
-		int aaysize = op;//total size
+		int arraysize = op;//total size
 		dimsize[i] = op;
 		i++;
 		
@@ -431,25 +431,25 @@ AaySize
 		{
 			dimsize[i] = op;			
 			i++;
-			aaysize *= op;
+			arraysize *= op;
 		}
 
-		//Â¶ÇÊûúÊòØÊï∞ÁªÑÔºå ÂàÜÈÖçÊåáÈíàÁ±ªÂûã
+		//»Áπ˚ « ˝◊È£¨ ∑÷≈‰÷∏’Î¿‡–Õ
 		long temp;
 		long index;
-		temp = AllocTempVa(type->type, 1);
+		temp = AllocTempVar(type->type, 1);
 		if (temp == -1)
 		{
-			GenEo(98);
+			GenError(98);
 		}
-		//ËÆæÁΩÆÁ±ªÂûãÂíåÂêçÂ≠ó
+		//…Ë÷√¿‡–Õ∫Õ√˚◊÷
 		index = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount -1;
-		stcpy(m_pMainFunction->m_SymbolTable.tableEnty[index].szName, szName);
+		strcpy(m_pMainFunction->m_SymbolTable.tableEntry[index].szName, szName);
 		type->dim = i-1;
-		type->efLevel = 1;
+		type->refLevel = 1;
 		memcpy(type->dimsize, dimsize, (i-1)*sizeof(long));
-		memcpy(&m_pMainFunction->m_SymbolTable.tableEnty[index].type, type, sizeof(TYPEDES));
-		m_pMainFunction->m_iPaamTotalSize += this->UnitSize(*type);
+		memcpy(&m_pMainFunction->m_SymbolTable.tableEntry[index].type, type, sizeof(TYPEDES));
+		m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
 	}
 	delete type;
 .)  
@@ -461,81 +461,81 @@ AaySize
                          ( 
                          /*
 (.
- 		cha szName[MAX_IDENTIFIER_LENGTH];
+ 		char szName[MAX_IDENTIFIER_LENGTH];
 		memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
-		Scanne->GetName(&Scanne->NextSym, szName, MAX_IDENTIFIER_LENGTH);
+		Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH);
 .)*/
-						 AssignmentStatement | BeakStatement
+						 AssignmentStatement | BreakStatement
                            | ContinueStatement
-                           | DoStatement | FoStatement
+                           | DoStatement | ForStatement
                            | IfStatement  | NullStatement
-                           | RetunStatement | SwitchStatement
-                           | WhileStatement ) (. 	m_pMainFunction->CleaExpStack(); .)
+                           | ReturnStatement | SwitchStatement
+                           | WhileStatement ) (. 	m_pMainFunction->ClearExpStack(); .)
  .
 
-  Label                = ("case" ConstExpession ":")  | ( "default" ":") .
+  Label                = ("case" ConstExpression ":")  | ( "default" ":") .
 
-/* Thee is no equiement that a switch statement be followed by a compound
-   statement.  Actually labels may be even moe geneal */
+/* There is no requirement that a switch statement be followed by a compound
+   statement.  Actually labels may be even more general */
 
-  AssignmentStatement = Expession ";" .
+  AssignmentStatement = Expression ";" .
 
-  BeakStatement       = "beak" ";" 
-  (. 	//ecode this command fo wite back
-	this->m_culoop->AddBeak(this->m_pMainFunction->m_nCuentCmdNum);
+  BreakStatement       = "break" ";" 
+  (. 	//recode this command for write back
+	this->m_curloop->AddBreak(this->m_pMainFunction->m_nCurrentCmdNum);
 	//add command
 	ADDCOMMAND1(__jmp, CC, 0);	
  .)
  .
- LocalDeclaation     = 
+ LocalDeclaration     = 
 							(.
 								PTYPEDES type = new TYPEDES;
-								cha szName[MAX_IDENTIFIER_LENGTH];
+								char szName[MAX_IDENTIFIER_LENGTH];
 								
 							.)
- ( Type<type> |  StoageClass  [Type<type>] )
+ ( Type<type> |  StorageClass  [Type<type>] )
   
 							
- /* { "*"						(. 		type->efLevel++; .)
+ /* { "*"						(. 		type->refLevel++; .)
   } */
   
-  identifie				(.	
+  identifier				(.	
 								memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-								Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);
+								Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);
 							.)
- VaList<type, szName>";"  (. delete type; .)
+ VarList<type, szName>";"  (. delete type; .)
  . 
-  CompoundStatement    = "{" { LocalDeclaation | Statement } "}" .
+  CompoundStatement    = "{" { LocalDeclaration | Statement } "}" .
 
   ContinueStatement    = "continue" ";" 
   (.
-  	//ecode this command fo wite back
-	this->m_culoop->AddContinue(this->m_pMainFunction->m_nCuentCmdNum);
+  	//recode this command for write back
+	this->m_curloop->AddContinue(this->m_pMainFunction->m_nCurrentCmdNum);
 	//add command
 	ADDCOMMAND1(__jmp, CC, 0);	
 
   .)
   .
 
-  DoStatement          = "do" Statement "while" "(" Expession ")" ";" .
+  DoStatement          = "do" Statement "while" "(" Expression ")" ";" .
 
-  FoStatement         = "fo"  "(" [ Expession ] ";" 
+  ForStatement         = "for"  "(" [ Expression ] ";" 
   (.
-	//Âæ™ÁéØ‰ªé‰∏ã‰∏ÄÂè•ÂºÄÂßã
-	int loopEnty = this->m_pMainFunction->m_nCuentCmdNum;
+	//—≠ª∑¥”œ¬“ªæ‰ø™ º
+	int loopEntry = this->m_pMainFunction->m_nCurrentCmdNum;
 	int jzCmd = 0;
 	
-	//ÂéãÊ†à
-	this->AddNewLoop();//Ê∑ªÂä†‰∏Ä‰∏™Êñ∞ÁöÑlooptee
-	this->m_culoop->m_enty = loopEnty;//ËÆæÁΩÆÊñ∞loopteeÁöÑÂÖ•Âè£
+	//—π’ª
+	this->AddNewLoop();//ÃÌº”“ª∏ˆ–¬µƒlooptree
+	this->m_curloop->m_entry = loopEntry;//…Ë÷√–¬looptreeµƒ»Îø⁄
 
 
   .)
   
-  [ Expession ] 
+  [ Expression ] 
   (.
  		//add command jz
-		jzCmd = this->m_pMainFunction->m_nCuentCmdNum;
+		jzCmd = this->m_pMainFunction->m_nCurrentCmdNum;
 		ADDCOMMAND1(__jnz, CC, 0)
  
   .)
@@ -549,44 +549,44 @@ AaySize
   .)
   [ 
 (.
-  		cmdsaved = this->m_pMainFunction->m_nCuentCmdNum;
+  		cmdsaved = this->m_pMainFunction->m_nCurrentCmdNum;
 .)
-	Expession 
+	Expression 
 (.
-		cmdnum = this->m_pMainFunction->m_nCuentCmdNum - cmdsaved;
+		cmdnum = this->m_pMainFunction->m_nCurrentCmdNum - cmdsaved;
 		cmd = new COMMAND[cmdnum];    
-		//save expession cmd to inset befoe jmp command
+		//save expression cmd to insert before jmp command
 		long t=cmdnum*sizeof(COMMAND);
 		memcpy(cmd, &(m_pMainFunction->m_pCmdTable[cmdsaved]), cmdnum*sizeof(COMMAND));
-		m_pMainFunction->m_nCuentCmdNum = cmdsaved;		
+		m_pMainFunction->m_nCurrentCmdNum = cmdsaved;		
 
 .)
   ] ")" Statement
   (.
-  	long nContinue;//continue ËØ≠Âè•ÁöÑË∑≥ËΩ¨ÁõÆÁöÑÂú∞„ÄÇ
-	nContinue = this->m_pMainFunction->m_nCuentCmdNum;
-	this->m_culoop->SetContinue(nContinue);
+  	long nContinue;//continue ”Ôæ‰µƒÃ¯◊™ƒøµƒµÿ°£
+	nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
+	this->m_curloop->SetContinue(nContinue);
 
-	//inset saved cmd
-	fo (int i = 0; i< cmdnum; i++)
+	//insert saved cmd
+	for (int i = 0; i< cmdnum; i++)
 	{
 		m_pMainFunction->AddCommand(cmd[i]);
 	}
 	delete cmd;
-	//change loop vaiable
+	//change loop variable
 	//jump back
-	ADDCOMMAND1(__jmp, CC, loopEnty);	
-	//wite back jz instuctment
-	this->m_pMainFunction->m_pCmdTable[jzCmd].op[0] = this->m_pMainFunction->m_nCuentCmdNum;
-	//wite back beak continue statement
-	this->m_culoop->SetExit(this->m_pMainFunction->m_nCuentCmdNum);
-	this->ExitCuLoop();//destoy cuent loop tee
+	ADDCOMMAND1(__jmp, CC, loopEntry);	
+	//write back jz instructment
+	this->m_pMainFunction->m_pCmdTable[jzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
+	//write back break continue statement
+	this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
+	this->ExitCurLoop();//destroy current loop tree
 
   .) .
 
-  IfStatement          = "if" "(" Expession ")" 
+  IfStatement          = "if" "(" Expression ")" 
   (.
-  	//Âà§Êñ≠
+  	//≈–∂œ
 	{
 		long op1;
 		long type1;
@@ -595,48 +595,48 @@ AaySize
 		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 		{
 			//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 			if (dt1.type == dtFloat)
 			{
-				GenEo(112);
+				GenError(112);
 			}
 			else
 			{
-				//get addess mode
-				int addess_mode = (type1<<8);
-				addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
-				addess_mode |= AMODE_DIRECT;
+				//get address mode
+				int address_mode = (type1<<8);
+				address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+				address_mode |= AMODE_DIRECT;
 				//add commmand to command table
-				ADDCOMMAND3(__test, addess_mode, op1, 0, 0)	
+				ADDCOMMAND3(__test, address_mode, op1, 0, 0)	
 			}
 		}
 	}
 
-	//ËÆ∞ÂΩïË∑≥ËΩ¨Êåá‰ª§ÁöÑÂ∫èÂè∑
-	int jzcmd = this->m_pMainFunction->m_nCuentCmdNum;
-	//Âä†ÂÖ•Âà§Êñ≠ËØ≠Âè•
-	ADDCOMMAND1(__jz, CC, 0)//Ë∑≥ËΩ¨ÁõÆÊ†áÂú®‰∏ãÈù¢Ë°•‰∏ä
+	//º«¬ºÃ¯◊™÷∏¡Óµƒ–Ú∫≈
+	int jzcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+	//º”»Î≈–∂œ”Ôæ‰
+	ADDCOMMAND1(__jz, CC, 0)//Ã¯◊™ƒø±Í‘⁄œ¬√Ê≤π…œ
   .)
   Statement   (. 	int nextcmd; bool bElse = false;.)[
  
    "else" 
   (.
-		bElse = tue;
-  		int jmpcmd = this->m_pMainFunction->m_nCuentCmdNum;
+		bElse = true;
+  		int jmpcmd = this->m_pMainFunction->m_nCurrentCmdNum;
 		ADDCOMMAND1(__jmp, CC, 0);
-		//Ë°•‰∏äjnzÁöÑË∑≥ËΩ¨ÁõÆÊ†á
-		nextcmd = this->m_pMainFunction->m_nCuentCmdNum;
+		//≤π…œjnzµƒÃ¯◊™ƒø±Í
+		nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
 		this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
 
   .)
   Statement
   (.
-  		nextcmd = this->m_pMainFunction->m_nCuentCmdNum;
-		//Ë°•‰∏äjmpÁöÑË∑≥ËΩ¨ÁõÆÊ†á
+  		nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		//≤π…œjmpµƒÃ¯◊™ƒø±Í
 		this->m_pMainFunction->m_pCmdTable[jmpcmd].op[0] = nextcmd;
 
   .)
@@ -644,8 +644,8 @@ AaySize
    (.
    if (!bElse)
    {
-   		//Ë°•‰∏äjnzÁöÑË∑≥ËΩ¨ÁõÆÊ†á
-		nextcmd = this->m_pMainFunction->m_nCuentCmdNum;
+   		//≤π…œjnzµƒÃ¯◊™ƒø±Í
+		nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
 		this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
 	}
 .)
@@ -653,7 +653,7 @@ AaySize
 
   NullStatement        = ";" .
 
-  RetunStatement      = "etun" [ Expession ] 
+  ReturnStatement      = "return" [ Expression ] 
   (.
 	//pop
 	long op1;
@@ -662,25 +662,25 @@ AaySize
 	if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
 	{
 	//	REPORT_COMPILE_ERROR("POP UP FAILED");
-		this->GenEo(96);
-		etun;
+		this->GenError(96);
+		return;
 	}
-	int addess_mode = type&0x00ff;
-	addess_mode |= (log2(UnitSize(dt1))<<6);
+	int address_mode = type&0x00ff;
+	address_mode |= (log2(UnitSize(dt1))<<6);
 	
 	//ADDCOMMAND
-	// move eutn value to _ax
-	ADDCOMMAND2(__mov, addess_mode|0x8200, _AX, op1);
-	// etun
-	ADDCOMMAND0(__et);
+	// move reutrn value to _ax
+	ADDCOMMAND2(__mov, address_mode|0x8200, _AX, op1);
+	// return
+	ADDCOMMAND0(__ret);
 
   .)
   ";" .
-                         /* Expession usually in paentheses */
+                         /* Expression usually in parentheses */
 
   SwitchStatement      = "switch" "("
 
-   Expession 
+   Expression 
 
    
    ")" Statement 
@@ -689,17 +689,17 @@ AaySize
 
   WhileStatement       = "while" "(" 
     (.
-	int loopenty = this->m_pMainFunction->m_nCuentCmdNum;
+	int loopentry = this->m_pMainFunction->m_nCurrentCmdNum;
 
-	//ÂéãÊ†à
-	this->AddNewLoop();//Ê∑ªÂä†‰∏Ä‰∏™Êñ∞ÁöÑlooptee
-	this->m_culoop->m_enty = loopenty;//ËÆæÁΩÆÊñ∞loopteeÁöÑÂÖ•Âè£
+	//—π’ª
+	this->AddNewLoop();//ÃÌº”“ª∏ˆ–¬µƒlooptree
+	this->m_curloop->m_entry = loopentry;//…Ë÷√–¬looptreeµƒ»Îø⁄
 
 
   .)
-	Expession 
+	Expression 
 	   (.
-	//Âà§Êñ≠
+	//≈–∂œ
 	{
 		long op1;
 		long type1;
@@ -708,76 +708,76 @@ AaySize
 		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 		{
 			//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 			if (dt1.type == dtFloat)
 			{
-				GenEo(112);
+				GenError(112);
 			}
 			else
 			{
-				//get addess mode
-				int addess_mode = (type1<<8);
-				addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
-				addess_mode |= AMODE_DIRECT;
+				//get address mode
+				int address_mode = (type1<<8);
+				address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+				address_mode |= AMODE_DIRECT;
 				//add commmand to command table
-				ADDCOMMAND3(__test, addess_mode, op1, 0, 0)	
+				ADDCOMMAND3(__test, address_mode, op1, 0, 0)	
 			}
 		}
 	}
 
-	int jnzCmd =  this->m_pMainFunction->m_nCuentCmdNum;
+	int jnzCmd =  this->m_pMainFunction->m_nCurrentCmdNum;
 	//jnz command
 	ADDCOMMAND1(__jz, CC, 0);
    .)
    ")" Statement 
    
      (.
-   	long nContinue;//continue ËØ≠Âè•ÁöÑË∑≥ËΩ¨ÁõÆÁöÑÂú∞„ÄÇ
-	nContinue = this->m_pMainFunction->m_nCuentCmdNum;
-	this->m_culoop->SetContinue(nContinue);
+   	long nContinue;//continue ”Ôæ‰µƒÃ¯◊™ƒøµƒµÿ°£
+	nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
+	this->m_curloop->SetContinue(nContinue);
 
 	//jmp back
-	ADDCOMMAND1(__jmp, CC, loopenty);
-	//wite back jnz
-	this->m_pMainFunction->m_pCmdTable[jnzCmd].op[0] = this->m_pMainFunction->m_nCuentCmdNum;
+	ADDCOMMAND1(__jmp, CC, loopentry);
+	//write back jnz
+	this->m_pMainFunction->m_pCmdTable[jnzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
 
-	this->m_culoop->SetExit(this->m_pMainFunction->m_nCuentCmdNum);
-	this->ExitCuLoop();//destoy cuent loop tee
+	this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
+	this->ExitCurLoop();//destroy current loop tree
 
    .).
 
-/* LocalDeclaations */
+/* LocalDeclarations */
 
-/*  LocalDeclaation     = 
+/*  LocalDeclaration     = 
 							(.
 								PTYPEDES type = new TYPEDES;
-								cha szName[MAX_IDENTIFIER_LENGTH];
+								char szName[MAX_IDENTIFIER_LENGTH];
 								
 							.)
-  [ StoageClass ] [Type<type>	]
+  [ StorageClass ] [Type<type>	]
 							
-  { "*"						(. 		type->efLevel++; .)
+  { "*"						(. 		type->refLevel++; .)
   } 
   
-  identifie				(.	
+  identifier				(.	
 								memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-								Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);
+								Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);
 							.)
- ( FunctionHeade | VaList<type, szName> ) ";"  (. delete type; .)
+ ( FunctionHeader | VarList<type, szName> ) ";"  (. delete type; .)
  . 
 */
 
-/* Expessions, based on Kenighan and Ritchie: "The C Pogamming Language".
-   Thee does not seem to be a way to make this wok in an LL(1) fashion,
-   but this geneates a "woking" pase */
+/* Expressions, based on Kernighan and Ritchie: "The C Programming Language".
+   There does not seem to be a way to make this work in an LL(1) fashion,
+   but this generates a "working" parser */
 
-  ConstExpession      = Expession .
+  ConstExpression      = Expression .
 
-  Expession           = Conditional { AssignmentOpeato Expession
+  Expression           = Conditional { AssignmentOperator Expression
   (.
 	if (!doAssign()) 
 			continue;
@@ -798,22 +798,22 @@ LogANDExp
 		long op1, op2;
 		long type1, type2;
 		TYPEDES dt1, dt2;
-		//popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
+		//pop≥ˆ≥À ˝∫Õ±ª≥À ˝
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 			CAST
-			//get addess mode
-			int addess_mode = (type1<<8)|(shot)type2;
-			addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 			//add commmand to command table
-			ADDCOMMAND3(__test, addess_mode, op1, op2, 7/*==*/)					
-			//push esult
+			ADDCOMMAND3(__test, address_mode, op1, op2, 7/*==*/)					
+			//push result
 			TYPEDES dt;//not used
 			memset(&dt, 0, sizeof(TYPEDES));
 			this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -828,13 +828,13 @@ LogANDExp
 		long t;
 		TYPEDES DT;
 		m_pMainFunction->PopDigit(&g, &t, &DT);
-		//Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+		//Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 		
 		_typedes(DT1, dtLong)
 		if (m_pMainFunction->AddVal(NULL, DT1))
 		{
 			long temp;
-			temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 			ADDCOMMAND2(__mov, DR, temp, _PSW);
 			m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, DT1);
 		}
@@ -862,22 +862,22 @@ InclORExp
 
 (.
 		//add command
-		//popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
+		//pop≥ˆ≥À ˝∫Õ±ª≥À ˝
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 			CAST
-			//get addess mode
-			int addess_mode = (type1<<8)|(shot)type2;
-			addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 			//add commmand to command table
-			ADDCOMMAND3(__test, addess_mode, op1, op2, 6/*==*/)					
-			//push esult
+			ADDCOMMAND3(__test, address_mode, op1, op2, 6/*==*/)					
+			//push result
 			TYPEDES dt;//not used
 			memset(&dt, 0, sizeof(TYPEDES));
 			this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -893,11 +893,11 @@ InclORExp
 		TYPEDES dt;
 		m_pMainFunction->PopDigit(&g, &t, &dt);
 		
-		//Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+		//Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 		if (m_pMainFunction->AddVal(NULL, dt1))
 		{			
 			long temp;
-			temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 			ADDCOMMAND2(__mov, DR, temp, _PSW);
 			m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
 		}
@@ -934,31 +934,31 @@ InclORExp
 
 (.
 		//add command
-		//popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
+		//pop≥ˆ≥À ˝∫Õ±ª≥À ˝
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 			CAST
-			//get addess mode
-			int addess_mode = (type1<<8)|(shot)type2;
-			addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 
 			//add commmand to command table
 			if (type == 0)
 			{	
-				ADDCOMMAND3(__test, addess_mode, op1, op2, 0/*==*/)					
+				ADDCOMMAND3(__test, address_mode, op1, op2, 0/*==*/)					
 			}
 			else if (type == 1)
 			{
-				ADDCOMMAND3(__test, addess_mode, op1, op2, 1/*==*/)	
+				ADDCOMMAND3(__test, address_mode, op1, op2, 1/*==*/)	
 			}
 
-			//push esult
+			//push result
 			TYPEDES dt;//not used
 			memset(&dt, 0, sizeof(TYPEDES));
 			this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -975,11 +975,11 @@ InclORExp
 		TYPEDES dt;
 		if (m_pMainFunction->PopDigit(&g, &t, &dt))
 		{
-			//Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+			//Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 			if (m_pMainFunction->AddVal(NULL,  dt1))
 			{			
 				long temp;
-				temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 				ADDCOMMAND2(__mov, DR, temp , _PSW);
 				m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
 			}
@@ -1005,24 +1005,24 @@ InclORExp
   
   (.
   		//add command
-		//popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
+		//pop≥ˆ≥À ˝∫Õ±ª≥À ˝
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 			CAST
-			//get addess mode
-			int addess_mode = (type1<<8)|(shot)type2;
-			addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 
 			//add commmand to command table
-			ADDCOMMAND3(__test, addess_mode, op1, op2, type)					
+			ADDCOMMAND3(__test, address_mode, op1, op2, type)					
 
-			//push esult
+			//push result
 			TYPEDES dt;//not used
 			memset(&dt, 0, sizeof(TYPEDES));
 			this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -1035,18 +1035,18 @@ InclORExp
   (.
   	if (type >= 0)
 	{
-		// popÊéâÂ§ö‰∫éÁöÑÊìç‰ΩúÊï∞, Âõ†‰∏∫ËøôÊó∂ÁªìÊûúÂ∑≤Âú®__AX‰∏≠
+		// popµÙ∂‡”⁄µƒ≤Ÿ◊˜ ˝, “ÚŒ™’‚ ±Ω·π˚“—‘⁄__AX÷–
 		long g;
 		long t;
 		TYPEDES dt;
 		m_pMainFunction->PopDigit(&g, &t, &dt);
 
-		//Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+		//Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 		_typedes(dt_temp, dtLong)
 		if (m_pMainFunction->AddVal(NULL,  dt_temp))
 		{			
 			long temp;
-			temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 			ADDCOMMAND2(__mov, DR, temp, _PSW);
 			m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt_temp);
 		}
@@ -1068,35 +1068,35 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		long op1, op2;
 		long type1, type2;
 		TYPEDES dt1, dt2;
-		//popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
+		//pop≥ˆ≥À ˝∫Õ±ª≥À ˝
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 
-			//Á±ªÂûãËΩ¨Êç¢
+			//¿‡–Õ◊™ªª
 			CAST
-			//get addess mode
-			int addess_mode = (type1<<8)|(shot)type2;
-			addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 
 			
 			if (dt1.dim >0)
-			{//Â¶ÇÊûúÊòØÊï∞ÁªÑÂèòÈáè
-				//ÂæóÂà∞Â¢ûÈáè
+			{//»Áπ˚ « ˝◊È±‰¡ø
+				//µ√µΩ‘ˆ¡ø
 				int size = UnitSize(dt1);
-				fo (int i=1; i<dt1.dim;i++)
+				for (int i=1; i<dt1.dim;i++)
 				{
 					size *= dt1.dimsize[i];
 				}
-				//Â¢ûÈáè‰πò‰ª•op2ÂæóÂà∞ÂÆûÈôÖÂ¢ûÈáè,Â≠òÂÖ•_AX
+				//‘ˆ¡ø≥À“‘op2µ√µΩ µº ‘ˆ¡ø,¥Ê»Î_AX
 				ADDCOMMAND2(__mul, type2<<8, op2, size)
-				//Âä†Ê≥ï
-				if (dt1.type == dtFloat && dt1.efLevel==0)
+				//º”∑®
+				if (dt1.type == dtFloat && dt1.refLevel==0)
 				{
 					if (type == 0)
 					ADDCOMMAND2(__fsub, (type1<<8)|0x82, op1, _AX)	
@@ -1114,27 +1114,27 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			else
 			{
 				//add commmand to command table
-				if (dt1.type == dtFloat && dt1.efLevel==0)
+				if (dt1.type == dtFloat && dt1.refLevel==0)
 				{
 					if (type == 0)
-					ADDCOMMAND2(__fsub, addess_mode, op1, op2)	
+					ADDCOMMAND2(__fsub, address_mode, op1, op2)	
 					else if (type == 1)
-					ADDCOMMAND2(__fadd, addess_mode, op1, op2)	
+					ADDCOMMAND2(__fadd, address_mode, op1, op2)	
 				}
 				else
 				{
 					if (type == 0)
-					ADDCOMMAND2(__sub, addess_mode, op1, op2)	
+					ADDCOMMAND2(__sub, address_mode, op1, op2)	
 					else if (type == 1)
-					ADDCOMMAND2(__add, addess_mode, op1, op2)	
+					ADDCOMMAND2(__add, address_mode, op1, op2)	
 				}
 			}	
-			//Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+			//Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 			if (m_pMainFunction->AddVal(NULL,  dt1))
 			{			
 				long temp;
 				long opsize = log2(UnitSize(dt1))<<6;
-				temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 				ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp , _AX);
 				m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
 			}
@@ -1147,59 +1147,59 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 
 } .
 
-  MultExp              = (. 	cha szName[MAX_IDENTIFIER_LENGTH];	memset(szName, 0, MAX_IDENTIFIER_LENGTH); .)
+  MultExp              = (. 	char szName[MAX_IDENTIFIER_LENGTH];	memset(szName, 0, MAX_IDENTIFIER_LENGTH); .)
   CastExp  
 (. 
-	Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
-	int type = -1;//0: mult 1: div 2:pecent
+	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+	int type = -1;//0: mult 1: div 2:percent
 .) { ( "*"  (.	type = 0; .) | "/"  (.	type = 1; .) | "%"  (.	type = 2; .) ) CastExp 
 (.
-		Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+		Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
 		
 		//add command
 		long op1, op2;
 		long type1, type2;
 		TYPEDES dt1, dt2;
 
-		//popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
+		//pop≥ˆ≥À ˝∫Õ±ª≥À ˝
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 			//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenEo(96);
-			etun;
+			GenError(96);
+			return;
 		}
 		else
 		{
 			CAST
-			//get addess mode
-			int addess_mode = (type1<<8)|(shot)type2;
-			addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+			//get address mode
+			int address_mode = (type1<<8)|(short)type2;
+			address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 			//add commmand to command table
-			if (dt1.type == dtFloat && dt1.efLevel==0)
+			if (dt1.type == dtFloat && dt1.refLevel==0)
 			{
-				if (type == 0) ADDCOMMAND2(__fmul, addess_mode, op1, op2)					
-					else if (type == 1) ADDCOMMAND2(__fdiv, addess_mode, op1, op2)				
-					else GenEo(109);
+				if (type == 0) ADDCOMMAND2(__fmul, address_mode, op1, op2)					
+					else if (type == 1) ADDCOMMAND2(__fdiv, address_mode, op1, op2)				
+					else GenError(109);
 			}
 			else
 			{
-				if (type == 0) ADDCOMMAND2(__mul, addess_mode, op1, op2)					
-					else if (type == 1) ADDCOMMAND2(__div, addess_mode, op1, op2)
-					else if (type == 2) ADDCOMMAND2(__mod, addess_mode, op1, op2)
+				if (type == 0) ADDCOMMAND2(__mul, address_mode, op1, op2)					
+					else if (type == 1) ADDCOMMAND2(__div, address_mode, op1, op2)
+					else if (type == 2) ADDCOMMAND2(__mod, address_mode, op1, op2)
 			}
 			
-			//Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+			//Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 			if (m_pMainFunction->AddVal(NULL, dt1))
 			{			
 				long temp;
 				long opsize = log2(UnitSize(dt1))<<6;
-				temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 				ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp, _AX);
 				m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
 			}
 			else
 			{
-				this->GenEo(98);
+				this->GenError(98);
 			}
 		}
 
@@ -1208,42 +1208,42 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 
   CastExp              = 
   (.
-  	//‰øùÂ≠ò‰∏ÄÂÖÉÊìç‰ΩúÁ¨¶Ê†à
+  	//±£¥Ê“ª‘™≤Ÿ◊˜∑˚’ª
 	EXPRESSIONOP* pSavedStack = this->m_pExpOpPt;
-	//Ê∏ÖÁ©∫‰∏ÄÂÖÉÊìç‰ΩúÁ¨¶Ê†à
+	//«Âø’“ª‘™≤Ÿ◊˜∑˚’ª
 	m_pExpOpPt = &m_ExpOp;
 	//int op;
 
   .)
-  UnayExp 
+  UnaryExp 
   
   (.
 	int op;
 	while (this->PopOp(&op))
 	{		
 
-		//Êìç‰ΩúÊï∞Âá∫Ê†à
+		//≤Ÿ◊˜ ˝≥ˆ’ª
 		long op1;
 		long type1;
 		TYPEDES dt1;	
 		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
 		{
-			beak;//genEo(96);???????
+			break;//genError(96);???????
 		}
-		int addess_mode = (type1<<8);
-		addess_mode |= log2(UnitSize(dt1))<<14;
+		int address_mode = (type1<<8);
+		address_mode |= log2(UnitSize(dt1))<<14;
 		
-		//Ê∑ªÂä†ÂëΩ‰ª§
+		//ÃÌº”√¸¡Ó
 		switch (op)
 		{
 		case PlusSym:  			
-			//no opeation
-			beak;
+			//no operation
+			break;
 		case MinusSym:			
 			{
 				int opsize;
 				if (!m_pMainFunction->AddVal(NULL, dt1))
-					GenEo(98);
+					GenError(98);
 				if (dt1.type == dtFloat)
 				{
 					opsize = (type1>>6)&0xc0;
@@ -1254,32 +1254,32 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 					opsize = (type1>>6)&0xc0;
 					ADDCOMMAND2(__sub, type1, 0, op1)
 				}
-				ADDCOMMAND2(__mov, DR, m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, _AX)
-				m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, AMODE_MEM|(opsize<<6), dt1);
+				ADDCOMMAND2(__mov, DR, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, _AX)
+				m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, AMODE_MEM|(opsize<<6), dt1);
 			}
-			beak;
-		case StaSym:  
+			break;
+		case StarSym:  
 			{
-				if (dt1.efLevel <1)
-					GenEo(102);
-				dt1.efLevel--;
-				//ÂèñÊìç‰ΩúÁöÑÂ≠óËäÇÁ±ªÂûã
+				if (dt1.refLevel <1)
+					GenError(102);
+				dt1.refLevel--;
+				//»°≤Ÿ◊˜µƒ◊÷Ω⁄¿‡–Õ
 				int opsize = log2(UnitSize(dt1));
 				opsize = opsize<< 6;
 				type1 |= opsize; 
 
-				//Â∞Ütype1ÁöÑÈó¥Êé•ËÆøÈóÆÁ∫ßÂà´ÊèêÈ´ò‰∏ÄÁ∫ß
+				//Ω´type1µƒº‰Ω”∑√Œ º∂±Ã·∏ﬂ“ªº∂
 				int level = (type1 & 0x30) >> 4;
 				if (level == 3)
 				{
-					GenEo(103);
-					beak;
+					GenError(103);
+					break;
 				}
 				level ++;
 				type1 |= level << 4;
 /*				int j = (type1>>4)&0x3;
 				if (j < 1)
-					GenEo(102);//is not a point
+					GenError(102);//is not a point
 				else
 					j--;
 				j = j << 4;
@@ -1288,76 +1288,76 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				type1 &= 0xffcf;
 				type1 |= j;
 */
-				//ÂÖ•Ê†à
+				//»Î’ª
 				m_pMainFunction->PushDigit(op1, type1, dt1);
 			}
-			beak;
+			break;
 		case BangSym: 
 			{
 				if (!m_pMainFunction->AddVal(NULL, dt1))
-					GenEo(98);
+					GenError(98);
 				int opsize = (type1>>6)&0x03;
-				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, op1)
-				ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess)
-				m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, type1, dt1);
+				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
+				ADDCOMMAND1(__notr, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
+				m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
 			}
-			beak;
+			break;
 		case AndSym:  
 			{
 				long temp;
-				temp = AllocTempVa(dtLong, 1);
+				temp = AllocTempVar(dtLong, 1);
 				if (temp == -1)
 				{
-					GenEo(98);
+					GenError(98);
 				}
 				else
 				{
 					if (dt1.objID > 0)
-					{//Â¶ÇÊûúÊó∂objÔºå ‰∏çÂèñÂú∞ÂùÄ
+					{//»Áπ˚ ±obj£¨ ≤ª»°µÿ÷∑
 						m_pMainFunction->PushDigit(op1, type1, dt1);
 					}
 					else
 					{
 						ADDCOMMAND2(__ea, 0x8100|type1, temp, op1)
-						dt1.efLevel ++;
+						dt1.refLevel ++;
 						m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
 					}
 				}
 			}
-			beak;
+			break;
 		case TildeSym: //'~'
 			{
 				if (!m_pMainFunction->AddVal(NULL, dt1))
-					GenEo(98);
+					GenError(98);
 				int opsize = (type1>>6)&0xc0;
-				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, op1)
-				ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess)
-				m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, type1, dt1);
+				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
+				ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
+				m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
 			}
-			beak;
-		default :GenEo(93); beak;
+			break;
+		default :GenError(93); break;
 		}		
 	}
-	//ÊÅ¢Â§ç‰∏ÄÂÖÉËøêÁÆóÁ¨¶Ê†à
-	this->CleaOpStack();
+	//ª÷∏¥“ª‘™‘ÀÀ„∑˚’ª
+	this->ClearOpStack();
 	m_pExpOpPt = pSavedStack;  
   .)
   .
 
-/* we should eally add
-                         | "(" identifie ")" CastExp .
-   but this beaks it badly */
+/* we should really add
+                         | "(" identifier ")" CastExp .
+   but this breaks it badly */
 
-  UnayExp             = PostFixExp
-                         | ( "++" | "--" ) UnayExp
-                         | UnayOpeato CastExp .
+  UnaryExp             = PostFixExp
+                         | ( "++" | "--" ) UnaryExp
+                         | UnaryOperator CastExp .
 
-/* we should eally add
-                         | "sizeof" ( UnayExp | "(" (. PTYPEDES type = new TYPEDES;.) Type<type> ")" ) .
-   but this beaks it badly */
+/* we should really add
+                         | "sizeof" ( UnaryExp | "(" (. PTYPEDES type = new TYPEDES;.) Type<type> ")" ) .
+   but this breaks it badly */
 
-  PostFixExp           = Pimay
-                         { "[" Expession "]"
+  PostFixExp           = Primary
+                         { "[" Expression "]"
 (.
 {
 				//add command
@@ -1368,63 +1368,63 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 				{
 					//	REPORT_COMPILE_ERROR("POP UP FAILED");
-					GenEo(96);
-					etun;
+					GenError(96);
+					return;
 					
 				}
 				else
 				{	
-				/*Â§ÑÁêÜa[b]ÁöÑÊµÅÁ®ã(Ë¶ÅËÄÉËôëÊåáÈíàÔºå Êï∞ÁªÑÔºå Â§öÁª¥Êï∞ÁªÑÔºå ‰Ωú‰∏∫ÂèÇÊï∞‰º†ËøõÊù•ÁöÑÊï∞ÁªÑÂíåÊåáÈíàÔºâ
-					1. ÂæóÂà∞b‰∏ãÊ†á‰ª£Ë°®ÁöÑÂçï‰ΩçÈïøÂ∫¶(Â¶ÇÊûúÊòØÊï∞ÁªÑ, ÈÄöËøáÁª¥Êï∞ËÆ°ÁÆó, Â¶ÇÊûúÊòØÊåáÈíà, eflvlÂáè‰∏ÄÂêéËÆ°ÁÆóUnitSize)
-					2. b*Âçï‰ΩçÈïøÂ∫¶= offset 
+				/*¥¶¿Ìa[b]µƒ¡˜≥Ã(“™øº¬«÷∏’Î£¨  ˝◊È£¨ ∂‡Œ¨ ˝◊È£¨ ◊˜Œ™≤Œ ˝¥´Ω¯¿¥µƒ ˝◊È∫Õ÷∏’Î£©
+					1. µ√µΩbœ¬±Í¥˙±Ìµƒµ•Œª≥§∂»(»Áπ˚ « ˝◊È, Õ®π˝Œ¨ ˝º∆À„, »Áπ˚ «÷∏’Î, reflvlºı“ª∫Ûº∆À„UnitSize)
+					2. b*µ•Œª≥§∂»= offset 
 					3. a + offset -> temp
-					4. push temp, Èó¥Êé•ÂØªÂùÄ
+					4. push temp, º‰Ω”—∞÷∑
 					*/
 					int offset;
-					BOOL bIsAay = TRUE;
-					if (dt1.dim >0)//ÊòØÊï∞ÁªÑ
+					BOOL bIsArray = TRUE;
+					if (dt1.dim >0)// « ˝◊È
 					{
-						bIsAay = TRUE;
+						bIsArray = TRUE;
 						offset= UnitSize(dt1);
-						fo (int i = 1; i< dt1.dim; i++)
+						for (int i = 1; i< dt1.dim; i++)
 						{
 							offset *= dt1.dimsize[i];
 						}
-						//‰∏çÁîüÊàêÊñ∞ÁöÑtypedes, Áõ¥Êé•‰øÆÊîπdt1, ‰Ωø‰πãÁª¥Êï∞Âáè‰∏Ä
+						//≤ª…˙≥…–¬µƒtypedes, ÷±Ω”–ﬁ∏ƒdt1,  π÷ÆŒ¨ ˝ºı“ª
 						if (dt1.dim >1)
 							memcpy(dt1.dimsize, dt1.dimsize+1, sizeof(long)*(dt1.dim-1));					
 						dt1.dim--;							
 					}
 					else
-					{//‰∏çÊòØÊï∞ÁªÑ, ÊòØÊåáÈíà
-						bIsAay = FALSE;
-						if (dt1.efLevel > 0)//ÊòØÊåáÈíà‰∏î‰∏çÊòØÊåáÈíàÊï∞ÁªÑ
+					{//≤ª « ˝◊È,  «÷∏’Î
+						bIsArray = FALSE;
+						if (dt1.refLevel > 0)// «÷∏’Î«“≤ª «÷∏’Î ˝◊È
 						{
-							//‰∏çÁîüÊàêÊñ∞ÁöÑtypedes, Áõ¥Êé•‰øÆÊîπdt1, ‰Ωø‰πã*Âè∑Âáè‰∏Ä
-							dt1.efLevel--;
+							//≤ª…˙≥…–¬µƒtypedes, ÷±Ω”–ﬁ∏ƒdt1,  π÷Æ*∫≈ºı“ª
+							dt1.refLevel--;
 							offset = UnitSize(dt1);
 						}
-						else//Êó¢‰∏çÊòØÊåáÈíà‰πü‰∏çÊòØÊï∞ÁªÑ
-							GenEo(101);						
+						else//º»≤ª «÷∏’Î“≤≤ª « ˝◊È
+							GenError(101);						
 					}
 
-					//ÂÅèÁßªÈáè = Âçï‰ΩçÈïøÂ∫¶* ‰∏ãÊ†áaddcommand(mul, DC, ‰∏ãÊ†á, Âçï‰ΩçÈïøÂ∫¶)
+					//∆´“∆¡ø = µ•Œª≥§∂»* œ¬±Íaddcommand(mul, DC, œ¬±Í, µ•Œª≥§∂»)
 					ADDCOMMAND2(__mul, (type2<<8)|0x8080, op2, offset)
-					//Â¢ûÂä†‰∏¥Êó∂ÂèòÈáèÂ≠òÊîæ‰∏≠Èó¥ÁªìÊûú
-					long temp = this->AllocTempVa(dtLong);
+					//‘ˆº”¡Ÿ ±±‰¡ø¥Ê∑≈÷–º‰Ω·π˚
+					long temp = this->AllocTempVar(dtLong);
 					if (temp == -1)
 					{
-						GenEo(98);
+						GenError(98);
 					}
-					//Â±ÖÂç´Âçé2001-08-22
-					long lIndiect = (type1>>4)&0x03;
-					if (bIsAay == FALSE && lIndiect>0)//Â¶ÇÊûúÊòØÊåáÈíàÔºå ÂàôÈó¥Êé•ÂØªÂùÄ
+					//æ”Œ¿ª™2001-08-22
+					long lIndirect = (type1>>4)&0x03;
+					if (bIsArray == FALSE && lIndirect>0)//»Áπ˚ «÷∏’Î£¨ ‘Úº‰Ω”—∞÷∑
 						ADDCOMMAND2(__add, DR|0x1000, op1, _AX)
 					else
 						ADDCOMMAND2(__add, DR, op1, _AX)
-					//Â∞ÜÁªìÊûú‰øùÂ≠òÂà∞temp
+					//Ω´Ω·π˚±£¥ÊµΩtemp
 					ADDCOMMAND2(__mov, DR, temp, _AX)
-					//ÂÖ•Ê†à, ‰Ωú‰∏∫ÊåáÈíàÁî®
+					//»Î’ª, ◊˜Œ™÷∏’Î”√
 					m_pMainFunction->PushDigit(temp, AMODE_MEM|0x10|((log2(UnitSize(dt1)))<<6), dt1);
 }
 }
@@ -1433,28 +1433,28 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 (.
 	
 {
-			cha szName[MAX_IDENTIFIER_LENGTH];
+			char szName[MAX_IDENTIFIER_LENGTH];
 			memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-			Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+			Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
 			long index = m_PubFuncTable->FindFuncByName(szName);
 			FUNCCALL fn;
 			fn.name = szName;
-			if (index < 0) // cannot find function name in public function table, guess is was scipt function
+			if (index < 0) // cannot find function name in public function table, guess is was script function
 			{
-				// find in scipt function table
-				CFunction* pScipt = m_pCuClassDes->getFuncTable()->GetFunction(szName, &index);
-				if (pScipt == NULL)
+				// find in script function table
+				CFunction* pScript = m_pCurClassDes->getFuncTable()->GetFunction(szName, &index);
+				if (pScript == NULL)
 				{	
-					GenEo(97);
+					GenError(97);
 					Get();
-					etun;
+					return;
 				}
 				else
 				{
-					fn.pVF = pScipt;
+					fn.pVF = pScript;
 					fn.nType = 0;
-					ADDCOMMAND1(__callv, CC, (long)pScipt);
-					m_pCuClassDes->getFuncTable()->ReleaseFunc();
+					ADDCOMMAND1(__callv, CC, (long)pScript);
+					m_pCurClassDes->getFuncTable()->ReleaseFunc();
 				}
 
 			}
@@ -1469,28 +1469,28 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 .)
 FunctionCall<&fn>
 (.}.)
-                          | ("." identifie)  
+                          | ("." identifier)  
                           (.
                           {
-                          cha* membe = GetCuSym();
-                          int addess = m_pMainFunction->AddStaticData(stlen(membe)+1, (BYTE*)membe);
+                          char* member = GetCurrSym();
+                          int address = m_pMainFunction->AddStaticData(strlen(member)+1, (BYTE*)member);
                           //add command
 		            long op1, type1;
 		            TYPEDES dt1;
 		
 		            //pop
-		            if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 != dtGeneal){
-		                     GenEo(96);
-		                    etun;
+		            if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 != dtGeneral){
+		                     GenError(96);
+		                    return;
 		            }else
 					{
-					     long temp = AllocTempVa(dtGeneal);
+					     long temp = AllocTempVar(dtGeneral);
 				    	 if (temp == -1)
 						 {
-	                     GenEo(98);
+	                     GenError(98);
 						}
-						// get effective addess fo object membe
-						ADDCOMMAND3(__eaobj, AMODE_OBJ|AMODE_MEM<<8, temp, op1, addess);
+						// get effective address for object member
+						ADDCOMMAND3(__eaobj, AMODE_OBJ|AMODE_MEM<<8, temp, op1, address);
 						 _typedes(DT1, dtLong)
 						 m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, DT1);
 					}
@@ -1499,7 +1499,7 @@ FunctionCall<&fn>
                           
                           
                           
-                          | ( "->" "{" identifie "}" 
+                          | ( "->" "{" identifier "}" 
 (.
 			{				
 				//pop
@@ -1508,45 +1508,45 @@ FunctionCall<&fn>
 				long op;
 				if (!m_pMainFunction->PopDigit(&op, &type, &dt))
 				{
-					GenEo(96);
+					GenError(96);
 				}
 				else
 				{
 					if (dt.objID > 0)
 					{
-						cha szName[MAX_IDENTIFIER_LENGTH];
+						char szName[MAX_IDENTIFIER_LENGTH];
 						memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-						Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞				
+						Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆				
 						
 						#if 0
 						//get offset
-						OBJMEMDES* pMembe = this->m_ObjTable[dt.objID-1]->GetMembeByName(szName);
-						if (pMembe == NULL)
+						OBJMEMDES* pMember = this->m_ObjTable[dt.objID-1]->GetMemberByName(szName);
+						if (pMember == NULL)
 						{
-							GenEo(121);					
+							GenError(121);					
 						}
 						else
 						{	
 							TYPEDES dtTemp;
-							memcpy(&dtTemp, &pMembe->dt, sizeof(TYPEDES));
+							memcpy(&dtTemp, &pMember->dt, sizeof(TYPEDES));
 							
-							long temp = AllocTempVa(dtLong, 1);
+							long temp = AllocTempVar(dtLong, 1);
 							
 							if (temp == -1)
 							{
-								GenEo(98);
+								GenError(98);
 							}
 							
-							//add(op, offset) = addess
-							ADDCOMMAND2(__add, DC, op, pMembe->offset)
+							//add(op, offset) = address
+							ADDCOMMAND2(__add, DC, op, pMember->offset)
 							ADDCOMMAND2(__mov, DR, temp, _AX)
 							if ((dtTemp.dim ==0 && dtTemp.objID == 0 )
-								||(dtTemp.objID > 0 && dtTemp.efLevel > 0))
-								{//Â¶ÇÊûú‰∏çÊòØÊï∞ÁªÑÂíåobj
+								||(dtTemp.objID > 0 && dtTemp.refLevel > 0))
+								{//»Áπ˚≤ª « ˝◊È∫Õobj
 									
-									//ÂèñÊîπmembeÁöÑopsize
+									//»°∏ƒmemberµƒopsize
 									int opsize;
-									if (dtTemp.efLevel > 0) //Â¶ÇÊûúÊòØÊåáÈíàÁ±ªÂûã
+									if (dtTemp.refLevel > 0) //»Áπ˚ «÷∏’Î¿‡–Õ
 										opsize = log2(OPSIZE_PTR);
 									else
 										opsize = log2(typesize(dtTemp.type, dtTemp.objID));
@@ -1557,18 +1557,18 @@ FunctionCall<&fn>
 								else
 								{
 									
-									//Â¶ÇÊûúÊòØÊï∞ÁªÑÊàñobj, ÁîüÊàê‰∏¥Êó∂ÂèòÈáèÂ≠òÊîæÊï∞ÁªÑÂú∞ÂùÄ
+									//»Áπ˚ « ˝◊ÈªÚobj, …˙≥…¡Ÿ ±±‰¡ø¥Ê∑≈ ˝◊Èµÿ÷∑
 									if (dtTemp.dim != 0)
 									{									
-										/*Â±ÖÂç´Âçé2001-08-22‰øÆÊîπ
-										dtTemp.efLevel++;
+										/*æ”Œ¿ª™2001-08-22–ﬁ∏ƒ
+										dtTemp.refLevel++;
 										dtTemp.dim--;
 										*/
 										m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
 									}
 									else
 									{
-										dtTemp.efLevel++;
+										dtTemp.refLevel++;
 										m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
 									}
 								}
@@ -1582,8 +1582,8 @@ FunctionCall<&fn>
 .)
 			)			  
 						  
-						  | identifie        
-						/*  | (["::" identifie ])*/
+						  | identifier        
+						/*  | (["::" identifier ])*/
                           | "++"
 
 (.
@@ -1591,43 +1591,43 @@ FunctionCall<&fn>
 				long op1;
 				long type1;
 				TYPEDES dt1;
-				//popÂá∫Ë¢´Âä†Êï∞
+				//pop≥ˆ±ªº” ˝
 				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				{
 					//	REPORT_COMPILE_ERROR("POP UP FAILED");
-								GenEo(96);
-			etun;
+								GenError(96);
+			return;
 
 				}
 				else
 				{
 					if (dt1.type == dtFloat)
 					{
-						GenEo(112);
+						GenError(112);
 					}
 					else
 					{
-						//get addess mode
-						int addess_mode = (type1<<8);
-						addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+						//get address mode
+						int address_mode = (type1<<8);
+						address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
 						if (dt1.dim >0)
-						{//Â¶ÇÊûúÊòØÊï∞ÁªÑÂèòÈáè
-							//ÂæóÂà∞Â¢ûÈáè
+						{//»Áπ˚ « ˝◊È±‰¡ø
+							//µ√µΩ‘ˆ¡ø
 							int size = UnitSize(dt1);
-							fo (int i=1; i<dt1.dim;i++)
+							for (int i=1; i<dt1.dim;i++)
 							{
 								size *= dt1.dimsize[i];
 							}
-							//Âä†Ê≥ï
+							//º”∑®
 							ADDCOMMAND2(__add, (type1<<8)|0x80, op1, size)
 						}
 						else
 						{
 							//add commmand to command table
-							ADDCOMMAND2(__add, addess_mode, op1, 1)	
+							ADDCOMMAND2(__add, address_mode, op1, 1)	
 						}	
-						ADDCOMMAND2(__mov, addess_mode|0x02, op1, _AX); 
-						//Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+						ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
+						//Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 						m_pMainFunction->PushDigit(op1, type1, dt1);
 					}
 				}
@@ -1641,43 +1641,43 @@ FunctionCall<&fn>
 				long op1;
 				long type1;
 				TYPEDES dt1;
-				//popÂá∫Ë¢´Âä†Êï∞
+				//pop≥ˆ±ªº” ˝
 				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				{
 					//	REPORT_COMPILE_ERROR("POP UP FAILED");
-								GenEo(96);
-			etun;
+								GenError(96);
+			return;
 
 				}
 				else
 				{
 					if (dt1.type == dtFloat)
 					{
-						GenEo(112);
+						GenError(112);
 					}
 					else
 					{
-						//get addess mode
-						int addess_mode = (type1<<8);
-						addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
+						//get address mode
+						int address_mode = (type1<<8);
+						address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
 						if (dt1.dim >0)
-						{//Â¶ÇÊûúÊòØÊï∞ÁªÑÂèòÈáè
-							//ÂæóÂà∞Â¢ûÈáè
+						{//»Áπ˚ « ˝◊È±‰¡ø
+							//µ√µΩ‘ˆ¡ø
 							int size = UnitSize(dt1);
-							fo (int i=1; i<dt1.dim;i++)
+							for (int i=1; i<dt1.dim;i++)
 							{
 								size *= dt1.dimsize[i];
 							}
-							//Âä†Ê≥ï
+							//º”∑®
 							ADDCOMMAND2(__sub, (type1<<8)|0x80, op1, size)
 						}
 						else
 						{
 							//add commmand to command table
-							ADDCOMMAND2(__sub, addess_mode, op1, 1)	
+							ADDCOMMAND2(__sub, address_mode, op1, 1)	
 						}	
-						ADDCOMMAND2(__mov, addess_mode|0x02, op1, _AX); 
-						//Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+						ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
+						//Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 						m_pMainFunction->PushDigit(op1, type1, dt1);
 					}
 				}
@@ -1685,42 +1685,42 @@ FunctionCall<&fn>
 .)						  
                          } .
                          
- HashItem  = (sting1 | identifie) ":" Expession . 
- SetItem = HashItem | Expession .
+ HashItem  = (string1 | identifier) ":" Expression . 
+ SetItem = HashItem | Expression .
   SetItems = SetItem { "," SetItem } .  
   SetDef = "{"  [ SetItems ] "}" .
   
-  Ceato = 
-  (. cha szName[_MAX_PATH] = ""; .)
-  ClassFullName<szName> {"(" {FomalPaamList} ")"} 
+  Creator = 
+  (. char szName[_MAX_PATH] = ""; .)
+  ClassFullName<szName> {"(" {FormalParamList} ")"} 
   (. 	
 	CClassDes* cd = this->m_classTable->getClass(szName);
 	if (cd == NULL){
-		std::sting s = JUJU::getFilePath(c->getCuScFile())+szName;
-		stcpy(szName, s.c_st());
+		std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+		strcpy(szName, s.c_str());
 		cd = this->m_classTable->getClass(szName);
 		if (cd == NULL){
-				stcat(szName, ".c");
-				CCompile cc;                         
+				strcat(szName, ".c");
+				CCompiler cc;                         
 	            cc.Compile(szName);
 	    }
-		// TODO geneete coect eo
-		//GenEo(100);
-		//etun;
+		// TODO generete correct error
+		//GenError(100);
+		//return;
 	}
-		int addess = m_pMainFunction->AddStaticData(stlen(szName)+1, (BYTE*)szName);
-	ADDCOMMAND1(__newobj,DS, addess);
+		int address = m_pMainFunction->AddStaticData(strlen(szName)+1, (BYTE*)szName);
+	ADDCOMMAND1(__newobj,DS, address);
 	
     
     TYPEDES dt1;
 	memset(&dt1, 0, sizeof(TYPEDES));
-	dt1.type = dtGeneal;
-   // Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
+	dt1.type = dtGeneral;
+   // Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
 	if (m_pMainFunction->AddVal(NULL,  dt1))
 	{                       
 			long temp;
 			long opsize = log2(UnitSize(dt1))<<6;
-			temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 			ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp , _AX);
 			m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
 	}
@@ -1731,72 +1731,72 @@ FunctionCall<&fn>
   .)
    .
   
-  ClassFullName<cha* szName> = 
-  identifie (. stcpy(szName, GetCuSym()); .) 
-  {"::" (. stcat(szName, PATH_SEPARATOR_S); .)
-   identifie (. stcat(szName, GetCuSym()); .)
+  ClassFullName<char* szName> = 
+  identifier (. strcpy(szName, GetCurrSym()); .) 
+  {"::" (. strcat(szName, PATH_SEPARATOR_S); .)
+   identifier (. strcat(szName, GetCurrSym()); .)
    }  .
   
-  Pimay              = 
+  Primary              = 
 (.
-	cha szName[MAX_IDENTIFIER_LENGTH];
+	char szName[MAX_IDENTIFIER_LENGTH];
 	memset(szName, 0, MAX_IDENTIFIER_LENGTH);
 .)
- identifie (.
+ identifier (.
  
- 		{	Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+ 		{	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
  		
  			
-			int addess = -1;
+			int address = -1;
 			
-			if (stcmp(szName, "this")==0){
-			// TODO: get addess of cuent object
-				addess = 0;
+			if (strcmp(szName, "this")==0){
+			// TODO: get address of current object
+				address = 0;
 			}else
-			    addess = GetSymAddess(szName);
+			    address = GetSymAddress(szName);
 
-			 //Â¶ÇÊûúadess<0ÊòØÂáΩÊï∞Âêç
-			          if (addess >= 0 )//Â¶ÇÊûú‰∏çÊòØÂáΩÊï∞ÂêçÔºå ÊòØÂèòÈáèÂêç„ÄÇ
+			 //»Áπ˚adress<0 «∫Ø ˝√˚
+			          if (address >= 0 )//»Áπ˚≤ª «∫Ø ˝√˚£¨  «±‰¡ø√˚°£
 			          {
 			                  TYPEDES dt;
 			                  SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
 			                  if (pElement == NULL)
 			                  {
-			                          GenEo(115);
+			                          GenError(115);
 			                  }
 			                  else
 			                  {
 			                          memcpy(&dt ,&(pElement->type), sizeof(TYPEDES));
 			                          /*if (pdt == NULL)
 			                          {
-			                          GenEo(111);
+			                          GenError(111);
 			                          }
 			                          else*/
 			                  
 			                          if ((dt.dim ==0 && dt.objID == 0 )
-			                                  ||(dt.objID > 0 && dt.efLevel > 0))
-			                          {//Â¶ÇÊûú‰∏çÊòØÊï∞ÁªÑÂíåobj
+			                                  ||(dt.objID > 0 && dt.refLevel > 0))
+			                          {//»Áπ˚≤ª « ˝◊È∫Õobj
 			                                  int opsize;
-			                                  if (dt.efLevel > 0) 
+			                                  if (dt.refLevel > 0) 
 			                                          opsize = log2((int)OPSIZE_PTR);
 			                                  else
 			                                          opsize = log2((int)typesize(dt.type, dt.objID));
 			                                  opsize &= 0x3;
-			                                  m_pMainFunction->PushDigit(addess, AMODE_MEM|(opsize << 6), dt);
+			                                  m_pMainFunction->PushDigit(address, AMODE_MEM|(opsize << 6), dt);
 			                          }
 			                          else
-			                          {//Â¶ÇÊûúÊòØÊï∞ÁªÑÊàñobj, ÁîüÊàê‰∏¥Êó∂ÂèòÈáèÂ≠òÊîæÊï∞ÁªÑÂú∞ÂùÄ
+			                          {//»Áπ˚ « ˝◊ÈªÚobj, …˙≥…¡Ÿ ±±‰¡ø¥Ê∑≈ ˝◊Èµÿ÷∑
 			                                  if (dt.dim != 0)
 			                                  {
-			                                          long temp = AllocTempVa(dtLong, 1);
+			                                          long temp = AllocTempVar(dtLong, 1);
 			                                          if (temp == -1)
 			                                          {
-			                                                  GenEo(98);
+			                                                  GenError(98);
 			                                          }
 			                                          
-			                                          ADDCOMMAND2(__ea, DD, temp, addess)
-			                                          /*Â±ÖÂç´Âçé2001Ôºç8Ôºç22‰øÆÊîπ
-			                                          dt.efLevel++;
+			                                          ADDCOMMAND2(__ea, DD, temp, address)
+			                                          /*æ”Œ¿ª™2001£≠8£≠22–ﬁ∏ƒ
+			                                          dt.refLevel++;
 			                                          dt.dim--;
 			                                          */
 			                                          m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2( (int)(OPSIZE_PTR) )<<6), dt);
@@ -1806,7 +1806,7 @@ FunctionCall<&fn>
 												  int opsize;
 												  opsize = log2((int)OPSIZE_PTR);
 			                                      opsize &= 0x3;
-												  m_pMainFunction->PushDigit(addess, AMODE_MEM|(opsize << 6), dt);
+												  m_pMainFunction->PushDigit(address, AMODE_MEM|(opsize << 6), dt);
 			                                  }
 			                          }
 			                          
@@ -1814,159 +1814,159 @@ FunctionCall<&fn>
 			          }
 			else
 			{
-				//GenEo(126);
+				//GenError(126);
 				if (this->m_PubFuncTable->FindFuncByName(szName) < 0)
 				{
 					long index = 0;
-					if (m_pCuClassDes->getFuncTable()->GetFunction(szName, &index) == NULL)
-						GenEo(104);
+					if (m_pCurClassDes->getFuncTable()->GetFunction(szName, &index) == NULL)
+						GenError(104);
 					else
-						m_pCuClassDes->getFuncTable()->ReleaseFunc();
+						m_pCurClassDes->getFuncTable()->ReleaseFunc();
 				}
-				//	etun;
+				//	return;
 			}
 }
  .)
-  | "new" Ceato
+  | "new" Creator
   
   
-  | sting1
+  | string1
   (.
   		 {
-			                    cha* pCh;
-			                    pCh = new cha[Scanne->CuSym.Len+1];
+			                    char* pCh;
+			                    pCh = new char[Scanner->CurrSym.Len+1];
 			                    if (pCh == NULL)
 			                    {
-			                            GenEo(106);
+			                            GenError(106);
 			                            Get();
-			                            beak;
+			                            break;
 			                    }
-			                    memset(pCh, 0, Scanne->CuSym.Len+1);
-								Scanne->GetName(&Scanne->CuSym, pCh, Scanne->CuSym.Len);//ÂæóÂà∞ÂêçÁß∞
-			                       cha* sting = NULL;
-			                    sting = AnalyzeConstSting(pCh);
-			                 if (sting == NULL)
+			                    memset(pCh, 0, Scanner->CurrSym.Len+1);
+								Scanner->GetName(&Scanner->CurrSym, pCh, Scanner->CurrSym.Len);//µ√µΩ√˚≥∆
+			                       char* string = NULL;
+			                    string = AnalyzeConstString(pCh);
+			                 if (string == NULL)
 			                    {
 			                            if (pCh)
 			                                    delete pCh;
-			                            GenEo(100);                          
+			                            GenError(100);                          
 			                            Get();
-			                            beak;
+			                            break;
 			                    }
 			
-			                    int staddess = this->m_pMainFunction->m_nSSUsedSize;
-			                    if (m_pMainFunction->AddStaticData(stlen(sting)+1, (BYTE*)sting)>=0)
+			                    int straddress = this->m_pMainFunction->m_nSSUsedSize;
+			                    if (m_pMainFunction->AddStaticData(strlen(string)+1, (BYTE*)string)>=0)
 			                    {       
 			                            _typedes(dt, dtInt)
 			                            
 			                            if (m_pMainFunction->AddVal(NULL,  dt))
 			                            {
 			                                    long temp;
-			                                    temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
-			                                    ADDCOMMAND2(__ea, DS, temp, staddess);
+			                                    temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+			                                    ADDCOMMAND2(__ea, DS, temp, straddress);
 			                                    m_pMainFunction->PushDigit(temp, AMODE_MEM, dt);                         
 			                            }
 			                    }
 			                    else
 			                    {
-			                            this->GenEo(98);
+			                            this->GenError(98);
 			                    }
 			                   	
-								if (sting)
-			                            delete sting;
+								if (string)
+			                            delete string;
 								if (pCh)
 			                            delete pCh;	
 			            }
-  .)| cha1
+  .)| char1
   (.
 		{
-			Scanne->GetName(&Scanne->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
-			_typedes(dt,dtCha);
+			Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+			_typedes(dt,dtChar);
 			m_pMainFunction->PushDigit(szName[1], AMODE_DIRECT, dt);
 		}
 
   .)
-  | numbe 
+  | number 
  (.
 
-		if (stch(szName, '.'))	// float
+		if (strchr(szName, '.'))	// float
 		{
 			
-			float numbe = (float)atof(GetCuSym());
+			float number = (float)atof(GetCurrSym());
 			_typedes(dt, dtFloat);			
-			m_pMainFunction->PushDigit(*(long*)&numbe, AMODE_DIRECT|OPSIZE_4B, dt);
+			m_pMainFunction->PushDigit(*(long*)&number, AMODE_DIRECT|OPSIZE_4B, dt);
 		}
 		else	// int
 		{
 			
-			int numbe = atoi(GetCuSym());
+			int number = atoi(GetCurrSym());
 			_typedes(dt, dtLong);			
-			m_pMainFunction->PushDigit(numbe, AMODE_DIRECT|OPSIZE_4B, dt);
+			m_pMainFunction->PushDigit(number, AMODE_DIRECT|OPSIZE_4B, dt);
 		}
 
  .)
-  | "(" Expession ")" 
+  | "(" Expression ")" 
   | SetDef
   .
 
-  FunctionCall<FUNCCALL* pFuncEnty>         = "("   [ ActualPaametes<pFuncEnty> ] ")" 
+  FunctionCall<FUNCCALL* pFuncEntry>         = "("   [ ActualParameters<pFuncEntry> ] ")" 
   (.
-    //long lPaamNum = 0;
-	if (pFuncEnty->nType)
+    //long lParamNum = 0;
+	if (pFuncEntry->nType)
 	{
   	//addcommand
 	ADDCOMMAND0(__endcallpub);
-	//save etun value
+	//save return value
 	_typedes(dt, dtLong)
 	if (m_pMainFunction->AddVal(NULL, dt))
 	{			
 		long temp;
-		temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+		temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 		ADDCOMMAND2(__mov, DR, temp , _AX);
 		m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
 	}
 	else
 	{
-		this->GenEo(98);
+		this->GenError(98);
 	}
 				
 	}
 	else
 	{
-	// check paam numbe
-	//if (lPaamNum != pFuncEnty->pVF->m_iPaamNum)
+	// check param number
+	//if (lParamNum != pFuncEntry->pVF->m_iParamNum)
 	//{
-	//	GenEo(123);
+	//	GenError(123);
 	//}
 
 	//addcommand
 	ADDCOMMAND0(__endcallv);
 
-	//save etun value
+	//save return value
 	_typedes(dt, dtLong)
 	if (m_pMainFunction->AddVal(NULL, dt))
 	{
 		long temp;
-		temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+		temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 		ADDCOMMAND2(__mov, DR, temp , _AX);
 		m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
 	}
 	else
 	{
-		this->GenEo(98);
+		this->GenError(98);
 	}
 	}
   .).
 
-  ActualPaametes<FUNCCALL* pFuncEnty>     = 
+  ActualParameters<FUNCCALL* pFuncEntry>     = 
   (.
-//  	lPaamNum = 0;
-	if (pFuncEnty == NULL)
-		etun;
+//  	lParamNum = 0;
+	if (pFuncEntry == NULL)
+		return;
 
-	cha cPaamNum = 0;	
+	char cParamNum = 0;	
 
-  .)Expession 
+  .)Expression 
   (.
  	//pop
 	long op1;
@@ -1975,26 +1975,26 @@ FunctionCall<&fn>
 	if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
 	{
 	//	REPORT_COMPILE_ERROR("POP UP FAILED");
-		this->GenEo(96);
-		etun;
+		this->GenError(96);
+		return;
 	}
-	int addess_mode = (type<<8)&0xff00;
-	addess_mode |= (log2(UnitSize(dt1))<<14);
+	int address_mode = (type<<8)&0xff00;
+	address_mode |= (log2(UnitSize(dt1))<<14);
 
-	if (pFuncEnty->nType)	// native function
-		ADDCOMMAND1(__paampub, addess_mode, op1)			
+	if (pFuncEntry->nType)	// native function
+		ADDCOMMAND1(__parampub, address_mode, op1)			
 	else
-		ADDCOMMAND1(__paamv, addess_mode, op1)
+		ADDCOMMAND1(__paramv, address_mode, op1)
 
-	cPaamNum++; 
+	cParamNum++; 
   .)
-  { "," Expession 
+  { "," Expression 
   
   (.
   			// modified on 20030331 by weihua ju
-//			if (cPaamNum > pFuncEnty->paams.size()-1)
+//			if (cParamNum > pFuncEntry->params.size()-1)
 //			{
-//				GenEo(106);
+//				GenError(106);
 //			}
 
 			//pop
@@ -2004,62 +2004,60 @@ FunctionCall<&fn>
 			if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE)
 			{
 				//	REPORT_COMPILE_ERROR("POP UP FAILED");
-				this->GenEo(96);
-				etun;
+				this->GenError(96);
+				return;
 			}
 			else
 			{
-				//get addess mode
-				int addess_mode = (type<<8)&0xff00;
-				addess_mode |= (log2(UnitSize(dt1))<<14);
+				//get address mode
+				int address_mode = (type<<8)&0xff00;
+				address_mode |= (log2(UnitSize(dt1))<<14);
 				
-				/*		‰øùÁïô
+				/*		±£¡Ù
 				if (dt1.dim > 0)
 				{
 				_typedes(dt, dtInt)
 				long temp;
-				//Â¶ÇÊûúÊòØÊï∞ÁªÑ, ÊääÂÆÉÁöÑÂú∞ÂùÄÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè, ‰º†ÂÖ•‰∏¥Êó∂ÂèòÈáè
+				//»Áπ˚ « ˝◊È, ∞—À¸µƒµÿ÷∑¥Ê»Î¡Ÿ ±±‰¡ø, ¥´»Î¡Ÿ ±±‰¡ø
 				if (m_pMainFunction->AddVal(NULL, dt))
 				{			
-				temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+				temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
 				ADDCOMMAND2(__ea, DD, temp, op1);
 				}
 				long size = sizeof(long*);
 				size = log2(size);
 				size = size << 14;
 
-				ADDCOMMAND1(__paampub, size|0x100, temp)	
+				ADDCOMMAND1(__parampub, size|0x100, temp)	
 				}
 				else	
 				*/			
-				if (pFuncEnty->nType)	// native function
-				ADDCOMMAND1(__paampub, addess_mode, op1)			
+				if (pFuncEntry->nType)	// native function
+				ADDCOMMAND1(__parampub, address_mode, op1)			
 					else
-				ADDCOMMAND1(__paamv, addess_mode, op1)		
-				cPaamNum++; 
+				ADDCOMMAND1(__paramv, address_mode, op1)		
+				cParamNum++; 
 			}		
 
   .)
   } 
   (.
-		// code added on 20030331 weihua ju
-		if ((pFuncEnty->nType!=0) && cPaamNum != pFuncEnty->pfn->cPaamNum)
+  		// code added on 20030331 weihua ju
+		if ((pFuncEntry->nType!=0) && cParamNum != pFuncEntry->pfn->cParamNum)
 		{
 
-			GenEo(106);
+			GenError(106);
 		}
-	//lPaamNum = cPaamNum;
+	//lParamNum = cParamNum;
   .)
   .
 
-  AssignmentOpeato   =   "="  | "*=" | "/=" | "%=" | "+=" | "-=" | "&="
+  AssignmentOperator   =   "="  | "*=" | "/=" | "%=" | "+=" | "-=" | "&="
                          | "^=" | "|=" | "<<=" | ">>=" .
 
-  UnayOpeato        = "+" | "-" | "*" | "!" | "&" | "~" .
+  UnaryOperator        = "+" | "-" | "*" | "!" | "&" | "~" .
 
 END C.
-
-
 
 
 

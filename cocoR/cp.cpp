@@ -17,22 +17,22 @@
 // add by jackie juju
 #include "clib.h"
 #include <string.h>
-#include <vector>
-#include <string>
+#include <vecto>
+#include <sting>
 #include "datatype.h"
-#include "LoopTree.h"
+#include "LoopTee.h"
 #include "opcode.h"
 #include "os/CSS_LOCKEX.h"
-#include "ScriptFuncTable.h"
+#include "SciptFuncTable.h"
 #include "log.h"
 #include "PubFuncTable.h"
 #include "ClassDes.h"
-#include "compiler.h"
+#include "compile.h"
 #include "utility.h"
 
 #define CAST Cast(op1, type1, dt1, op2, type2, dt2);
 
-extern int typesize(int type);
+exten int typesize(int type);
 
 int log2(int x);
 
@@ -66,24 +66,24 @@ void cParser::Get()
     Scanner->NextSym.SetSym(Sym);
     if (Sym <= MAXT) Error->ErrorDist ++;
     else {
-      if (Sym == PreProcessorSym) { /*83*/
+      if (Sym == PePocessoSym) { /*83*/
       	
-      	    // process #include                                 
-      	char str[256];
-      	Scanner->GetName(&Scanner->NextSym, str, 255);
-      	// get directive
-      	char* p = strchr(str, ' ');
-      	char* directive = NULL;
-      	char* content = NULL;
+      	    // pocess #include                                  
+      	cha st[256];
+      	Scanne->GetName(&Scanne->NextSym, st, 255);
+      	// get diective
+      	cha* p = stch(st, ' ');
+      	cha* diective = NULL;
+      	cha* content = NULL;
       	if ( p != NULL ){
       	    *p=0; 
-      	    directive = str + sizeof(char);
-      	    // proce include 
-      	    if (strcmp(str, "include") == 0){
+      	    diective = st + sizeof(cha);
+      	    // poce include 
+      	    if (stcmp(st, "include") == 0){
       	            // get content
-      	            p += sizeof(char);
+      	            p += sizeof(cha);
       	            while ( (*p == ' ' || *p == '\t' ) && *p != '\0' ){
-      	                    p += sizeof(char);              
+      	                    p += sizeof(cha);               
       	            }
       	            if ( *p != '\0' )
       	                    content = p;
@@ -125,51 +125,51 @@ void cParser::C()
 {
 	
 	
-	m_pCurClassDes = new CClassDes(this);
-	std::string className = JUJU::getFileName(curFileName);
-	m_pCurClassDes->SetName((char*)className.c_str());
-	m_classTable->addClass(m_pCurClassDes);
+	m_pCuClassDes = new CClassDes(this);
+	std::sting className = JUJU::getFileName(cuFileName);
+	m_pCuClassDes->SetName((cha*)className.c_st());
+	m_classTable->addClass(m_pCuClassDes);
 	
 	while (Sym == useSym ||
 	       Sym == loadSym) {
 		if (Sym == useSym) {
-			Import();
+			Impot();
 		} else if (Sym == loadSym) {
 			LoadLib();
 		} else GenError(84);
 	}
-	if (Sym == inheritSym) {
-		Inheritance();
+	if (Sym == inheitSym) {
+		Inheitance();
 	}
-	while (Sym == identifierSym ||
+	while (Sym == identifieSym ||
 	       Sym == classSym ||
-	       Sym >= staticSym && Sym <= stringSym) {
+	       Sym >= staticSym && Sym <= stingSym) {
 		Definition();
 	}
 	Expect(EOF_Sym);
 	
-	std::string name = m_pCurClassDes->GetFullName();
+	std::sting name = m_pCuClassDes->GetFullName();
 	name += ".class";
-	FILE* file = fopen(name.c_str(), "w");
-	std::string *s = m_pCurClassDes->output();
-	fprintf(file, "%s", s->c_str());
+	FILE* file = fopen(name.c_st(), "w");
+	std::sting *s = m_pCuClassDes->output();
+	fpintf(file, "%s", s->c_st());
 	SAFEDELETE(s);
 	fclose(file);
 	
 }
 
-void cParser::Import()
+void cParser::Impot()
 {
 	Expect(useSym);
-	char szName[_MAX_PATH]= "";
+	cha szName[_MAX_PATH]= "";
 	ClassFullName(szName);
 	
 	    
 	    CClassDes* cd = this->m_classTable->getClass(szName);
 	    if (cd == NULL){
-	            strcat(szName, ".c");
-	                                            CCompiler cc;
-	                    //      std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+	            stcat(szName, ".c");
+	                                            CCompile cc;
+	                    //      std::sting s = JUJU::getFilePath(c->getCuScFile())+szName;
 	                            cc.Compile(szName);
 	    };
 	Expect(SemicolonSym);
@@ -178,77 +178,77 @@ void cParser::Import()
 void cParser::LoadLib()
 {
 	Expect(loadSym);
-	Expect(identifierSym);
+	Expect(identifieSym);
 	
-	    // load external library 
-	    std::string lib = GetCurrSym();
-	    std::string libfile = lib+".dll";
-	    std::string libintfile = lib+".int";
+	    // load extenal libay 
+	    std::sting lib = GetCuSym();
+	    std::sting libfile = lib+".dll";
+	    std::sting libintfile = lib+".int";
 	#ifdef WIN32
-	            m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
+	            m_PubFuncTable->LoadLib((cha*)libfile.c_st(), (cha*)libintfile.c_st());
 	#else
 	    m_PubFuncTable->LoadLib(lib+".so", lib+".int");
 	#endif
-	/* for the further if VM run in another process than compiler run
-	    int address = m_pMainFunction->AddStaticData(lib.size()+1, (BYTE*)lib.c_str());
-	    ADDCOMMAND1(__loadlib, DS, address);
+	/* fo the futhe if VM un in anothe pocess than compile un
+	    int addess = m_pMainFunction->AddStaticData(lib.size()+1, (BYTE*)lib.c_st());
+	    ADDCOMMAND1(__loadlib, DS, addess);
 	*/;
 	Expect(SemicolonSym);
 }
 
-void cParser::Inheritance()
+void cParser::Inheitance()
 {
-	Expect(inheritSym);
-	Expect(identifierSym);
+	Expect(inheitSym);
+	Expect(identifieSym);
 	
 	
-	// TODO get full name in current imported classes, should not need to provide full name here
-	    char* szName = GetCurrSym();
+	// TODO get full name in cuent impoted classes, should not need to povide full name hee
+	    cha* szName = GetCuSym();
 	    CClassDes* cd = this->m_classTable->getClass(szName);
 	    if (cd == NULL){
-	            std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
-	            strcpy(szName, s.c_str());
+	            std::sting s = JUJU::getFilePath(c->getCuScFile())+szName;
+	            stcpy(szName, s.c_st());
 	            cd = this->m_classTable->getClass(szName);
 	            if (cd == NULL){
-	                            strcat(szName, ".c");
-	                            CCompiler cc;                         
+	                            stcat(szName, ".c");
+	                            CCompile cc;                         
 	                cc.Compile(szName);
 	        }
 	    }
-	    this->m_pCurClassDes->setParent(szName);
+	    this->m_pCuClassDes->setPaent(szName);
 	Expect(SemicolonSym);
 }
 
 void cParser::Definition()
 {
-	if (Sym == identifierSym ||
-	    Sym >= staticSym && Sym <= stringSym) {
+	if (Sym == identifieSym ||
+	    Sym >= staticSym && Sym <= stingSym) {
 		if (Sym >= staticSym && Sym <= functionSym) {
-			StorageClass();
+			StoageClass();
 		}
 		PTYPEDES type = new TYPEDES;
-		if (Sym >= varSym && Sym <= stringSym) {
+		if (Sym >= vaSym && Sym <= stingSym) {
 			Type(type);
 		}
-		Expect(identifierSym);
+		Expect(identifieSym);
 		
-		      char szName[MAX_IDENTIFIER_LENGTH];
+		      cha szName[MAX_IDENTIFIER_LENGTH];
 		      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-		      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆;
+		      Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞;
 		if (Sym == LparenSym) {
 			FunctionDefinition();
-			this->m_pCurClassDes->AddMember(szName, *type);
+			this->m_pCuClassDes->AddMembe(szName, *type);
 		} else if (Sym == SemicolonSym ||
 		           Sym == EqualSym) {
 			if (Sym == EqualSym) {
 				Get();
-				this->m_pCurClassDes->AddMember(szName, *type);
-				Expression();
+				this->m_pCuClassDes->AddMembe(szName, *type);
+				Expession();
 				/*TODO*/;
 				Expect(SemicolonSym);
 			} else if (Sym == SemicolonSym) {
 				Get();
-				this->m_pCurClassDes->AddMember(szName, *type);
+				this->m_pCuClassDes->AddMembe(szName, *type);
 			} else GenError(85);
 		} else GenError(86);
 	} else if (Sym == classSym) {
@@ -256,19 +256,19 @@ void cParser::Definition()
 	} else GenError(87);
 }
 
-void cParser::ClassFullName(char* szName)
+void cParser::ClassFullName(cha* szName)
 {
-	Expect(identifierSym);
-	strcpy(szName, GetCurrSym());
+	Expect(identifieSym);
+	stcpy(szName, GetCuSym());
 	while (Sym == ColonColonSym) {
 		Get();
-		strcat(szName, PATH_SEPARATOR_S);
-		Expect(identifierSym);
-		strcat(szName, GetCurrSym());
+		stcat(szName, PATH_SEPARATOR_S);
+		Expect(identifieSym);
+		stcat(szName, GetCuSym());
 	}
 }
 
-void cParser::StorageClass()
+void cParser::StoageClass()
 {
 	if (Sym == staticSym) {
 		Get();
@@ -282,35 +282,35 @@ void cParser::StorageClass()
 void cParser::Type(PTYPEDES type)
 {
 	switch (Sym) {
-		case varSym: 
+		case vaSym: 
 		case mixedSym:  
-			if (Sym == varSym) {
+			if (Sym == vaSym) {
 				Get();
 			} else if (Sym == mixedSym) {
 				Get();
 			} else GenError(89);
 			
 			              /*      #ifdef __SUPPORT_OBJ
-			                      char szName[MAX_IDENTIFIER_LENGTH];
+			                      cha szName[MAX_IDENTIFIER_LENGTH];
 			                      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-			                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆                         
-			                      type->type = dtGeneral;
+			                      Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞                         
+			                      type->type = dtGeneal;
 			                      type->objID = GetObjIDByName(szName); 
 			                      if (type->objID == 0)
-			                              GenError(120);
+			                              GenEo(120);
 			                      #else
 			                      // TODO
-			                              GenError(120);
+			                              GenEo(120);
 			                      #endif
 			*/
-			      type->type = dtGeneral; type->refLevel = 0;
+			      type->type = dtGeneal; type->efLevel = 0;
 			break;
-		case shortSym:  
+		case shotSym:  
 			Get();
 			if (Sym == intSym) {
 				Get();
 			}
-			                         type->type = dtShort; type->refLevel = 0;      
+			                         type->type = dtShot; type->efLevel = 0;        
 			break;
 		case longSym:  
 			Get();
@@ -322,13 +322,13 @@ void cParser::Type(PTYPEDES type)
 					Get();
 				} else GenError(90);
 			}
-			                         type->type = dtLong; type->refLevel = 0;
+			                         type->type = dtLong; type->efLevel = 0;
 			break;
 		case unsignedSym:  
 			Get();
 			if (Sym >= intSym && Sym <= longSym ||
-			    Sym == charSym) {
-				if (Sym == charSym) {
+			    Sym == chaSym) {
+				if (Sym == chaSym) {
 					Get();
 				} else if (Sym == intSym) {
 					Get();
@@ -337,17 +337,17 @@ void cParser::Type(PTYPEDES type)
 				} else GenError(91);
 			}
 			break;
-		case charSym:  
+		case chaSym:  
 			Get();
-			                        type->type = dtChar;                    type->refLevel = 0;
+			                        type->type = dtCha;                     type->efLevel = 0;
 			break;
 		case intSym:  
 			Get();
-			                         type->type = dtInt; type->refLevel = 0;
+			                         type->type = dtInt; type->efLevel = 0;
 			break;
 		case floatSym:  
 			Get();
-			                        type->type = dtFloat;                   type->refLevel = 0;
+			                        type->type = dtFloat;                   type->efLevel = 0;
 			break;
 		case doubleSym:  
 			Get();
@@ -355,9 +355,9 @@ void cParser::Type(PTYPEDES type)
 		case voidSym:  
 			Get();
 			break;
-		case stringSym:  
+		case stingSym:  
 			Get();
-			type->type =  dtStr;            type->refLevel = 0;
+			type->type =  dtSt;            type->efLevel = 0;
 			break;
 		default :GenError(92); break;
 	}
@@ -367,31 +367,31 @@ void cParser::FunctionDefinition()
 {
 	
 	    this->m_pMainFunction = new CFunction;
-	    //for test
+	    //fo test
 	    long t = sizeof(CFunction);
-	    m_pMainFunction->m_SymbolTable.m_pParser = this;
-	    this->m_LoopTree->m_pFunc = m_pMainFunction;
+	    m_pMainFunction->m_SymbolTable.m_pPase = this;
+	    this->m_LoopTee->m_pFunc = m_pMainFunction;
 	    
-	    char szName[MAX_IDENTIFIER_LENGTH];
+	    cha szName[MAX_IDENTIFIER_LENGTH];
 	    memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	    Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+	    Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
 	
-	    if (strlen(szName) > 20)
-	            GenError(105);
+	    if (stlen(szName) > 20)
+	            GenEo(105);
 	    else
-	            strcpy(m_pMainFunction->m_szName, szName);
+	            stcpy(m_pMainFunction->m_szName, szName);
 	            
 	            
-	FunctionHeader();
+	FunctionHeade();
 	FunctionBody();
 	
-	    if (!this->Error->Errors)
+	    if (!this->Eo->Eos)
 	    {
-	               char path[_MAX_PATH];
-	                            if (strlen(m_szByteCodeFilePath) == 0 )
-	                                    sprintf(path, "%s.%s", this->m_pCurClassDes->GetFullName(),szName);
+	               cha path[_MAX_PATH];
+	                            if (stlen(m_szByteCodeFilePath) == 0 )
+	                                    spintf(path, "%s.%s", this->m_pCuClassDes->GetFullName(),szName);
 	                            else
-	                                    sprintf(path, "%s%s%s.%s", m_szByteCodeFilePath, PATH_SEPARATOR_S, this->m_pCurClassDes->GetFullName(),szName);
+	                                    spintf(path, "%s%s%s.%s", m_szByteCodeFilePath, PATH_SEPARATOR_S, this->m_pCuClassDes->GetFullName(),szName);
 	                m_pMainFunction->Output(path);
 	            
 	    }else{
@@ -400,13 +400,13 @@ void cParser::FunctionDefinition()
 	     m_pMainFunction = NULL;
 }
 
-void cParser::Expression()
+void cParser::Expession()
 {
 	Conditional();
 	while (Sym == EqualSym ||
 	       Sym >= StarEqualSym && Sym <= GreaterGreaterEqualSym) {
-		AssignmentOperator();
-		Expression();
+		AssignmentOpeato();
+		Expession();
 		
 		    if (!doAssign()) 
 		                    continue;
@@ -417,12 +417,12 @@ void cParser::Expression()
 void cParser::ClassDef()
 {
 	Expect(classSym);
-	Expect(identifierSym);
+	Expect(identifieSym);
 	
 	      // get name
-	      char *szName = new char[MAX_IDENTIFIER_LENGTH];
+	      cha *szName = new cha[MAX_IDENTIFIER_LENGTH];
 	      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆;
+	      Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞;
 	ClassBody();
 	Expect(SemicolonSym);
 }
@@ -430,51 +430,51 @@ void cParser::ClassDef()
 void cParser::ClassBody()
 {
 	
-	// ¿˚”√CFunction¿¥¥Ê∑≈¿‡≥…‘±
-	CFunction* pSaved = this->m_pMainFunction;      // save current function
+	// Âà©Áî®CFunctionÊù•Â≠òÊîæÁ±ªÊàêÂëò
+	CFunction* pSaved = this->m_pMainFunction;      // save cuent function
 	CFunction function;
-	function.m_SymbolTable.m_pParser = this;
+	function.m_SymbolTable.m_pPase = this;
 	this->m_pMainFunction = &function;
 	
 	
 	Expect(LbraceSym);
-	while (Sym == identifierSym ||
+	while (Sym == identifieSym ||
 	       Sym == classSym ||
-	       Sym >= staticSym && Sym <= stringSym) {
+	       Sym >= staticSym && Sym <= stingSym) {
 		Definition();
 	}
 	Expect(RbraceSym);
 	
 	/*
-	//ÃÌº”class
-	if (!Error->Errors)
+	//Ê∑ªÂä†class
+	if (!Eo->Eos)
 	{
 	      CObjDes* pClass = new CObjDes(this);
 	      pClass->SetName(szName);
 	      if (!pClass)
 	      {
-	              REPORT_MEM_ERROR("Allcotion memory failed")
+	              REPORT_MEM_ERROR("Allcotion memoy failed")
 	      }
 	      else
 	      {
-	              for (int i = 0; i < function.m_SymbolTable.m_nSymbolCount; i++)
+	              fo (int i = 0; i < function.m_SymbolTable.m_nSymbolCount; i++)
 	              {
-	                      if (!pClass->AddMember(function.m_SymbolTable.tableEntry[i].szName, 
-	                              function.m_SymbolTable.tableEntry[i].type))
+	                      if (!pClass->AddMembe(function.m_SymbolTable.tableEnty[i].szName, 
+	                              function.m_SymbolTable.tableEnty[i].type))
 	                      {
 	                              if (pClass)
 	                              {
 	                                      delete pClass;
 	                                      pClass = NULL;
 	                              }
-	                              GenError(118);                                  
-	                              break;
+	                              GenEo(118);                                     
+	                              beak;
 	                      }
 	              }
 	      }
 	      if (!this->AddObj(*pClass))
 	      {
-	              GenError(119);                          
+	              GenEo(119);                             
 	              if (pClass)
 	              {
 	                      delete pClass;
@@ -486,42 +486,42 @@ void cParser::ClassBody()
 	;
 }
 
-void cParser::VarList(PTYPEDES type, char* szFirstName)
+void cParser::VaList(PTYPEDES type, cha* szFistName)
 {
-	ArraySize();
+	AaySize();
 	
-	      doVarDecl(type, szFirstName);
-	      char szName[MAX_IDENTIFIER_LENGTH];
+	      doVaDecl(type, szFistName);
+	      cha szName[MAX_IDENTIFIER_LENGTH];
 	if (Sym == EqualSym) {
 		Get();
-		Expression();
+		Expession();
 		doAssign();
 	}
 	while (Sym == CommaSym) {
 		Get();
-		Expect(identifierSym);
+		Expect(identifieSym);
 		
 		              memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
-		              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
+		              Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH);
 		              
 		
-		ArraySize();
+		AaySize();
 		
-		               doVarDecl(type, szName);
+		               doVaDecl(type, szName);
 		if (Sym == EqualSym) {
 			Get();
-			Expression();
+			Expession();
 			        doAssign();
 		}
 	}
 }
 
-void cParser::ArraySize()
+void cParser::AaySize()
 {
 	while (Sym == LbrackSym) {
 		Get();
-		if (Sym >= identifierSym && Sym <= numberSym ||
-		    Sym >= stringD1Sym && Sym <= charD1Sym ||
+		if (Sym >= identifieSym && Sym <= numbeSym ||
+		    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 		    Sym == LbraceSym ||
 		    Sym == LparenSym ||
 		    Sym == StarSym ||
@@ -530,29 +530,29 @@ void cParser::ArraySize()
 		    Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
 		    Sym == newSym ||
 		    Sym >= BangSym && Sym <= TildeSym) {
-			ConstExpression();
+			ConstExpession();
 		}
 		Expect(RbrackSym);
 	}
 }
 
-void cParser::ConstExpression()
+void cParser::ConstExpession()
 {
-	Expression();
+	Expession();
 }
 
-void cParser::FunctionHeader()
+void cParser::FunctionHeade()
 {
 	Expect(LparenSym);
-	if (Sym >= varSym && Sym <= stringSym) {
-		FormalParamList();
+	if (Sym >= vaSym && Sym <= stingSym) {
+		FomalPaamList();
 	}
 	Expect(RparenSym);
 	        
-	this->m_pMainFunction->m_iParamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
-	if    (!m_pCurClassDes->getFuncTable()->AddFunction(this->m_pMainFunction))
+	this->m_pMainFunction->m_iPaamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
+	if    (!m_pCuClassDes->getFuncTable()->AddFunction(this->m_pMainFunction))
 	           {
-	                   GenError(114);
+	                   GenEo(114);
 	           }               
 	;
 }
@@ -560,45 +560,45 @@ void cParser::FunctionHeader()
 void cParser::FunctionBody()
 {
 	CompoundStatement();
-	        ADDCOMMAND0(__ret);
+	        ADDCOMMAND0(__et);
 }
 
-void cParser::FormalParamList()
+void cParser::FomalPaamList()
 {
-	FormalParameter();
+	FomalPaamete();
 	while (Sym == CommaSym) {
 		Get();
-		FormalParameter();
+		FomalPaamete();
 	}
 }
 
 void cParser::CompoundStatement()
 {
 	Expect(LbraceSym);
-	while (Sym >= identifierSym && Sym <= numberSym ||
-	       Sym >= stringD1Sym && Sym <= charD1Sym ||
+	while (Sym >= identifieSym && Sym <= numbeSym ||
+	       Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	       Sym == SemicolonSym ||
 	       Sym == LbraceSym ||
-	       Sym >= staticSym && Sym <= stringSym ||
+	       Sym >= staticSym && Sym <= stingSym ||
 	       Sym == LparenSym ||
 	       Sym >= StarSym && Sym <= caseSym ||
 	       Sym >= defaultSym && Sym <= ifSym ||
-	       Sym >= returnSym && Sym <= switchSym ||
+	       Sym >= etunSym && Sym <= switchSym ||
 	       Sym == AndSym ||
 	       Sym >= PlusSym && Sym <= MinusSym ||
 	       Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
 	       Sym == newSym ||
 	       Sym >= BangSym && Sym <= TildeSym) {
-		if (Sym >= staticSym && Sym <= stringSym) {
-			LocalDeclaration();
-		} else if (Sym >= identifierSym && Sym <= numberSym ||
-		           Sym >= stringD1Sym && Sym <= charD1Sym ||
+		if (Sym >= staticSym && Sym <= stingSym) {
+			LocalDeclaation();
+		} else if (Sym >= identifieSym && Sym <= numbeSym ||
+		           Sym >= stingD1Sym && Sym <= chaD1Sym ||
 		           Sym == SemicolonSym ||
 		           Sym == LbraceSym ||
 		           Sym == LparenSym ||
 		           Sym >= StarSym && Sym <= caseSym ||
 		           Sym >= defaultSym && Sym <= ifSym ||
-		           Sym >= returnSym && Sym <= switchSym ||
+		           Sym >= etunSym && Sym <= switchSym ||
 		           Sym == AndSym ||
 		           Sym >= PlusSym && Sym <= MinusSym ||
 		           Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
@@ -610,21 +610,21 @@ void cParser::CompoundStatement()
 	Expect(RbraceSym);
 }
 
-void cParser::FormalParameter()
+void cParser::FomalPaamete()
 {
 	PTYPEDES type = new TYPEDES;
 	Type(type);
 	while (Sym == StarSym) {
 		//test;
 		Get();
-		type->refLevel++;
+		type->efLevel++;
 	}
-	Expect(identifierSym);
+	Expect(identifieSym);
 	
-	   char szName[MAX_IDENTIFIER_LENGTH];
+	   cha szName[MAX_IDENTIFIER_LENGTH];
 	   memset(szName, 0, MAX_IDENTIFIER_LENGTH-1);
-	   Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH);
-	ArraySize();
+	   Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH);
+	AaySize();
 	
 	     long op;
 	     long type1;
@@ -633,21 +633,21 @@ void cParser::FormalParameter()
 	     if (!m_pMainFunction->PopDigit(&op, &type1, &DT1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
 	     {
 	
-	             if (type->objID > 0 && type->type == dtGeneral && type->refLevel == 0)//»Áπ˚ «Ω·ππ£¨ …˙≥…À˚µƒ÷∏’Î
+	             if (type->objID > 0 && type->type == dtGeneal && type->efLevel == 0)//Â¶ÇÊûúÊòØÁªìÊûÑÔºå ÁîüÊàê‰ªñÁöÑÊåáÈíà
 	             {
-	                     type->refLevel++;
+	                     type->efLevel++;
 	             }
-	             if (!AllocVar(type, szName))
-	                     GenError(113);
+	             if (!AllocVa(type, szName))
+	                     GenEo(113);
 	             else
-	                     m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
+	                     m_pMainFunction->m_iPaamTotalSize += this->UnitSize(*type);
 	     }
 	     else
 	     {
 	             
-	             int dimsize[64];// ˝◊È◊Ó¥ÛŒ¨ ˝64
+	             int dimsize[64];//Êï∞ÁªÑÊúÄÂ§ßÁª¥Êï∞64
 	             int i = 0;
-	             int arraysize = op;//total size
+	             int aaysize = op;//total size
 	             dimsize[i] = op;
 	             i++;
 	             
@@ -655,25 +655,25 @@ void cParser::FormalParameter()
 	             {
 	                     dimsize[i] = op;                        
 	                     i++;
-	                     arraysize *= op;
+	                     aaysize *= op;
 	             }
 	
-	             //»Áπ˚ « ˝◊È£¨ ∑÷≈‰÷∏’Î¿‡–Õ
+	             //Â¶ÇÊûúÊòØÊï∞ÁªÑÔºå ÂàÜÈÖçÊåáÈíàÁ±ªÂûã
 	             long temp;
 	             long index;
-	             temp = AllocTempVar(type->type, 1);
+	             temp = AllocTempVa(type->type, 1);
 	             if (temp == -1)
 	             {
-	                     GenError(98);
+	                     GenEo(98);
 	             }
-	             //…Ë÷√¿‡–Õ∫Õ√˚◊÷
+	             //ËÆæÁΩÆÁ±ªÂûãÂíåÂêçÂ≠ó
 	             index = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount -1;
-	             strcpy(m_pMainFunction->m_SymbolTable.tableEntry[index].szName, szName);
+	             stcpy(m_pMainFunction->m_SymbolTable.tableEnty[index].szName, szName);
 	             type->dim = i-1;
-	             type->refLevel = 1;
+	             type->efLevel = 1;
 	             memcpy(type->dimsize, dimsize, (i-1)*sizeof(long));
-	             memcpy(&m_pMainFunction->m_SymbolTable.tableEntry[index].type, type, sizeof(TYPEDES));
-	             m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
+	             memcpy(&m_pMainFunction->m_SymbolTable.tableEnty[index].type, type, sizeof(TYPEDES));
+	             m_pMainFunction->m_iPaamTotalSize += this->UnitSize(*type);
 	     }
 	     delete type;
 }
@@ -685,10 +685,10 @@ void cParser::Statement()
 		Label();
 	}
 	switch (Sym) {
-		case identifierSym: 
-		case numberSym: 
-		case stringD1Sym: 
-		case charD1Sym: 
+		case identifieSym: 
+		case numbeSym: 
+		case stingD1Sym: 
+		case chaD1Sym: 
 		case LbraceSym: 
 		case LparenSym: 
 		case StarSym: 
@@ -702,8 +702,8 @@ void cParser::Statement()
 		case TildeSym:  
 			AssignmentStatement();
 			break;
-		case breakSym:  
-			BreakStatement();
+		case beakSym:  
+			BeakStatement();
 			break;
 		case continueSym:  
 			ContinueStatement();
@@ -711,8 +711,8 @@ void cParser::Statement()
 		case doSym:  
 			DoStatement();
 			break;
-		case forSym:  
-			ForStatement();
+		case foSym:  
+			FoStatement();
 			break;
 		case ifSym:  
 			IfStatement();
@@ -720,8 +720,8 @@ void cParser::Statement()
 		case SemicolonSym:  
 			NullStatement();
 			break;
-		case returnSym:  
-			ReturnStatement();
+		case etunSym:  
+			RetunStatement();
 			break;
 		case switchSym:  
 			SwitchStatement();
@@ -731,14 +731,14 @@ void cParser::Statement()
 			break;
 		default :GenError(94); break;
 	}
-	        m_pMainFunction->ClearExpStack();
+	        m_pMainFunction->CleaExpStack();
 }
 
 void cParser::Label()
 {
 	if (Sym == caseSym) {
 		Get();
-		ConstExpression();
+		ConstExpession();
 		Expect(ColonSym);
 	} else if (Sym == defaultSym) {
 		Get();
@@ -748,16 +748,16 @@ void cParser::Label()
 
 void cParser::AssignmentStatement()
 {
-	Expression();
+	Expession();
 	Expect(SemicolonSym);
 }
 
-void cParser::BreakStatement()
+void cParser::BeakStatement()
 {
-	Expect(breakSym);
+	Expect(beakSym);
 	Expect(SemicolonSym);
-	        //recode this command for write back
-	   this->m_curloop->AddBreak(this->m_pMainFunction->m_nCurrentCmdNum);
+	        //ecode this command fo wite back
+	   this->m_culoop->AddBeak(this->m_pMainFunction->m_nCuentCmdNum);
 	   //add command
 	   ADDCOMMAND1(__jmp, CC, 0);      
 }
@@ -767,8 +767,8 @@ void cParser::ContinueStatement()
 	Expect(continueSym);
 	Expect(SemicolonSym);
 	
-	    //recode this command for write back
-	    this->m_curloop->AddContinue(this->m_pMainFunction->m_nCurrentCmdNum);
+	    //ecode this command fo wite back
+	    this->m_culoop->AddContinue(this->m_pMainFunction->m_nCuentCmdNum);
 	    //add command
 	    ADDCOMMAND1(__jmp, CC, 0);      
 	
@@ -780,17 +780,17 @@ void cParser::DoStatement()
 	Statement();
 	Expect(whileSym);
 	Expect(LparenSym);
-	Expression();
+	Expession();
 	Expect(RparenSym);
 	Expect(SemicolonSym);
 }
 
-void cParser::ForStatement()
+void cParser::FoStatement()
 {
-	Expect(forSym);
+	Expect(foSym);
 	Expect(LparenSym);
-	if (Sym >= identifierSym && Sym <= numberSym ||
-	    Sym >= stringD1Sym && Sym <= charD1Sym ||
+	if (Sym >= identifieSym && Sym <= numbeSym ||
+	    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	    Sym == LbraceSym ||
 	    Sym == LparenSym ||
 	    Sym == StarSym ||
@@ -799,21 +799,21 @@ void cParser::ForStatement()
 	    Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
 	    Sym == newSym ||
 	    Sym >= BangSym && Sym <= TildeSym) {
-		Expression();
+		Expession();
 	}
 	Expect(SemicolonSym);
 	
-	    //—≠ª∑¥”œ¬“ªæ‰ø™ º
-	    int loopEntry = this->m_pMainFunction->m_nCurrentCmdNum;
+	    //Âæ™ÁéØ‰ªé‰∏ã‰∏ÄÂè•ÂºÄÂßã
+	    int loopEnty = this->m_pMainFunction->m_nCuentCmdNum;
 	    int jzCmd = 0;
 	    
-	    //—π’ª
-	    this->AddNewLoop();//ÃÌº”“ª∏ˆ–¬µƒlooptree
-	    this->m_curloop->m_entry = loopEntry;//…Ë÷√–¬looptreeµƒ»Îø⁄
+	    //ÂéãÊ†à
+	    this->AddNewLoop();//Ê∑ªÂä†‰∏Ä‰∏™Êñ∞ÁöÑlooptee
+	    this->m_culoop->m_enty = loopEnty;//ËÆæÁΩÆÊñ∞loopteeÁöÑÂÖ•Âè£
 	
 	;
-	if (Sym >= identifierSym && Sym <= numberSym ||
-	    Sym >= stringD1Sym && Sym <= charD1Sym ||
+	if (Sym >= identifieSym && Sym <= numbeSym ||
+	    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	    Sym == LbraceSym ||
 	    Sym == LparenSym ||
 	    Sym == StarSym ||
@@ -822,11 +822,11 @@ void cParser::ForStatement()
 	    Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
 	    Sym == newSym ||
 	    Sym >= BangSym && Sym <= TildeSym) {
-		Expression();
+		Expession();
 	}
 	
 	            //add command jz
-	            jzCmd = this->m_pMainFunction->m_nCurrentCmdNum;
+	            jzCmd = this->m_pMainFunction->m_nCuentCmdNum;
 	            ADDCOMMAND1(__jnz, CC, 0)
 	;
 	Expect(SemicolonSym);
@@ -836,8 +836,8 @@ void cParser::ForStatement()
 	    int cmdnum;
 	
 	
-	if (Sym >= identifierSym && Sym <= numberSym ||
-	    Sym >= stringD1Sym && Sym <= charD1Sym ||
+	if (Sym >= identifieSym && Sym <= numbeSym ||
+	    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	    Sym == LbraceSym ||
 	    Sym == LparenSym ||
 	    Sym == StarSym ||
@@ -847,38 +847,38 @@ void cParser::ForStatement()
 	    Sym == newSym ||
 	    Sym >= BangSym && Sym <= TildeSym) {
 		
-		              cmdsaved = this->m_pMainFunction->m_nCurrentCmdNum;
-		Expression();
+		              cmdsaved = this->m_pMainFunction->m_nCuentCmdNum;
+		Expession();
 		
-		              cmdnum = this->m_pMainFunction->m_nCurrentCmdNum - cmdsaved;
+		              cmdnum = this->m_pMainFunction->m_nCuentCmdNum - cmdsaved;
 		              cmd = new COMMAND[cmdnum];    
-		              //save expression cmd to insert before jmp command
+		              //save expession cmd to inset befoe jmp command
 		              long t=cmdnum*sizeof(COMMAND);
 		              memcpy(cmd, &(m_pMainFunction->m_pCmdTable[cmdsaved]), cmdnum*sizeof(COMMAND));
-		              m_pMainFunction->m_nCurrentCmdNum = cmdsaved;           
+		              m_pMainFunction->m_nCuentCmdNum = cmdsaved;             
 		
 	}
 	Expect(RparenSym);
 	Statement();
 	
-	    long nContinue;//continue ”Ôæ‰µƒÃ¯◊™ƒøµƒµÿ°£
-	    nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
-	    this->m_curloop->SetContinue(nContinue);
+	    long nContinue;//continue ËØ≠Âè•ÁöÑË∑≥ËΩ¨ÁõÆÁöÑÂú∞„ÄÇ
+	    nContinue = this->m_pMainFunction->m_nCuentCmdNum;
+	    this->m_culoop->SetContinue(nContinue);
 	
-	    //insert saved cmd
-	    for (int i = 0; i< cmdnum; i++)
+	    //inset saved cmd
+	    fo (int i = 0; i< cmdnum; i++)
 	    {
 	            m_pMainFunction->AddCommand(cmd[i]);
 	    }
 	    delete cmd;
-	    //change loop variable
+	    //change loop vaiable
 	    //jump back
-	    ADDCOMMAND1(__jmp, CC, loopEntry);      
-	    //write back jz instructment
-	    this->m_pMainFunction->m_pCmdTable[jzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
-	    //write back break continue statement
-	    this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
-	    this->ExitCurLoop();//destroy current loop tree
+	    ADDCOMMAND1(__jmp, CC, loopEnty);       
+	    //wite back jz instuctment
+	    this->m_pMainFunction->m_pCmdTable[jzCmd].op[0] = this->m_pMainFunction->m_nCuentCmdNum;
+	    //wite back beak continue statement
+	    this->m_culoop->SetExit(this->m_pMainFunction->m_nCuentCmdNum);
+	    this->ExitCuLoop();//destoy cuent loop tee
 	;
 }
 
@@ -886,10 +886,10 @@ void cParser::IfStatement()
 {
 	Expect(ifSym);
 	Expect(LparenSym);
-	Expression();
+	Expession();
 	Expect(RparenSym);
 	
-	    //≈–∂œ
+	    //Âà§Êñ≠
 	    {
 	            long op1;
 	            long type1;
@@ -898,55 +898,55 @@ void cParser::IfStatement()
 	            if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 	            {
 	                    //      REPORT_COMPILE_ERROR("POP UP FAILED");
-	                    GenError(96);
-	                    return;
+	                    GenEo(96);
+	                    etun;
 	            }
 	            else
 	            {
 	                    if (dt1.type == dtFloat)
 	                    {
-	                            GenError(112);
+	                            GenEo(112);
 	                    }
 	                    else
 	                    {
-	                            //get address mode
-	                            int address_mode = (type1<<8);
-	                            address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
-	                            address_mode |= AMODE_DIRECT;
+	                            //get addess mode
+	                            int addess_mode = (type1<<8);
+	                            addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);      
+	                            addess_mode |= AMODE_DIRECT;
 	                            //add commmand to command table
-	                            ADDCOMMAND3(__test, address_mode, op1, 0, 0)    
+	                            ADDCOMMAND3(__test, addess_mode, op1, 0, 0)     
 	                    }
 	            }
 	    }
 	
-	    //º«¬ºÃ¯◊™÷∏¡Óµƒ–Ú∫≈
-	    int jzcmd = this->m_pMainFunction->m_nCurrentCmdNum;
-	    //º”»Î≈–∂œ”Ôæ‰
-	    ADDCOMMAND1(__jz, CC, 0)//Ã¯◊™ƒø±Í‘⁄œ¬√Ê≤π…œ;
+	    //ËÆ∞ÂΩïË∑≥ËΩ¨Êåá‰ª§ÁöÑÂ∫èÂè∑
+	    int jzcmd = this->m_pMainFunction->m_nCuentCmdNum;
+	    //Âä†ÂÖ•Âà§Êñ≠ËØ≠Âè•
+	    ADDCOMMAND1(__jz, CC, 0)//Ë∑≥ËΩ¨ÁõÆÊ†áÂú®‰∏ãÈù¢Ë°•‰∏ä;
 	Statement();
 	        int nextcmd; bool bElse = false;
 	if (Sym == elseSym) {
 		Get();
 		
-		            bElse = true;
-		            int jmpcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		            bElse = tue;
+		            int jmpcmd = this->m_pMainFunction->m_nCuentCmdNum;
 		            ADDCOMMAND1(__jmp, CC, 0);
-		            //≤π…œjnzµƒÃ¯◊™ƒø±Í
-		            nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+		            //Ë°•‰∏äjnzÁöÑË∑≥ËΩ¨ÁõÆÊ†á
+		            nextcmd = this->m_pMainFunction->m_nCuentCmdNum;
 		            this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
 		
 		Statement();
 		
-		            nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
-		            //≤π…œjmpµƒÃ¯◊™ƒø±Í
+		            nextcmd = this->m_pMainFunction->m_nCuentCmdNum;
+		            //Ë°•‰∏äjmpÁöÑË∑≥ËΩ¨ÁõÆÊ†á
 		            this->m_pMainFunction->m_pCmdTable[jmpcmd].op[0] = nextcmd;
 		
 	}
 	
 	if (!bElse)
 	{
-	           //≤π…œjnzµƒÃ¯◊™ƒø±Í
-	           nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
+	           //Ë°•‰∏äjnzÁöÑË∑≥ËΩ¨ÁõÆÊ†á
+	           nextcmd = this->m_pMainFunction->m_nCuentCmdNum;
 	           this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
 	   };
 }
@@ -956,11 +956,11 @@ void cParser::NullStatement()
 	Expect(SemicolonSym);
 }
 
-void cParser::ReturnStatement()
+void cParser::RetunStatement()
 {
-	Expect(returnSym);
-	if (Sym >= identifierSym && Sym <= numberSym ||
-	    Sym >= stringD1Sym && Sym <= charD1Sym ||
+	Expect(etunSym);
+	if (Sym >= identifieSym && Sym <= numbeSym ||
+	    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	    Sym == LbraceSym ||
 	    Sym == LparenSym ||
 	    Sym == StarSym ||
@@ -969,7 +969,7 @@ void cParser::ReturnStatement()
 	    Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
 	    Sym == newSym ||
 	    Sym >= BangSym && Sym <= TildeSym) {
-		Expression();
+		Expession();
 	}
 	
 	    //pop
@@ -979,17 +979,17 @@ void cParser::ReturnStatement()
 	    if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
 	    {
 	    //      REPORT_COMPILE_ERROR("POP UP FAILED");
-	            this->GenError(96);
-	            return;
+	            this->GenEo(96);
+	            etun;
 	    }
-	    int address_mode = type&0x00ff;
-	    address_mode |= (log2(UnitSize(dt1))<<6);
+	    int addess_mode = type&0x00ff;
+	    addess_mode |= (log2(UnitSize(dt1))<<6);
 	    
 	    //ADDCOMMAND
-	    // move reutrn value to _ax
-	    ADDCOMMAND2(__mov, address_mode|0x8200, _AX, op1);
-	    // return
-	    ADDCOMMAND0(__ret);
+	    // move eutn value to _ax
+	    ADDCOMMAND2(__mov, addess_mode|0x8200, _AX, op1);
+	    // etun
+	    ADDCOMMAND0(__et);
 	
 	Expect(SemicolonSym);
 }
@@ -998,7 +998,7 @@ void cParser::SwitchStatement()
 {
 	Expect(switchSym);
 	Expect(LparenSym);
-	Expression();
+	Expession();
 	Expect(RparenSym);
 	Statement();
 }
@@ -1008,16 +1008,16 @@ void cParser::WhileStatement()
 	Expect(whileSym);
 	Expect(LparenSym);
 	
-	  int loopentry = this->m_pMainFunction->m_nCurrentCmdNum;
+	  int loopenty = this->m_pMainFunction->m_nCuentCmdNum;
 	
-	  //—π’ª
-	  this->AddNewLoop();//ÃÌº”“ª∏ˆ–¬µƒlooptree
-	  this->m_curloop->m_entry = loopentry;//…Ë÷√–¬looptreeµƒ»Îø⁄
+	  //ÂéãÊ†à
+	  this->AddNewLoop();//Ê∑ªÂä†‰∏Ä‰∏™Êñ∞ÁöÑlooptee
+	  this->m_culoop->m_enty = loopenty;//ËÆæÁΩÆÊñ∞loopteeÁöÑÂÖ•Âè£
 	
 	;
-	Expression();
+	Expession();
 	
-	//≈–∂œ
+	//Âà§Êñ≠
 	{
 	   long op1;
 	   long type1;
@@ -1026,68 +1026,68 @@ void cParser::WhileStatement()
 	   if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 	   {
 	           //      REPORT_COMPILE_ERROR("POP UP FAILED");
-	           GenError(96);
-	           return;
+	           GenEo(96);
+	           etun;
 	   }
 	   else
 	   {
 	           if (dt1.type == dtFloat)
 	           {
-	                   GenError(112);
+	                   GenEo(112);
 	           }
 	           else
 	           {
-	                   //get address mode
-	                   int address_mode = (type1<<8);
-	                   address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
-	                   address_mode |= AMODE_DIRECT;
+	                   //get addess mode
+	                   int addess_mode = (type1<<8);
+	                   addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);      
+	                   addess_mode |= AMODE_DIRECT;
 	                   //add commmand to command table
-	                   ADDCOMMAND3(__test, address_mode, op1, 0, 0)    
+	                   ADDCOMMAND3(__test, addess_mode, op1, 0, 0)     
 	           }
 	   }
 	}
 	
-	int jnzCmd =  this->m_pMainFunction->m_nCurrentCmdNum;
+	int jnzCmd =  this->m_pMainFunction->m_nCuentCmdNum;
 	//jnz command
 	ADDCOMMAND1(__jz, CC, 0);
 	Expect(RparenSym);
 	Statement();
 	
-	 long nContinue;//continue ”Ôæ‰µƒÃ¯◊™ƒøµƒµÿ°£
-	 nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
-	 this->m_curloop->SetContinue(nContinue);
+	 long nContinue;//continue ËØ≠Âè•ÁöÑË∑≥ËΩ¨ÁõÆÁöÑÂú∞„ÄÇ
+	 nContinue = this->m_pMainFunction->m_nCuentCmdNum;
+	 this->m_culoop->SetContinue(nContinue);
 	
 	 //jmp back
-	 ADDCOMMAND1(__jmp, CC, loopentry);
-	 //write back jnz
-	 this->m_pMainFunction->m_pCmdTable[jnzCmd].op[0] = this->m_pMainFunction->m_nCurrentCmdNum;
+	 ADDCOMMAND1(__jmp, CC, loopenty);
+	 //wite back jnz
+	 this->m_pMainFunction->m_pCmdTable[jnzCmd].op[0] = this->m_pMainFunction->m_nCuentCmdNum;
 	
-	 this->m_curloop->SetExit(this->m_pMainFunction->m_nCurrentCmdNum);
-	 this->ExitCurLoop();//destroy current loop tree
+	 this->m_culoop->SetExit(this->m_pMainFunction->m_nCuentCmdNum);
+	 this->ExitCuLoop();//destoy cuent loop tee
 	;
 }
 
-void cParser::LocalDeclaration()
+void cParser::LocalDeclaation()
 {
 	
 	      PTYPEDES type = new TYPEDES;
-	      char szName[MAX_IDENTIFIER_LENGTH];
+	      cha szName[MAX_IDENTIFIER_LENGTH];
 	      
 	
-	if (Sym >= varSym && Sym <= stringSym) {
+	if (Sym >= vaSym && Sym <= stingSym) {
 		Type(type);
 	} else if (Sym >= staticSym && Sym <= functionSym) {
-		StorageClass();
-		if (Sym >= varSym && Sym <= stringSym) {
+		StoageClass();
+		if (Sym >= vaSym && Sym <= stingSym) {
 			Type(type);
 		}
 	} else GenError(96);
-	Expect(identifierSym);
+	Expect(identifieSym);
 	        
 	                      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);
+	                      Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);
 	              
-	VarList(type, szName);
+	VaList(type, szName);
 	Expect(SemicolonSym);
 	delete type;
 }
@@ -1097,7 +1097,7 @@ void cParser::Conditional()
 	LogORExp();
 }
 
-void cParser::AssignmentOperator()
+void cParser::AssignmentOpeato()
 {
 	switch (Sym) {
 		case EqualSym:  
@@ -1151,22 +1151,22 @@ void cParser::LogORExp()
 		              long op1, op2;
 		              long type1, type2;
 		              TYPEDES dt1, dt2;
-		              //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+		              //popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
-		                      GenError(96);
-		                      return;
+		                      GenEo(96);
+		                      etun;
 		              }
 		              else
 		              {
 		                      CAST
-		                      //get address mode
-		                      int address_mode = (type1<<8)|(short)type2;
-		                      address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+		                      //get addess mode
+		                      int addess_mode = (type1<<8)|(shot)type2;
+		                      addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 		                      //add commmand to command table
-		                      ADDCOMMAND3(__test, address_mode, op1, op2, 7/*==*/)                                    
-		                      //push result
+		                      ADDCOMMAND3(__test, addess_mode, op1, op2, 7/*==*/)                                     
+		                      //push esult
 		                      TYPEDES dt;//not used
 		                      memset(&dt, 0, sizeof(TYPEDES));
 		                      this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -1179,13 +1179,13 @@ void cParser::LogORExp()
 	              long t;
 	              TYPEDES DT;
 	              m_pMainFunction->PopDigit(&g, &t, &DT);
-	              //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+	              //Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 	              
 	              _typedes(DT1, dtLong)
 	              if (m_pMainFunction->AddVal(NULL, DT1))
 	              {
 	                      long temp;
-	                      temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+	                      temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 	                      ADDCOMMAND2(__mov, DR, temp, _PSW);
 	                      m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, DT1);
 	              }
@@ -1210,22 +1210,22 @@ void cParser::LogANDExp()
 		InclORExp();
 		
 		              //add command
-		              //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+		              //popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
-		                      GenError(96);
-		                      return;
+		                      GenEo(96);
+		                      etun;
 		              }
 		              else
 		              {
 		                      CAST
-		                      //get address mode
-		                      int address_mode = (type1<<8)|(short)type2;
-		                      address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+		                      //get addess mode
+		                      int addess_mode = (type1<<8)|(shot)type2;
+		                      addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 		                      //add commmand to command table
-		                      ADDCOMMAND3(__test, address_mode, op1, op2, 6/*==*/)                                    
-		                      //push result
+		                      ADDCOMMAND3(__test, addess_mode, op1, op2, 6/*==*/)                                     
+		                      //push esult
 		                      TYPEDES dt;//not used
 		                      memset(&dt, 0, sizeof(TYPEDES));
 		                      this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -1240,11 +1240,11 @@ void cParser::LogANDExp()
 	              TYPEDES dt;
 	              m_pMainFunction->PopDigit(&g, &t, &dt);
 	              
-	              //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+	              //Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 	              if (m_pMainFunction->AddVal(NULL, dt1))
 	              {                       
 	                      long temp;
-	                      temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+	                      temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 	                      ADDCOMMAND2(__mov, DR, temp, _PSW);
 	                      m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
 	              }
@@ -1304,31 +1304,31 @@ void cParser::EqualExp()
 		RelationExp();
 		
 		              //add command
-		              //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+		              //popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
-		                      GenError(96);
-		                      return;
+		                      GenEo(96);
+		                      etun;
 		              }
 		              else
 		              {
 		                      CAST
-		                      //get address mode
-		                      int address_mode = (type1<<8)|(short)type2;
-		                      address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+		                      //get addess mode
+		                      int addess_mode = (type1<<8)|(shot)type2;
+		                      addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 		
 		                      //add commmand to command table
 		                      if (type == 0)
 		                      {       
-		                              ADDCOMMAND3(__test, address_mode, op1, op2, 0/*==*/)                                    
+		                              ADDCOMMAND3(__test, addess_mode, op1, op2, 0/*==*/)                                     
 		                      }
 		                      else if (type == 1)
 		                      {
-		                              ADDCOMMAND3(__test, address_mode, op1, op2, 1/*==*/)    
+		                              ADDCOMMAND3(__test, addess_mode, op1, op2, 1/*==*/)     
 		                      }
 		
-		                      //push result
+		                      //push esult
 		                      TYPEDES dt;//not used
 		                      memset(&dt, 0, sizeof(TYPEDES));
 		                      this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -1343,11 +1343,11 @@ void cParser::EqualExp()
 	              TYPEDES dt;
 	              if (m_pMainFunction->PopDigit(&g, &t, &dt))
 	              {
-	                      //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+	                      //Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 	                      if (m_pMainFunction->AddVal(NULL,  dt1))
 	                      {                       
 	                              long temp;
-	                              temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+	                              temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 	                              ADDCOMMAND2(__mov, DR, temp , _PSW);
 	                              m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
 	                      }
@@ -1391,24 +1391,24 @@ void cParser::RelationExp()
 		ShiftExp();
 		
 		            //add command
-		            //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+		            //popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
 		            if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		            {
 		            //      REPORT_COMPILE_ERROR("POP UP FAILED");
-		                    GenError(96);
-		                    return;
+		                    GenEo(96);
+		                    etun;
 		            }
 		            else
 		            {
 		                    CAST
-		                    //get address mode
-		                    int address_mode = (type1<<8)|(short)type2;
-		                    address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+		                    //get addess mode
+		                    int addess_mode = (type1<<8)|(shot)type2;
+		                    addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 		
 		                    //add commmand to command table
-		                    ADDCOMMAND3(__test, address_mode, op1, op2, type)                                       
+		                    ADDCOMMAND3(__test, addess_mode, op1, op2, type)                                        
 		
-		                    //push result
+		                    //push esult
 		                    TYPEDES dt;//not used
 		                    memset(&dt, 0, sizeof(TYPEDES));
 		                    this->m_pMainFunction->PushDigit(_PSW, 0x82, dt);
@@ -1419,18 +1419,18 @@ void cParser::RelationExp()
 	
 	    if (type >= 0)
 	    {
-	            // popµÙ∂‡”⁄µƒ≤Ÿ◊˜ ˝, “ÚŒ™’‚ ±Ω·π˚“—‘⁄__AX÷–
+	            // popÊéâÂ§ö‰∫éÁöÑÊìç‰ΩúÊï∞, Âõ†‰∏∫ËøôÊó∂ÁªìÊûúÂ∑≤Âú®__AX‰∏≠
 	            long g;
 	            long t;
 	            TYPEDES dt;
 	            m_pMainFunction->PopDigit(&g, &t, &dt);
 	
-	            //Ω´Ω·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+	            //Â∞ÜÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 	            _typedes(dt_temp, dtLong)
 	            if (m_pMainFunction->AddVal(NULL,  dt_temp))
 	            {                       
 	                    long temp;
-	                    temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+	                    temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 	                    ADDCOMMAND2(__mov, DR, temp, _PSW);
 	                    m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt_temp);
 	            }
@@ -1472,35 +1472,35 @@ void cParser::AddExp()
 		              long op1, op2;
 		              long type1, type2;
 		              TYPEDES dt1, dt2;
-		              //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+		              //popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
-		                      GenError(96);
-		                      return;
+		                      GenEo(96);
+		                      etun;
 		              }
 		              else
 		              {
 		
-		                      //¿‡–Õ◊™ªª
+		                      //Á±ªÂûãËΩ¨Êç¢
 		                      CAST
-		                      //get address mode
-		                      int address_mode = (type1<<8)|(short)type2;
-		                      address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+		                      //get addess mode
+		                      int addess_mode = (type1<<8)|(shot)type2;
+		                      addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 		
 		                      
 		                      if (dt1.dim >0)
-		                      {//»Áπ˚ « ˝◊È±‰¡ø
-		                              //µ√µΩ‘ˆ¡ø
+		                      {//Â¶ÇÊûúÊòØÊï∞ÁªÑÂèòÈáè
+		                              //ÂæóÂà∞Â¢ûÈáè
 		                              int size = UnitSize(dt1);
-		                              for (int i=1; i<dt1.dim;i++)
+		                              fo (int i=1; i<dt1.dim;i++)
 		                              {
 		                                      size *= dt1.dimsize[i];
 		                              }
-		                              //‘ˆ¡ø≥À“‘op2µ√µΩ µº ‘ˆ¡ø,¥Ê»Î_AX
+		                              //Â¢ûÈáè‰πò‰ª•op2ÂæóÂà∞ÂÆûÈôÖÂ¢ûÈáè,Â≠òÂÖ•_AX
 		                              ADDCOMMAND2(__mul, type2<<8, op2, size)
-		                              //º”∑®
-		                              if (dt1.type == dtFloat && dt1.refLevel==0)
+		                              //Âä†Ê≥ï
+		                              if (dt1.type == dtFloat && dt1.efLevel==0)
 		                              {
 		                                      if (type == 0)
 		                                      ADDCOMMAND2(__fsub, (type1<<8)|0x82, op1, _AX)  
@@ -1518,27 +1518,27 @@ void cParser::AddExp()
 		                      else
 		                      {
 		                              //add commmand to command table
-		                              if (dt1.type == dtFloat && dt1.refLevel==0)
+		                              if (dt1.type == dtFloat && dt1.efLevel==0)
 		                              {
 		                                      if (type == 0)
-		                                      ADDCOMMAND2(__fsub, address_mode, op1, op2)     
+		                                      ADDCOMMAND2(__fsub, addess_mode, op1, op2)      
 		                                      else if (type == 1)
-		                                      ADDCOMMAND2(__fadd, address_mode, op1, op2)     
+		                                      ADDCOMMAND2(__fadd, addess_mode, op1, op2)      
 		                              }
 		                              else
 		                              {
 		                                      if (type == 0)
-		                                      ADDCOMMAND2(__sub, address_mode, op1, op2)      
+		                                      ADDCOMMAND2(__sub, addess_mode, op1, op2)       
 		                                      else if (type == 1)
-		                                      ADDCOMMAND2(__add, address_mode, op1, op2)      
+		                                      ADDCOMMAND2(__add, addess_mode, op1, op2)       
 		                              }
 		                      }       
-		                      //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+		                      //Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 		                      if (m_pMainFunction->AddVal(NULL,  dt1))
 		                      {                       
 		                              long temp;
 		                              long opsize = log2(UnitSize(dt1))<<6;
-		                              temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+		                              temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 		                              ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp , _AX);
 		                              m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
 		                      }
@@ -1552,11 +1552,11 @@ void cParser::AddExp()
 
 void cParser::MultExp()
 {
-	        char szName[MAX_IDENTIFIER_LENGTH];     memset(szName, 0, MAX_IDENTIFIER_LENGTH);
+	        cha szName[MAX_IDENTIFIER_LENGTH];      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
 	CastExp();
 	
-	     Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
-	     int type = -1;//0: mult 1: div 2:percent;
+	     Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+	     int type = -1;//0: mult 1: div 2:pecent;
 	while (Sym == StarSym ||
 	       Sym >= SlashSym && Sym <= PercentSym) {
 		if (Sym == StarSym) {
@@ -1571,52 +1571,52 @@ void cParser::MultExp()
 		} else GenError(102);
 		CastExp();
 		
-		              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+		              Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
 		              
 		              //add command
 		              long op1, op2;
 		              long type1, type2;
 		              TYPEDES dt1, dt2;
 		
-		              //pop≥ˆ≥À ˝∫Õ±ª≥À ˝
+		              //popÂá∫‰πòÊï∞ÂíåË¢´‰πòÊï∞
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		                      //      REPORT_COMPILE_ERROR("POP UP FAILED");
-		                      GenError(96);
-		                      return;
+		                      GenEo(96);
+		                      etun;
 		              }
 		              else
 		              {
 		                      CAST
-		                      //get address mode
-		                      int address_mode = (type1<<8)|(short)type2;
-		                      address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
+		                      //get addess mode
+		                      int addess_mode = (type1<<8)|(shot)type2;
+		                      addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt2))<<6);
 		                      //add commmand to command table
-		                      if (dt1.type == dtFloat && dt1.refLevel==0)
+		                      if (dt1.type == dtFloat && dt1.efLevel==0)
 		                      {
-		                              if (type == 0) ADDCOMMAND2(__fmul, address_mode, op1, op2)                                      
-		                                      else if (type == 1) ADDCOMMAND2(__fdiv, address_mode, op1, op2)                                 
-		                                      else GenError(109);
+		                              if (type == 0) ADDCOMMAND2(__fmul, addess_mode, op1, op2)                                       
+		                                      else if (type == 1) ADDCOMMAND2(__fdiv, addess_mode, op1, op2)                          
+		                                      else GenEo(109);
 		                      }
 		                      else
 		                      {
-		                              if (type == 0) ADDCOMMAND2(__mul, address_mode, op1, op2)                                       
-		                                      else if (type == 1) ADDCOMMAND2(__div, address_mode, op1, op2)
-		                                      else if (type == 2) ADDCOMMAND2(__mod, address_mode, op1, op2)
+		                              if (type == 0) ADDCOMMAND2(__mul, addess_mode, op1, op2)                                        
+		                                      else if (type == 1) ADDCOMMAND2(__div, addess_mode, op1, op2)
+		                                      else if (type == 2) ADDCOMMAND2(__mod, addess_mode, op1, op2)
 		                      }
 		                      
-		                      //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+		                      //Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 		                      if (m_pMainFunction->AddVal(NULL, dt1))
 		                      {                       
 		                              long temp;
 		                              long opsize = log2(UnitSize(dt1))<<6;
-		                              temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+		                              temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 		                              ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp, _AX);
 		                              m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
 		                      }
 		                      else
 		                      {
-		                              this->GenError(98);
+		                              this->GenEo(98);
 		                      }
 		              }
 		;
@@ -1626,40 +1626,40 @@ void cParser::MultExp()
 void cParser::CastExp()
 {
 	
-	    //±£¥Ê“ª‘™≤Ÿ◊˜∑˚’ª
+	    //‰øùÂ≠ò‰∏ÄÂÖÉÊìç‰ΩúÁ¨¶Ê†à
 	    EXPRESSIONOP* pSavedStack = this->m_pExpOpPt;
-	    //«Âø’“ª‘™≤Ÿ◊˜∑˚’ª
+	    //Ê∏ÖÁ©∫‰∏ÄÂÖÉÊìç‰ΩúÁ¨¶Ê†à
 	    m_pExpOpPt = &m_ExpOp;
 	    //int op;
 	
-	UnaryExp();
+	UnayExp();
 	
 	    int op;
 	    while (this->PopOp(&op))
 	    {               
 	
-	            //≤Ÿ◊˜ ˝≥ˆ’ª
+	            //Êìç‰ΩúÊï∞Âá∫Ê†à
 	            long op1;
 	            long type1;
 	            TYPEDES dt1;    
 	            if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
 	            {
-	                    break;//genError(96);???????
+	                    beak;//genEo(96);???????
 	            }
-	            int address_mode = (type1<<8);
-	            address_mode |= log2(UnitSize(dt1))<<14;
+	            int addess_mode = (type1<<8);
+	            addess_mode |= log2(UnitSize(dt1))<<14;
 	            
-	            //ÃÌº”√¸¡Ó
+	            //Ê∑ªÂä†ÂëΩ‰ª§
 	            switch (op)
 	            {
 	            case PlusSym:                           
-	                    //no operation
-	                    break;
+	                    //no opeation
+	                    beak;
 	            case MinusSym:                  
 	                    {
 	                            int opsize;
 	                            if (!m_pMainFunction->AddVal(NULL, dt1))
-	                                    GenError(98);
+	                                    GenEo(98);
 	                            if (dt1.type == dtFloat)
 	                            {
 	                                    opsize = (type1>>6)&0xc0;
@@ -1670,32 +1670,32 @@ void cParser::CastExp()
 	                                    opsize = (type1>>6)&0xc0;
 	                                    ADDCOMMAND2(__sub, type1, 0, op1)
 	                            }
-	                            ADDCOMMAND2(__mov, DR, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, _AX)
-	                            m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, AMODE_MEM|(opsize<<6), dt1);
+	                            ADDCOMMAND2(__mov, DR, m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, _AX)
+	                            m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, AMODE_MEM|(opsize<<6), dt1);
 	                    }
-	                    break;
-	            case StarSym:  
+	                    beak;
+	            case StaSym:  
 	                    {
-	                            if (dt1.refLevel <1)
-	                                    GenError(102);
-	                            dt1.refLevel--;
-	                            //»°≤Ÿ◊˜µƒ◊÷Ω⁄¿‡–Õ
+	                            if (dt1.efLevel <1)
+	                                    GenEo(102);
+	                            dt1.efLevel--;
+	                            //ÂèñÊìç‰ΩúÁöÑÂ≠óËäÇÁ±ªÂûã
 	                            int opsize = log2(UnitSize(dt1));
 	                            opsize = opsize<< 6;
 	                            type1 |= opsize; 
 	
-	                            //Ω´type1µƒº‰Ω”∑√Œ º∂±Ã·∏ﬂ“ªº∂
+	                            //Â∞Ütype1ÁöÑÈó¥Êé•ËÆøÈóÆÁ∫ßÂà´ÊèêÈ´ò‰∏ÄÁ∫ß
 	                            int level = (type1 & 0x30) >> 4;
 	                            if (level == 3)
 	                            {
-	                                    GenError(103);
-	                                    break;
+	                                    GenEo(103);
+	                                    beak;
 	                            }
 	                            level ++;
 	                            type1 |= level << 4;
 	/*                              int j = (type1>>4)&0x3;
 	                            if (j < 1)
-	                                    GenError(102);//is not a point
+	                                    GenEo(102);//is not a point
 	                            else
 	                                    j--;
 	                            j = j << 4;
@@ -1704,65 +1704,65 @@ void cParser::CastExp()
 	                            type1 &= 0xffcf;
 	                            type1 |= j;
 	*/
-	                            //»Î’ª
+	                            //ÂÖ•Ê†à
 	                            m_pMainFunction->PushDigit(op1, type1, dt1);
 	                    }
-	                    break;
+	                    beak;
 	            case BangSym: 
 	                    {
 	                            if (!m_pMainFunction->AddVal(NULL, dt1))
-	                                    GenError(98);
+	                                    GenEo(98);
 	                            int opsize = (type1>>6)&0x03;
-	                            ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
-	                            ADDCOMMAND1(__notr, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
-	                            m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
+	                            ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, op1)
+	                            ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess)
+	                            m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, type1, dt1);
 	                    }
-	                    break;
+	                    beak;
 	            case AndSym:  
 	                    {
 	                            long temp;
-	                            temp = AllocTempVar(dtLong, 1);
+	                            temp = AllocTempVa(dtLong, 1);
 	                            if (temp == -1)
 	                            {
-	                                    GenError(98);
+	                                    GenEo(98);
 	                            }
 	                            else
 	                            {
 	                                    if (dt1.objID > 0)
-	                                    {//»Áπ˚ ±obj£¨ ≤ª»°µÿ÷∑
+	                                    {//Â¶ÇÊûúÊó∂objÔºå ‰∏çÂèñÂú∞ÂùÄ
 	                                            m_pMainFunction->PushDigit(op1, type1, dt1);
 	                                    }
 	                                    else
 	                                    {
 	                                            ADDCOMMAND2(__ea, 0x8100|type1, temp, op1)
-	                                            dt1.refLevel ++;
+	                                            dt1.efLevel ++;
 	                                            m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt1);
 	                                    }
 	                            }
 	                    }
-	                    break;
+	                    beak;
 	            case TildeSym: //'~'
 	                    {
 	                            if (!m_pMainFunction->AddVal(NULL, dt1))
-	                                    GenError(98);
+	                                    GenEo(98);
 	                            int opsize = (type1>>6)&0xc0;
-	                            ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
-	                            ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
-	                            m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
+	                            ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, op1)
+	                            ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess)
+	                            m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].addess, type1, dt1);
 	                    }
-	                    break;
-	            default :GenError(93); break;
+	                    beak;
+	            default :GenEo(93); beak;
 	            }               
 	    }
-	    //ª÷∏¥“ª‘™‘ÀÀ„∑˚’ª
-	    this->ClearOpStack();
+	    //ÊÅ¢Â§ç‰∏ÄÂÖÉËøêÁÆóÁ¨¶Ê†à
+	    this->CleaOpStack();
 	    m_pExpOpPt = pSavedStack;  
 }
 
-void cParser::UnaryExp()
+void cParser::UnayExp()
 {
-	if (Sym >= identifierSym && Sym <= numberSym ||
-	    Sym >= stringD1Sym && Sym <= charD1Sym ||
+	if (Sym >= identifieSym && Sym <= numbeSym ||
+	    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	    Sym == LbraceSym ||
 	    Sym == LparenSym ||
 	    Sym == newSym) {
@@ -1773,27 +1773,27 @@ void cParser::UnaryExp()
 		} else if (Sym == MinusMinusSym) {
 			Get();
 		} else GenError(103);
-		UnaryExp();
+		UnayExp();
 	} else if (Sym == StarSym ||
 	           Sym == AndSym ||
 	           Sym >= PlusSym && Sym <= MinusSym ||
 	           Sym >= BangSym && Sym <= TildeSym) {
-		UnaryOperator();
+		UnayOpeato();
 		CastExp();
 	} else GenError(104);
 }
 
 void cParser::PostFixExp()
 {
-	Primary();
-	while (Sym == identifierSym ||
+	Pimay();
+	while (Sym == identifieSym ||
 	       Sym == LbrackSym ||
 	       Sym == LparenSym ||
 	       Sym >= PlusPlusSym && Sym <= MinusGreaterSym) {
 		switch (Sym) {
 			case LbrackSym:  
 				Get();
-				Expression();
+				Expession();
 				Expect(RbrackSym);
 				
 				{
@@ -1805,63 +1805,63 @@ void cParser::PostFixExp()
 				                              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 				                              {
 				                                      //      REPORT_COMPILE_ERROR("POP UP FAILED");
-				                                      GenError(96);
-				                                      return;
+				                                      GenEo(96);
+				                                      etun;
 				                                      
 				                              }
 				                              else
 				                              {       
-				                              /*¥¶¿Ìa[b]µƒ¡˜≥Ã(“™øº¬«÷∏’Î£¨  ˝◊È£¨ ∂‡Œ¨ ˝◊È£¨ ◊˜Œ™≤Œ ˝¥´Ω¯¿¥µƒ ˝◊È∫Õ÷∏’Î£©
-				                                      1. µ√µΩbœ¬±Í¥˙±Ìµƒµ•Œª≥§∂»(»Áπ˚ « ˝◊È, Õ®π˝Œ¨ ˝º∆À„, »Áπ˚ «÷∏’Î, reflvlºı“ª∫Ûº∆À„UnitSize)
-				                                      2. b*µ•Œª≥§∂»= offset 
+				                              /*Â§ÑÁêÜa[b]ÁöÑÊµÅÁ®ã(Ë¶ÅËÄÉËôëÊåáÈíàÔºå Êï∞ÁªÑÔºå Â§öÁª¥Êï∞ÁªÑÔºå ‰Ωú‰∏∫ÂèÇÊï∞‰º†ËøõÊù•ÁöÑÊï∞ÁªÑÂíåÊåáÈíàÔºâ
+				                                      1. ÂæóÂà∞b‰∏ãÊ†á‰ª£Ë°®ÁöÑÂçï‰ΩçÈïøÂ∫¶(Â¶ÇÊûúÊòØÊï∞ÁªÑ, ÈÄöËøáÁª¥Êï∞ËÆ°ÁÆó, Â¶ÇÊûúÊòØÊåáÈíà, eflvlÂáè‰∏ÄÂêéËÆ°ÁÆóUnitSize)
+				                                      2. b*Âçï‰ΩçÈïøÂ∫¶= offset 
 				                                      3. a + offset -> temp
-				                                      4. push temp, º‰Ω”—∞÷∑
+				                                      4. push temp, Èó¥Êé•ÂØªÂùÄ
 				                                      */
 				                                      int offset;
-				                                      BOOL bIsArray = TRUE;
-				                                      if (dt1.dim >0)// « ˝◊È
+				                                      BOOL bIsAay = TRUE;
+				                                      if (dt1.dim >0)//ÊòØÊï∞ÁªÑ
 				                                      {
-				                                              bIsArray = TRUE;
+				                                              bIsAay = TRUE;
 				                                              offset= UnitSize(dt1);
-				                                              for (int i = 1; i< dt1.dim; i++)
+				                                              fo (int i = 1; i< dt1.dim; i++)
 				                                              {
 				                                                      offset *= dt1.dimsize[i];
 				                                              }
-				                                              //≤ª…˙≥…–¬µƒtypedes, ÷±Ω”–ﬁ∏ƒdt1,  π÷ÆŒ¨ ˝ºı“ª
+				                                              //‰∏çÁîüÊàêÊñ∞ÁöÑtypedes, Áõ¥Êé•‰øÆÊîπdt1, ‰Ωø‰πãÁª¥Êï∞Âáè‰∏Ä
 				                                              if (dt1.dim >1)
 				                                                      memcpy(dt1.dimsize, dt1.dimsize+1, sizeof(long)*(dt1.dim-1));                                   
 				                                              dt1.dim--;                                                      
 				                                      }
 				                                      else
-				                                      {//≤ª « ˝◊È,  «÷∏’Î
-				                                              bIsArray = FALSE;
-				                                              if (dt1.refLevel > 0)// «÷∏’Î«“≤ª «÷∏’Î ˝◊È
+				                                      {//‰∏çÊòØÊï∞ÁªÑ, ÊòØÊåáÈíà
+				                                              bIsAay = FALSE;
+				                                              if (dt1.efLevel > 0)//ÊòØÊåáÈíà‰∏î‰∏çÊòØÊåáÈíàÊï∞ÁªÑ
 				                                              {
-				                                                      //≤ª…˙≥…–¬µƒtypedes, ÷±Ω”–ﬁ∏ƒdt1,  π÷Æ*∫≈ºı“ª
-				                                                      dt1.refLevel--;
+				                                                      //‰∏çÁîüÊàêÊñ∞ÁöÑtypedes, Áõ¥Êé•‰øÆÊîπdt1, ‰Ωø‰πã*Âè∑Âáè‰∏Ä
+				                                                      dt1.efLevel--;
 				                                                      offset = UnitSize(dt1);
 				                                              }
-				                                              else//º»≤ª «÷∏’Î“≤≤ª « ˝◊È
-				                                                      GenError(101);                                          
+				                                              else//Êó¢‰∏çÊòØÊåáÈíà‰πü‰∏çÊòØÊï∞ÁªÑ
+				                                                      GenEo(101);                                             
 				                                      }
 				
-				                                      //∆´“∆¡ø = µ•Œª≥§∂»* œ¬±Íaddcommand(mul, DC, œ¬±Í, µ•Œª≥§∂»)
+				                                      //ÂÅèÁßªÈáè = Âçï‰ΩçÈïøÂ∫¶* ‰∏ãÊ†áaddcommand(mul, DC, ‰∏ãÊ†á, Âçï‰ΩçÈïøÂ∫¶)
 				                                      ADDCOMMAND2(__mul, (type2<<8)|0x8080, op2, offset)
-				                                      //‘ˆº”¡Ÿ ±±‰¡ø¥Ê∑≈÷–º‰Ω·π˚
-				                                      long temp = this->AllocTempVar(dtLong);
+				                                      //Â¢ûÂä†‰∏¥Êó∂ÂèòÈáèÂ≠òÊîæ‰∏≠Èó¥ÁªìÊûú
+				                                      long temp = this->AllocTempVa(dtLong);
 				                                      if (temp == -1)
 				                                      {
-				                                              GenError(98);
+				                                              GenEo(98);
 				                                      }
-				                                      //æ”Œ¿ª™2001-08-22
-				                                      long lIndirect = (type1>>4)&0x03;
-				                                      if (bIsArray == FALSE && lIndirect>0)//»Áπ˚ «÷∏’Î£¨ ‘Úº‰Ω”—∞÷∑
+				                                      //Â±ÖÂç´Âçé2001-08-22
+				                                      long lIndiect = (type1>>4)&0x03;
+				                                      if (bIsAay == FALSE && lIndiect>0)//Â¶ÇÊûúÊòØÊåáÈíàÔºå ÂàôÈó¥Êé•ÂØªÂùÄ
 				                                              ADDCOMMAND2(__add, DR|0x1000, op1, _AX)
 				                                      else
 				                                              ADDCOMMAND2(__add, DR, op1, _AX)
-				                                      //Ω´Ω·π˚±£¥ÊµΩtemp
+				                                      //Â∞ÜÁªìÊûú‰øùÂ≠òÂà∞temp
 				                                      ADDCOMMAND2(__mov, DR, temp, _AX)
-				                                      //»Î’ª, ◊˜Œ™÷∏’Î”√
+				                                      //ÂÖ•Ê†à, ‰Ωú‰∏∫ÊåáÈíàÁî®
 				                                      m_pMainFunction->PushDigit(temp, AMODE_MEM|0x10|((log2(UnitSize(dt1)))<<6), dt1);
 				}
 				};
@@ -1870,28 +1870,28 @@ void cParser::PostFixExp()
 				
 				      
 				{
-				                      char szName[MAX_IDENTIFIER_LENGTH];
+				                      cha szName[MAX_IDENTIFIER_LENGTH];
 				                      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-				                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
+				                      Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
 				                      long index = m_PubFuncTable->FindFuncByName(szName);
 				                      FUNCCALL fn;
 				                      fn.name = szName;
-				                      if (index < 0) // cannot find function name in public function table, guess is was script function
+				                      if (index < 0) // cannot find function name in public function table, guess is was scipt function
 				                      {
-				                              // find in script function table
-				                              CFunction* pScript = m_pCurClassDes->getFuncTable()->GetFunction(szName, &index);
-				                              if (pScript == NULL)
+				                              // find in scipt function table
+				                              CFunction* pScipt = m_pCuClassDes->getFuncTable()->GetFunction(szName, &index);
+				                              if (pScipt == NULL)
 				                              {       
-				                                      GenError(97);
+				                                      GenEo(97);
 				                                      Get();
-				                                      return;
+				                                      etun;
 				                              }
 				                              else
 				                              {
-				                                      fn.pVF = pScript;
+				                                      fn.pVF = pScipt;
 				                                      fn.nType = 0;
-				                                      ADDCOMMAND1(__callv, CC, (long)pScript);
-				                                      m_pCurClassDes->getFuncTable()->ReleaseFunc();
+				                                      ADDCOMMAND1(__callv, CC, (long)pScipt);
+				                                      m_pCuClassDes->getFuncTable()->ReleaseFunc();
 				                              }
 				
 				                      }
@@ -1908,28 +1908,28 @@ void cParser::PostFixExp()
 				break;
 			case PointSym:  
 				Get();
-				Expect(identifierSym);
+				Expect(identifieSym);
 				
 				{
-				char* member = GetCurrSym();
-				int address = m_pMainFunction->AddStaticData(strlen(member)+1, (BYTE*)member);
+				cha* membe = GetCuSym();
+				int addess = m_pMainFunction->AddStaticData(stlen(membe)+1, (BYTE*)membe);
 				//add command
 				long op1, type1;
 				TYPEDES dt1;
 				
 				//pop
-				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 != dtGeneral){
-				         GenError(96);
-				        return;
+				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 != dtGeneal){
+				         GenEo(96);
+				        etun;
 				}else
 				            {
-				                 long temp = AllocTempVar(dtGeneral);
+				                 long temp = AllocTempVa(dtGeneal);
 				             if (temp == -1)
 				                     {
-				 GenError(98);
+				 GenEo(98);
 				                    }
-				                    // get effective address for object member
-				                    ADDCOMMAND3(__eaobj, AMODE_OBJ|AMODE_MEM<<8, temp, op1, address);
+				                    // get effective addess fo object membe
+				                    ADDCOMMAND3(__eaobj, AMODE_OBJ|AMODE_MEM<<8, temp, op1, addess);
 				                     _typedes(DT1, dtLong)
 				                     m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, DT1);
 				            }
@@ -1938,7 +1938,7 @@ void cParser::PostFixExp()
 			case MinusGreaterSym:  
 				Get();
 				Expect(LbraceSym);
-				Expect(identifierSym);
+				Expect(identifieSym);
 				Expect(RbraceSym);
 				
 				                      {                               
@@ -1948,45 +1948,45 @@ void cParser::PostFixExp()
 				                              long op;
 				                              if (!m_pMainFunction->PopDigit(&op, &type, &dt))
 				                              {
-				                                      GenError(96);
+				                                      GenEo(96);
 				                              }
 				                              else
 				                              {
 				                                      if (dt.objID > 0)
 				                                      {
-				                                              char szName[MAX_IDENTIFIER_LENGTH];
+				                                              cha szName[MAX_IDENTIFIER_LENGTH];
 				                                              memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-				                                              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆                                 
+				                                              Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞                                 
 				                                              
 				                                              #if 0
 				                                              //get offset
-				                                              OBJMEMDES* pMember = this->m_ObjTable[dt.objID-1]->GetMemberByName(szName);
-				                                              if (pMember == NULL)
+				                                              OBJMEMDES* pMembe = this->m_ObjTable[dt.objID-1]->GetMembeByName(szName);
+				                                              if (pMembe == NULL)
 				                                              {
-				                                                      GenError(121);                                  
+				                                                      GenEo(121);                                     
 				                                              }
 				                                              else
 				                                              {       
 				                                                      TYPEDES dtTemp;
-				                                                      memcpy(&dtTemp, &pMember->dt, sizeof(TYPEDES));
+				                                                      memcpy(&dtTemp, &pMembe->dt, sizeof(TYPEDES));
 				                                                      
-				                                                      long temp = AllocTempVar(dtLong, 1);
+				                                                      long temp = AllocTempVa(dtLong, 1);
 				                                                      
 				                                                      if (temp == -1)
 				                                                      {
-				                                                              GenError(98);
+				                                                              GenEo(98);
 				                                                      }
 				                                                      
-				                                                      //add(op, offset) = address
-				                                                      ADDCOMMAND2(__add, DC, op, pMember->offset)
+				                                                      //add(op, offset) = addess
+				                                                      ADDCOMMAND2(__add, DC, op, pMembe->offset)
 				                                                      ADDCOMMAND2(__mov, DR, temp, _AX)
 				                                                      if ((dtTemp.dim ==0 && dtTemp.objID == 0 )
-				                                                              ||(dtTemp.objID > 0 && dtTemp.refLevel > 0))
-				                                                              {//»Áπ˚≤ª « ˝◊È∫Õobj
+				                                                              ||(dtTemp.objID > 0 && dtTemp.efLevel > 0))
+				                                                              {//Â¶ÇÊûú‰∏çÊòØÊï∞ÁªÑÂíåobj
 				                                                                      
-				                                                                      //»°∏ƒmemberµƒopsize
+				                                                                      //ÂèñÊîπmembeÁöÑopsize
 				                                                                      int opsize;
-				                                                                      if (dtTemp.refLevel > 0) //»Áπ˚ «÷∏’Î¿‡–Õ
+				                                                                      if (dtTemp.efLevel > 0) //Â¶ÇÊûúÊòØÊåáÈíàÁ±ªÂûã
 				                                                                              opsize = log2(OPSIZE_PTR);
 				                                                                      else
 				                                                                              opsize = log2(typesize(dtTemp.type, dtTemp.objID));
@@ -1997,18 +1997,18 @@ void cParser::PostFixExp()
 				                                                              else
 				                                                              {
 				                                                                      
-				                                                                      //»Áπ˚ « ˝◊ÈªÚobj, …˙≥…¡Ÿ ±±‰¡ø¥Ê∑≈ ˝◊Èµÿ÷∑
+				                                                                      //Â¶ÇÊûúÊòØÊï∞ÁªÑÊàñobj, ÁîüÊàê‰∏¥Êó∂ÂèòÈáèÂ≠òÊîæÊï∞ÁªÑÂú∞ÂùÄ
 				                                                                      if (dtTemp.dim != 0)
 				                                                                      {                                                                       
-				                                                                              /*æ”Œ¿ª™2001-08-22–ﬁ∏ƒ
-				                                                                              dtTemp.refLevel++;
+				                                                                              /*Â±ÖÂç´Âçé2001-08-22‰øÆÊîπ
+				                                                                              dtTemp.efLevel++;
 				                                                                              dtTemp.dim--;
 				                                                                              */
 				                                                                              m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
 				                                                                      }
 				                                                                      else
 				                                                                      {
-				                                                                              dtTemp.refLevel++;
+				                                                                              dtTemp.efLevel++;
 				                                                                              m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2(OPSIZE_PTR)<<6), dtTemp);
 				                                                                      }
 				                                                              }
@@ -2020,7 +2020,7 @@ void cParser::PostFixExp()
 				                      }
 				                      ;
 				break;
-			case identifierSym:  
+			case identifieSym:  
 				Get();
 				break;
 			case PlusPlusSym:  
@@ -2030,43 +2030,43 @@ void cParser::PostFixExp()
 				                              long op1;
 				                              long type1;
 				                              TYPEDES dt1;
-				                              //pop≥ˆ±ªº” ˝
+				                              //popÂá∫Ë¢´Âä†Êï∞
 				                              if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				                              {
 				                                      //      REPORT_COMPILE_ERROR("POP UP FAILED");
-				                                                              GenError(96);
-				                      return;
+				                                                              GenEo(96);
+				                      etun;
 				
 				                              }
 				                              else
 				                              {
 				                                      if (dt1.type == dtFloat)
 				                                      {
-				                                              GenError(112);
+				                                              GenEo(112);
 				                                      }
 				                                      else
 				                                      {
-				                                              //get address mode
-				                                              int address_mode = (type1<<8);
-				                                              address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
+				                                              //get addess mode
+				                                              int addess_mode = (type1<<8);
+				                                              addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);      
 				                                              if (dt1.dim >0)
-				                                              {//»Áπ˚ « ˝◊È±‰¡ø
-				                                                      //µ√µΩ‘ˆ¡ø
+				                                              {//Â¶ÇÊûúÊòØÊï∞ÁªÑÂèòÈáè
+				                                                      //ÂæóÂà∞Â¢ûÈáè
 				                                                      int size = UnitSize(dt1);
-				                                                      for (int i=1; i<dt1.dim;i++)
+				                                                      fo (int i=1; i<dt1.dim;i++)
 				                                                      {
 				                                                              size *= dt1.dimsize[i];
 				                                                      }
-				                                                      //º”∑®
+				                                                      //Âä†Ê≥ï
 				                                                      ADDCOMMAND2(__add, (type1<<8)|0x80, op1, size)
 				                                              }
 				                                              else
 				                                              {
 				                                                      //add commmand to command table
-				                                                      ADDCOMMAND2(__add, address_mode, op1, 1)        
+				                                                      ADDCOMMAND2(__add, addess_mode, op1, 1)         
 				                                              }       
-				                                              ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
-				                                              //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+				                                              ADDCOMMAND2(__mov, addess_mode|0x02, op1, _AX); 
+				                                              //Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 				                                              m_pMainFunction->PushDigit(op1, type1, dt1);
 				                                      }
 				                              }
@@ -2080,43 +2080,43 @@ void cParser::PostFixExp()
 				                              long op1;
 				                              long type1;
 				                              TYPEDES dt1;
-				                              //pop≥ˆ±ªº” ˝
+				                              //popÂá∫Ë¢´Âä†Êï∞
 				                              if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				                              {
 				                                      //      REPORT_COMPILE_ERROR("POP UP FAILED");
-				                                                              GenError(96);
-				                      return;
+				                                                              GenEo(96);
+				                      etun;
 				
 				                              }
 				                              else
 				                              {
 				                                      if (dt1.type == dtFloat)
 				                                      {
-				                                              GenError(112);
+				                                              GenEo(112);
 				                                      }
 				                                      else
 				                                      {
-				                                              //get address mode
-				                                              int address_mode = (type1<<8);
-				                                              address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
+				                                              //get addess mode
+				                                              int addess_mode = (type1<<8);
+				                                              addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);      
 				                                              if (dt1.dim >0)
-				                                              {//»Áπ˚ « ˝◊È±‰¡ø
-				                                                      //µ√µΩ‘ˆ¡ø
+				                                              {//Â¶ÇÊûúÊòØÊï∞ÁªÑÂèòÈáè
+				                                                      //ÂæóÂà∞Â¢ûÈáè
 				                                                      int size = UnitSize(dt1);
-				                                                      for (int i=1; i<dt1.dim;i++)
+				                                                      fo (int i=1; i<dt1.dim;i++)
 				                                                      {
 				                                                              size *= dt1.dimsize[i];
 				                                                      }
-				                                                      //º”∑®
+				                                                      //Âä†Ê≥ï
 				                                                      ADDCOMMAND2(__sub, (type1<<8)|0x80, op1, size)
 				                                              }
 				                                              else
 				                                              {
 				                                                      //add commmand to command table
-				                                                      ADDCOMMAND2(__sub, address_mode, op1, 1)        
+				                                                      ADDCOMMAND2(__sub, addess_mode, op1, 1)         
 				                                              }       
-				                                              ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
-				                                              //Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+				                                              ADDCOMMAND2(__mov, addess_mode|0x02, op1, _AX); 
+				                                              //Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 				                                              m_pMainFunction->PushDigit(op1, type1, dt1);
 				                                      }
 				                              }
@@ -2127,7 +2127,7 @@ void cParser::PostFixExp()
 	}
 }
 
-void cParser::UnaryOperator()
+void cParser::UnayOpeato()
 {
 	switch (Sym) {
 		case PlusSym:  
@@ -2152,185 +2152,185 @@ void cParser::UnaryOperator()
 	}
 }
 
-void cParser::Primary()
+void cParser::Pimay()
 {
 	
-	      char szName[MAX_IDENTIFIER_LENGTH];
+	      cha szName[MAX_IDENTIFIER_LENGTH];
 	      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
 	switch (Sym) {
-		case identifierSym:  
+		case identifieSym:  
 			Get();
 			
 			
-			  {       Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
-			  
-			          
-			          int address = -1;
-			          
-			          if (strcmp(szName, "this")==0){
-			          // TODO: get address of current object
-			                  address = 0;
-			          }else
-			              address = GetSymAddress(szName);
+			   {       Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+			   
+			           
+			           int addess = -1;
+			           
+			           if (stcmp(szName, "this")==0){
+			           // TODO: get addess of cuent object
+			                   addess = 0;
+			           }else
+			               addess = GetSymAddess(szName);
 			
-			           //»Áπ˚adress<0 «∫Ø ˝√˚
-			                    if (address >= 0 )//»Áπ˚≤ª «∫Ø ˝√˚£¨  «±‰¡ø√˚°£
-			                    {
-			                            TYPEDES dt;
-			                            SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
-			                            if (pElement == NULL)
-			                            {
-			                                    GenError(115);
-			                            }
-			                            else
-			                            {
-			                                    memcpy(&dt ,&(pElement->type), sizeof(TYPEDES));
-			                                    /*if (pdt == NULL)
-			                                    {
-			                                    GenError(111);
-			                                    }
-			                                    else*/
-			                            
-			                                    if ((dt.dim ==0 && dt.objID == 0 )
-			                                            ||(dt.objID > 0 && dt.refLevel > 0))
-			                                    {//»Áπ˚≤ª « ˝◊È∫Õobj
-			                                            int opsize;
-			                                            if (dt.refLevel > 0) 
-			                                                    opsize = log2((int)OPSIZE_PTR);
-			                                            else
-			                                                    opsize = log2((int)typesize(dt.type, dt.objID));
-			                                            opsize &= 0x3;
-			                                            m_pMainFunction->PushDigit(address, AMODE_MEM|(opsize << 6), dt);
-			                                    }
-			                                    else
-			                                    {//»Áπ˚ « ˝◊ÈªÚobj, …˙≥…¡Ÿ ±±‰¡ø¥Ê∑≈ ˝◊Èµÿ÷∑
-			                                            if (dt.dim != 0)
-			                                            {
-			                                                    long temp = AllocTempVar(dtLong, 1);
-			                                                    if (temp == -1)
-			                                                    {
-			                                                            GenError(98);
-			                                                    }
-			                                                    
-			                                                    ADDCOMMAND2(__ea, DD, temp, address)
-			                                                    /*æ”Œ¿ª™2001£≠8£≠22–ﬁ∏ƒ
-			                                                    dt.refLevel++;
-			                                                    dt.dim--;
-			                                                    */
-			                                                    m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2( (int)(OPSIZE_PTR) )<<6), dt);
-			                                            }
-			                                            else // if it is object
-			                                            {
-			                                                                                    int opsize;
-			                                                                                    opsize = log2((int)OPSIZE_PTR);
-			                                                opsize &= 0x3;
-			                                                                                    m_pMainFunction->PushDigit(address, AMODE_MEM|(opsize << 6), dt);
-			                                            }
-			                                    }
-			                                    
-			                            }
-			                    }
-			          else
-			          {
-			                  //GenError(126);
-			                  if (this->m_PubFuncTable->FindFuncByName(szName) < 0)
-			                  {
-			                          long index = 0;
-			                          if (m_pCurClassDes->getFuncTable()->GetFunction(szName, &index) == NULL)
-			                                  GenError(104);
-			                          else
-			                                  m_pCurClassDes->getFuncTable()->ReleaseFunc();
-			                  }
-			                  //      return;
-			          }
+			            //Â¶ÇÊûúadess<0ÊòØÂáΩÊï∞Âêç
+			                     if (addess >= 0 )//Â¶ÇÊûú‰∏çÊòØÂáΩÊï∞ÂêçÔºå ÊòØÂèòÈáèÂêç„ÄÇ
+			                     {
+			                             TYPEDES dt;
+			                             SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
+			                             if (pElement == NULL)
+			                             {
+			                                     GenEo(115);
+			                             }
+			                             else
+			                             {
+			                                     memcpy(&dt ,&(pElement->type), sizeof(TYPEDES));
+			                                     /*if (pdt == NULL)
+			                                     {
+			                                     GenEo(111);
+			                                     }
+			                                     else*/
+			                             
+			                                     if ((dt.dim ==0 && dt.objID == 0 )
+			                                             ||(dt.objID > 0 && dt.efLevel > 0))
+			                                     {//Â¶ÇÊûú‰∏çÊòØÊï∞ÁªÑÂíåobj
+			                                             int opsize;
+			                                             if (dt.efLevel > 0) 
+			                                                     opsize = log2((int)OPSIZE_PTR);
+			                                             else
+			                                                     opsize = log2((int)typesize(dt.type, dt.objID));
+			                                             opsize &= 0x3;
+			                                             m_pMainFunction->PushDigit(addess, AMODE_MEM|(opsize << 6), dt);
+			                                     }
+			                                     else
+			                                     {//Â¶ÇÊûúÊòØÊï∞ÁªÑÊàñobj, ÁîüÊàê‰∏¥Êó∂ÂèòÈáèÂ≠òÊîæÊï∞ÁªÑÂú∞ÂùÄ
+			                                             if (dt.dim != 0)
+			                                             {
+			                                                     long temp = AllocTempVa(dtLong, 1);
+			                                                     if (temp == -1)
+			                                                     {
+			                                                             GenEo(98);
+			                                                     }
+			                                                     
+			                                                     ADDCOMMAND2(__ea, DD, temp, addess)
+			                                                     /*Â±ÖÂç´Âçé2001Ôºç8Ôºç22‰øÆÊîπ
+			                                                     dt.efLevel++;
+			                                                     dt.dim--;
+			                                                     */
+			                                                     m_pMainFunction->PushDigit(temp, AMODE_MEM|(log2( (int)(OPSIZE_PTR) )<<6), dt);
+			                                             }
+			                                             else // if it is object
+			                                             {
+			                                                                                     int opsize;
+			                                                                                     opsize = log2((int)OPSIZE_PTR);
+			                                                 opsize &= 0x3;
+			                                                                                     m_pMainFunction->PushDigit(addess, AMODE_MEM|(opsize << 6), dt);
+			                                             }
+			                                     }
+			                                     
+			                             }
+			                     }
+			           else
+			           {
+			                   //GenEo(126);
+			                   if (this->m_PubFuncTable->FindFuncByName(szName) < 0)
+			                   {
+			                           long index = 0;
+			                           if (m_pCuClassDes->getFuncTable()->GetFunction(szName, &index) == NULL)
+			                                   GenEo(104);
+			                           else
+			                                   m_pCuClassDes->getFuncTable()->ReleaseFunc();
+			                   }
+			                   //      etun;
+			           }
 			};
 			break;
 		case newSym:  
 			Get();
-			Creator();
+			Ceato();
 			break;
-		case stringD1Sym:  
+		case stingD1Sym:  
 			Get();
 			
 			             {
-			                                        char* pCh;
-			                                        pCh = new char[Scanner->CurrSym.Len+1];
+			                                        cha* pCh;
+			                                        pCh = new cha[Scanne->CuSym.Len+1];
 			                                        if (pCh == NULL)
 			                                        {
-			                                                GenError(106);
+			                                                GenEo(106);
 			                                                Get();
-			                                                break;
+			                                                beak;
 			                                        }
-			                                        memset(pCh, 0, Scanner->CurrSym.Len+1);
-			                                                            Scanner->GetName(&Scanner->CurrSym, pCh, Scanner->CurrSym.Len);//µ√µΩ√˚≥∆
-			                                           char* string = NULL;
-			                                        string = AnalyzeConstString(pCh);
-			                                     if (string == NULL)
+			                                        memset(pCh, 0, Scanne->CuSym.Len+1);
+			                                                            Scanne->GetName(&Scanne->CuSym, pCh, Scanne->CuSym.Len);//ÂæóÂà∞ÂêçÁß∞
+			                                           cha* sting = NULL;
+			                                        sting = AnalyzeConstSting(pCh);
+			                                     if (sting == NULL)
 			                                        {
 			                                                if (pCh)
 			                                                        delete pCh;
-			                                                GenError(100);                          
+			                                                GenEo(100);                          
 			                                                Get();
-			                                                break;
+			                                                beak;
 			                                        }
 			                    
-			                                        int straddress = this->m_pMainFunction->m_nSSUsedSize;
-			                                        if (m_pMainFunction->AddStaticData(strlen(string)+1, (BYTE*)string)>=0)
+			                                        int staddess = this->m_pMainFunction->m_nSSUsedSize;
+			                                        if (m_pMainFunction->AddStaticData(stlen(sting)+1, (BYTE*)sting)>=0)
 			                                        {       
 			                                                _typedes(dt, dtInt)
 			                                                
 			                                                if (m_pMainFunction->AddVal(NULL,  dt))
 			                                                {
 			                                                        long temp;
-			                                                        temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
-			                                                        ADDCOMMAND2(__ea, DS, temp, straddress);
+			                                                        temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
+			                                                        ADDCOMMAND2(__ea, DS, temp, staddess);
 			                                                        m_pMainFunction->PushDigit(temp, AMODE_MEM, dt);                         
 			                                                }
 			                                        }
 			                                        else
 			                                        {
-			                                                this->GenError(98);
+			                                                this->GenEo(98);
 			                                        }
 			                                            
-			                                                            if (string)
-			                                                delete string;
+			                                                            if (sting)
+			                                                delete sting;
 			                                                            if (pCh)
 			                                                delete pCh;         
 			                                };
 			break;
-		case charD1Sym:  
+		case chaD1Sym:  
 			Get();
 			
 			            {
-			                    Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//µ√µΩ√˚≥∆
-			                    _typedes(dt,dtChar);
+			                    Scanne->GetName(&Scanne->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//ÂæóÂà∞ÂêçÁß∞
+			                    _typedes(dt,dtCha);
 			                    m_pMainFunction->PushDigit(szName[1], AMODE_DIRECT, dt);
 			            }
 			;
 			break;
-		case numberSym:  
+		case numbeSym:  
 			Get();
 			
 			
-			             if (strchr(szName, '.'))        // float
+			             if (stch(szName, '.'))  // float
 			             {
 			                     
-			                     float number = (float)atof(GetCurrSym());
+			                     float numbe = (float)atof(GetCuSym());
 			                     _typedes(dt, dtFloat);                  
-			                     m_pMainFunction->PushDigit(*(long*)&number, AMODE_DIRECT|OPSIZE_4B, dt);
+			                     m_pMainFunction->PushDigit(*(long*)&numbe, AMODE_DIRECT|OPSIZE_4B, dt);
 			             }
 			             else    // int
 			             {
 			                     
-			                     int number = atoi(GetCurrSym());
+			                     int numbe = atoi(GetCuSym());
 			                     _typedes(dt, dtLong);                   
-			                     m_pMainFunction->PushDigit(number, AMODE_DIRECT|OPSIZE_4B, dt);
+			                     m_pMainFunction->PushDigit(numbe, AMODE_DIRECT|OPSIZE_4B, dt);
 			             }
 			;
 			break;
 		case LparenSym:  
 			Get();
-			Expression();
+			Expession();
 			Expect(RparenSym);
 			break;
 		case LbraceSym:  
@@ -2340,11 +2340,11 @@ void cParser::Primary()
 	}
 }
 
-void cParser::FunctionCall(FUNCCALL* pFuncEntry)
+void cParser::FunctionCall(FUNCCALL* pFuncEnty)
 {
 	Expect(LparenSym);
-	if (Sym >= identifierSym && Sym <= numberSym ||
-	    Sym >= stringD1Sym && Sym <= charD1Sym ||
+	if (Sym >= identifieSym && Sym <= numbeSym ||
+	    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	    Sym == LbraceSym ||
 	    Sym == LparenSym ||
 	    Sym == StarSym ||
@@ -2353,75 +2353,75 @@ void cParser::FunctionCall(FUNCCALL* pFuncEntry)
 	    Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
 	    Sym == newSym ||
 	    Sym >= BangSym && Sym <= TildeSym) {
-		ActualParameters(pFuncEntry);
+		ActualPaametes(pFuncEnty);
 	}
 	Expect(RparenSym);
 	
-	//long lParamNum = 0;
-	    if (pFuncEntry->nType)
+	//long lPaamNum = 0;
+	    if (pFuncEnty->nType)
 	    {
 	    //addcommand
 	    ADDCOMMAND0(__endcallpub);
-	    //save return value
+	    //save etun value
 	    _typedes(dt, dtLong)
 	    if (m_pMainFunction->AddVal(NULL, dt))
 	    {                       
 	            long temp;
-	            temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+	            temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 	            ADDCOMMAND2(__mov, DR, temp , _AX);
 	            m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
 	    }
 	    else
 	    {
-	            this->GenError(98);
+	            this->GenEo(98);
 	    }
 	                            
 	    }
 	    else
 	    {
-	    // check param number
-	    //if (lParamNum != pFuncEntry->pVF->m_iParamNum)
+	    // check paam numbe
+	    //if (lPaamNum != pFuncEnty->pVF->m_iPaamNum)
 	    //{
-	    //      GenError(123);
+	    //      GenEo(123);
 	    //}
 	
 	    //addcommand
 	    ADDCOMMAND0(__endcallv);
 	
-	    //save return value
+	    //save etun value
 	    _typedes(dt, dtLong)
 	    if (m_pMainFunction->AddVal(NULL, dt))
 	    {
 	            long temp;
-	            temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+	            temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 	            ADDCOMMAND2(__mov, DR, temp , _AX);
 	            m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
 	    }
 	    else
 	    {
-	            this->GenError(98);
+	            this->GenEo(98);
 	    }
 	    };
 }
 
 void cParser::HashItem()
 {
-	if (Sym == stringD1Sym) {
+	if (Sym == stingD1Sym) {
 		Get();
-	} else if (Sym == identifierSym) {
+	} else if (Sym == identifieSym) {
 		Get();
 	} else GenError(108);
 	Expect(ColonSym);
-	Expression();
+	Expession();
 }
 
 void cParser::SetItem()
 {
-	if (Sym == identifierSym ||
-	    Sym == stringD1Sym) {
+	if (Sym == identifieSym ||
+	    Sym == stingD1Sym) {
 		HashItem();
-	} else if (Sym == numberSym ||
-	           Sym == charD1Sym ||
+	} else if (Sym == numbeSym ||
+	           Sym == chaD1Sym ||
 	           Sym == LbraceSym ||
 	           Sym == LparenSym ||
 	           Sym == StarSym ||
@@ -2430,7 +2430,7 @@ void cParser::SetItem()
 	           Sym >= PlusPlusSym && Sym <= MinusMinusSym ||
 	           Sym == newSym ||
 	           Sym >= BangSym && Sym <= TildeSym) {
-		Expression();
+		Expession();
 	} else GenError(109);
 }
 
@@ -2446,8 +2446,8 @@ void cParser::SetItems()
 void cParser::SetDef()
 {
 	Expect(LbraceSym);
-	if (Sym >= identifierSym && Sym <= numberSym ||
-	    Sym >= stringD1Sym && Sym <= charD1Sym ||
+	if (Sym >= identifieSym && Sym <= numbeSym ||
+	    Sym >= stingD1Sym && Sym <= chaD1Sym ||
 	    Sym == LbraceSym ||
 	    Sym == LparenSym ||
 	    Sym == StarSym ||
@@ -2461,45 +2461,45 @@ void cParser::SetDef()
 	Expect(RbraceSym);
 }
 
-void cParser::Creator()
+void cParser::Ceato()
 {
-	char szName[_MAX_PATH] = "";
+	cha szName[_MAX_PATH] = "";
 	ClassFullName(szName);
 	while (Sym == LparenSym) {
 		Get();
-		while (Sym >= varSym && Sym <= stringSym) {
-			FormalParamList();
+		while (Sym >= vaSym && Sym <= stingSym) {
+			FomalPaamList();
 		}
 		Expect(RparenSym);
 	}
 	        
 	   CClassDes* cd = this->m_classTable->getClass(szName);
 	   if (cd == NULL){
-	           std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
-	           strcpy(szName, s.c_str());
+	           std::sting s = JUJU::getFilePath(c->getCuScFile())+szName;
+	           stcpy(szName, s.c_st());
 	           cd = this->m_classTable->getClass(szName);
 	           if (cd == NULL){
-	                           strcat(szName, ".c");
-	                           CCompiler cc;                         
+	                           stcat(szName, ".c");
+	                           CCompile cc;                         
 	               cc.Compile(szName);
 	       }
-	           // TODO generete correct error
-	           //GenError(100);
-	           //return;
+	           // TODO geneete coect eo
+	           //GenEo(100);
+	           //etun;
 	   }
-	           int address = m_pMainFunction->AddStaticData(strlen(szName)+1, (BYTE*)szName);
-	   ADDCOMMAND1(__newobj,DS, address);
+	           int addess = m_pMainFunction->AddStaticData(stlen(szName)+1, (BYTE*)szName);
+	   ADDCOMMAND1(__newobj,DS, addess);
 	   
 	
 	TYPEDES dt1;
 	   memset(&dt1, 0, sizeof(TYPEDES));
-	   dt1.type = dtGeneral;
-	// Ω´AX÷–µƒΩ·π˚¥Ê»Î¡Ÿ ±±‰¡ø
+	   dt1.type = dtGeneal;
+	// Â∞ÜAX‰∏≠ÁöÑÁªìÊûúÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè
 	   if (m_pMainFunction->AddVal(NULL,  dt1))
 	   {                       
 	                   long temp;
 	                   long opsize = log2(UnitSize(dt1))<<6;
-	                   temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+	                   temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 	                   ADDCOMMAND2(__mov, DR|((opsize<<8)|opsize), temp , _AX);
 	                   m_pMainFunction->PushDigit(temp, AMODE_MEM|opsize, dt1);
 	   }
@@ -2509,16 +2509,16 @@ void cParser::Creator()
 	   };
 }
 
-void cParser::ActualParameters(FUNCCALL* pFuncEntry)
+void cParser::ActualPaametes(FUNCCALL* pFuncEnty)
 {
 	
-	//      lParamNum = 0;
-	    if (pFuncEntry == NULL)
-	            return;
+	//      lPaamNum = 0;
+	    if (pFuncEnty == NULL)
+	            etun;
 	
-	    char cParamNum = 0;     
+	    cha cPaamNum = 0;       
 	
-	Expression();
+	Expession();
 	
 	    //pop
 	    long op1;
@@ -2527,26 +2527,26 @@ void cParser::ActualParameters(FUNCCALL* pFuncEntry)
 	    if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
 	    {
 	    //      REPORT_COMPILE_ERROR("POP UP FAILED");
-	            this->GenError(96);
-	            return;
+	            this->GenEo(96);
+	            etun;
 	    }
-	    int address_mode = (type<<8)&0xff00;
-	    address_mode |= (log2(UnitSize(dt1))<<14);
+	    int addess_mode = (type<<8)&0xff00;
+	    addess_mode |= (log2(UnitSize(dt1))<<14);
 	
-	    if (pFuncEntry->nType)  // native function
-	            ADDCOMMAND1(__parampub, address_mode, op1)                      
+	    if (pFuncEnty->nType)   // native function
+	            ADDCOMMAND1(__paampub, addess_mode, op1)                        
 	    else
-	            ADDCOMMAND1(__paramv, address_mode, op1)
+	            ADDCOMMAND1(__paamv, addess_mode, op1)
 	
-	    cParamNum++; 
+	    cPaamNum++; 
 	while (Sym == CommaSym) {
 		Get();
-		Expression();
+		Expession();
 		
 		                    // modified on 20030331 by weihua ju
-		//                      if (cParamNum > pFuncEntry->params.size()-1)
+		//                      if (cPaamNum > pFuncEnty->paams.size()-1)
 		//                      {
-		//                              GenError(106);
+		//                              GenEo(106);
 		//                      }
 		
 		                    //pop
@@ -2556,50 +2556,50 @@ void cParser::ActualParameters(FUNCCALL* pFuncEntry)
 		                    if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE)
 		                    {
 		                            //      REPORT_COMPILE_ERROR("POP UP FAILED");
-		                            this->GenError(96);
-		                            return;
+		                            this->GenEo(96);
+		                            etun;
 		                    }
 		                    else
 		                    {
-		                            //get address mode
-		                            int address_mode = (type<<8)&0xff00;
-		                            address_mode |= (log2(UnitSize(dt1))<<14);
+		                            //get addess mode
+		                            int addess_mode = (type<<8)&0xff00;
+		                            addess_mode |= (log2(UnitSize(dt1))<<14);
 		                            
-		                            /*              ±£¡Ù
+		                            /*              ‰øùÁïô
 		                            if (dt1.dim > 0)
 		                            {
 		                            _typedes(dt, dtInt)
 		                            long temp;
-		                            //»Áπ˚ « ˝◊È, ∞—À¸µƒµÿ÷∑¥Ê»Î¡Ÿ ±±‰¡ø, ¥´»Î¡Ÿ ±±‰¡ø
+		                            //Â¶ÇÊûúÊòØÊï∞ÁªÑ, ÊääÂÆÉÁöÑÂú∞ÂùÄÂ≠òÂÖ•‰∏¥Êó∂ÂèòÈáè, ‰º†ÂÖ•‰∏¥Êó∂ÂèòÈáè
 		                            if (m_pMainFunction->AddVal(NULL, dt))
 		                            {                       
-		                            temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+		                            temp = m_pMainFunction->m_SymbolTable.tableEnty[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].addess;
 		                            ADDCOMMAND2(__ea, DD, temp, op1);
 		                            }
 		                            long size = sizeof(long*);
 		                            size = log2(size);
 		                            size = size << 14;
 		
-		                            ADDCOMMAND1(__parampub, size|0x100, temp)       
+		                            ADDCOMMAND1(__paampub, size|0x100, temp)        
 		                            }
 		                            else    
 		                            */                      
-		                            if (pFuncEntry->nType)  // native function
-		                            ADDCOMMAND1(__parampub, address_mode, op1)                      
+		                            if (pFuncEnty->nType)   // native function
+		                            ADDCOMMAND1(__paampub, addess_mode, op1)                        
 		                                    else
-		                            ADDCOMMAND1(__paramv, address_mode, op1)                
-		                            cParamNum++; 
+		                            ADDCOMMAND1(__paamv, addess_mode, op1)          
+		                            cPaamNum++; 
 		                    }               
 		;
 	}
 	
 	            // code added on 20030331 weihua ju
-	            if ((pFuncEntry->nType!=0) && cParamNum != pFuncEntry->pfn->cParamNum)
+	            if ((pFuncEnty->nType!=0) && cPaamNum != pFuncEnty->pfn->cPaamNum)
 	            {
 	
-	                    GenError(106);
+	                    GenEo(106);
 	            }
-	    //lParamNum = cParamNum;
+	    //lPaamNum = cPaamNum;
 }
 
 
