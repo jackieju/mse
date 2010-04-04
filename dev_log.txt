@@ -1,57 +1,58 @@
-1. ʵ�ֽű������Ļ������
-	1. ��compiler�м���callv, paramv, �� endcallvָ��.
+2001/3
+1. 实现脚本函数的互相调用
+	1. 在compiler中加入callv, paramv, 和 endcallv指令.
 
-	2. ������ʱ���ֺ�������pubfunctable��û��ʱ, ��scriptfucntable�в���, ���ҵ�, ��
-	����callָ��, ��������CFucntion��ָ��.
+	2. 当编译时发现函数名在pubfunctable中没有时, 到scriptfucntable中查找, 如找到, 则
+	添加call指令, 操作数是CFucntion的指针.
 
-	3. paramv��¼����
+	3. paramv记录参数
 
-	4. endcallvָ���load�Ӻ���, 
-	�ѵ�ǰIP, ���ݶε�ַ���Ӻ���ָ������call stack, �ѵ�ǰ����ָ��ָ��ջ�Ķ���, IP����
-	�ȷ����ڴ�, Ȼ������ݶε�ָ��ָ���Ӻ������ڴ�.
-	��Ϊ����ָ�붼��������ַ��˲���Ҳ������ָ��. 
-	���Ʋ���
+	4. endcallv指令负责load子函数, 
+	把当前IP, 数据段地址和子函数指针推入call stack, 把当前函数指针指向栈的顶端, IP归零
+	先分配内存, 然后把数据段的指针指向子函数的内存.
+	因为所有指针都是物理地址因此参数也可以是指针. 
+	复制参数
 
-	5. returnʱ, �ѷ���ֵ����AX, �����ڴ�, �ָ�IP�����ݶ�ָ��, pop���Ӻ���ָ��.
+	5. return时, 把返回值赋给AX, 销毁内存, 恢复IP和数据段指针, pop出子函数指针.
 	
-	7. Ҫ�޸ĵĵط�
+	7. 要修改的地方
 	compiler
-	ʵ��callv, paramv, endcallv, return
-	����call stack, ��ǰ����ָ��
-	�޸�run����
+	实现callv, paramv, endcallv, return
+	增加call stack, 当前函数指针
+	修改run函数
 	
-	8. ���е�return�����뷵��һ��ֵ.
+	8. 所有的return语句必须返回一个值.
 	
-	9. �޸�ValidateAddress����
-	ʹ������֤ʱ����callstack�����е������ڴ�
+	9. 修改ValidateAddress函数
+	使他在验证时遍历callstack中所有的虚拟内存
 
-2.  Ҫ���ǵ������ĵ��ò�����һ�������ķ���ֵ�����, ����: test1(0, test2());
-	��һ�����ǰVM�����.
-	�������: ����һ����������ջ, �޸����кͺ��������йص�������ָ���ʵ�ֺ�����VM����������
+2.  要考虑当函数的调用参数是一个函数的返回值的情况, 比如: test1(0, test2());
+	这一情况当前VM会出错.
+	解决方法: 添加一个函数调用栈, 修改所有和函数调用有关的虚拟汇编指令的实现函数和VM的析构函数
 
-3.  �����õĽű������������һ��ָ��, ���ں�����return�������е��ڴ��ѱ��ͷ�, 
-	������ָ���ǲ����õ�. �������ָ���ǿ��Ա���������ʹ�õ�.
-	�������: �����
+3.  被调用的脚本函数如果传出一根指针, 由于函数在return后它所有的内存已被释放, 
+	因此这根指针是不可用的. 但传入的指针是可以被被调函数使用的.
+	解决方法: 待解决
 
-4. ʵ�ַ��䶯̬�ڴ�
+4. 实现分配动态内存
 
-5. ��������ʱ�ĳ�ʱ����
+5. 函数运行时的超时机制
 
-6. ����ʽ�ӿ�: javalib��ʽ
+6. 开放式接口: javalib方式
 
-7. ��ȫ�Է���Ŀ���
+7. 安全性方面的考虑
 
-8. ��ƽ̨
+8. 跨平台
 
-9. ������������Ʒ�Ľӿں�ͨѶ
+9. 与其他主流产品的接口和通讯
 
 
-��psse��һ���ĵط�:
-1. compile��compileall���߼�
-2. LoadConfig��GetConfig
-3. se_interface.h ��ע�ͺ�interface����
-4. û��ʹ��RunScript
+和psse不一样的地方:
+1. compile和compileall的逻辑
+2. LoadConfig和GetConfig
+3. se_interface.h 的注释和interface个数
+4. 没有使用RunScript
 
-ʹ��cocor����compiler�� ���ǰ������﷨�������ε��߼��ŵ�.atg��.frm��
+使用cocor改造compiler， 就是把生成语法树或代码段的逻辑放到.atg和.frm中
 1. CompoundStatement
 2. functoncall and ActualParameter
