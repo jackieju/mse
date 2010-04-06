@@ -81,7 +81,6 @@
 #include <string>
 #include <iostream>
 #include <fstream>
-#include <malloc.h>
 #include <time.h>
 //#include "io.h"
 #include <fcntl.h>
@@ -158,7 +157,8 @@ extern "C"
 				"movl %ecx,%esp\n\t"			
 				"call %eax\n\t"			
 				"movl %eax,(%ebx)\n\t"
-				"ret");
+				"ret"
+				);
 	}
 }
 #endif
@@ -177,9 +177,25 @@ BOOL __stdcall CallPubFunc(long lParamSize, void* pfn, void* pParam, long* pRet)
 #ifdef WIN32
 	_HGDispatchCall(pRet, (void*)pfn, p, lParamSize);
 #else
-
-		
-	
+#ifdef _MACOS
+	/*
+			__asm__ __volatile__ (
+			//"pushl	%0;"
+			//"pushl	%1;"
+			//"pushl	%2;"
+			//"pushl	%3;"			
+			"movl %3, %%ebx\n\t"	// edx = pRet
+			"movl %2, %%eax\n\t"	// eax = pfn
+			"movl %1, %%ecx\n\t"	// ecx = p
+			"movl %0, %%edx\n\t"	// edx = lParamSize
+	//		"addl %%edx, %%ecx;"	// ecx = p + lParamsize = Scrach erea
+	//		"movl %%edx,(%%ecx);"	// scrach = return address;
+	//		"subl %%edx, %%ecx;"	// ecx = ecx - lParasize = p;
+			"movl %%ecx, %%esp\n\t"		// move stack point to p
+			"call %%eax\n\t"			// call function
+			"movl %%eax,(%%ebx)\n\t"	: 	:"r"(lParamSize) , "r"(p) , "r"(pfn) , "r"(pRet)
+			);	*/
+#else
 			__asm__ __volatile__ (
 			//"pushl	%0;"
 			//"pushl	%1;"
@@ -192,11 +208,11 @@ BOOL __stdcall CallPubFunc(long lParamSize, void* pfn, void* pParam, long* pRet)
 	//		"addl %%edx, %%ecx;"	// ecx = p + lParamsize = Scrach erea
 	//		"movl %%edx,(%%ecx);"	// scrach = return address;
 	//		"subl %%edx, %%ecx;"	// ecx = ecx - lParasize = p;
-			"movl %%ecx,%%esp;"		// move stock point to p
+			"movl %%ecx,%%esp;"		// move stack point to p
 			"call %%eax;"			// call function
 			"movl %%eax,(%%ebx);"	: 	:"r"(lParamSize) , "r"(p) , "r"(pfn) , "r"(pRet)
 			);	
-	
+#endif	
 #endif
 
 	return TRUE;
@@ -730,7 +746,7 @@ BOOL CVirtualMachine::_ea(PCOMMAND cmd)
 
 BOOL CVirtualMachine::_eaobj(PCOMMAND cmd)
 {
-	int EA;
+	INT EA;
  
 	unsigned char* dest = (unsigned char*)&(m_pCurCall->DataSeg[cmd->op[0]]);
 	unsigned char* obj = &m_pCurCall->DataSeg[cmd->op[1]];
@@ -739,7 +755,7 @@ BOOL CVirtualMachine::_eaobj(PCOMMAND cmd)
 		if (obj == NULL)
 			return FALSE;
 		char* member = (char*)(&(m_pCurCall->StaticSeg[cmd->op[2]]));
-		EA = (int)(((CObjectInst*)obj)->getMemberAddress(member));
+		EA = (INT)(((CObjectInst*)obj)->getMemberAddress(member));
 	}else
 		EA = (long)obj;
 	memcpy(dest, &EA, sizeof(long));

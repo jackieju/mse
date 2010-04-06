@@ -11,3 +11,9 @@
 typedef int BOOL;
 typedef void* HMODULE;
 #endif
+
+#ifdef _64
+typedef long INT ;
+#else
+typedef int INT ;
+#endif

@@ -16,6 +16,9 @@
 #include "clib.h"
 #include "os/osutils.h"
 #include "PubFuncTable.h"
+#ifdef _MACOS
+#include <dlfcn.h>
+#endif
 
 //////////////////////////////////////////////////////////////////////
 // Construction/Destruction
@@ -182,7 +185,7 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 		if (dlerr)
 		{
 			snprintf(szMsg, 300, "SE:: dlerror() return \"%s\")", dlerr);
-			LOG(szMsg,  1);
+			nLOG(szMsg,  1);
 			printf(szMsg);printf("\n");
 		}
 #endif

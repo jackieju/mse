@@ -1,5 +1,6 @@
 #ifndef __SE_INTERFACE_H__
 #define __SE_INTERFACE_H__
+#include "clib.h"
 #ifdef 	WIN32
 #define SEMETHOD __stdcall
 #else

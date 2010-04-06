@@ -51,8 +51,8 @@
 #include "Request.h"
 
 
-//extern CScriptFuncTable functable[SCRIPTTABLE_NUM];
-//extern long g_lActiveScriptTable;
+extern CScriptFuncTable functable[SCRIPTTABLE_NUM];
+extern long g_lActiveScriptTable;
 
 CVMManager::CVMManager()
 {

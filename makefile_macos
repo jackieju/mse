@@ -1,33 +1,49 @@
 # Project: se
 
-headers = $(shell echo ./*.h os/*.h)
-srcs = $(shell echo ./*.cpp os/*.cpp)
-objs = $(srcs:.cpp=.o)
+#headers = $(shell echo ./*.h os/*.h)
+#srcs = $(shell echo ./*.cpp os/*.cpp)
+#objs = $(srcs:.cpp=.o)
 
 CC   = g++ 
 
-
-OBJ  = VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o StdAfx.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o$(RES)
+CLIB_OBJ = clib/thread.o clib/log.o clib/utility.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o os/protected.o os/mutex.o os/LogLevel.o 
+OBJ  = ObjTable.o ClassDesTable.o main.o ObjectInst.o Class.o ClassDes.o Exp.o VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o $(CLIB_OBJ) $(RES) 
 #OBJ  = $(objs) $(RES)
 #OBJ  = $(objs)
-BIN  = libSE.so.1.0
-SOBIN=$(BIN:.so.1.0=.so)
-CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./
+BIN_EXEC = mse
+#BIN  = libSE.so.1.0
+#SOBIN=$(BIN:.so.1.0=.so)
+CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./ -D_64
 # -Wfatal-errors
+LINK=g++ -g
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before $(BIN) all-after
+all: all-before $(BIN_EXEC) all-after
 
 
 clean: clean-custom
 	rm -f $(OBJ) $(BIN)
 
 DLLWRAP=g++
+main.o: main.cpp
+	$(CC) -c main.cpp -o main.o $(CFLAGS)
 
 cocoR/cp.cpp: cocoR/msec.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
 	cd cocoR && ./cocor -A -F -X -S -G -C -L msec.atg
-
+	
+ObjectInst.o: ObjectInst.cpp
+	$(CC) -c ObjectInst.cpp -o ObjectInst.o $(CFLAGS)
+		
+ObjTable.o: ObjTable.cpp
+	$(CC) -c ObjTable.cpp -o ObjTable.o $(CFLAGS)
+	
+ClassDesTable.o: ClassDesTable.cpp
+	$(CC) -c ClassDesTable.cpp -o ClassDesTable.o $(CFLAGS)
+	
+Class.o: Class.cpp
+	$(CC) -c Class.cpp -o Class.o $(CFLAGS)
+	
 CCompiler.o: CCompiler.cpp
 	$(CC) -c CCompiler.cpp -o CCompiler.o $(CFLAGS)
 
@@ -58,17 +74,23 @@ LoopTree.o: LoopTree.cpp
 ObjDes.o: ObjDes.cpp
 	$(CC) -c ObjDes.cpp -o ObjDes.o $(CFLAGS)
 
+ClassDes.o: ClassDes.cpp
+	$(CC) -c ClassDes.cpp -o ClassDes.o $(CFLAGS)
+
 PubFuncTable.o: PubFuncTable.cpp
 	$(CC) -c PubFuncTable.cpp -o PubFuncTable.o $(CFLAGS)
 
 Request.o: Request.cpp
 	$(CC) -c Request.cpp -o Request.o $(CFLAGS)
+	
+Exp.o: Exp.cpp
+	$(CC) -c Exp.cpp -o Exp.o $(CFLAGS)
 
 ScriptFuncTable.o: ScriptFuncTable.cpp
 	$(CC) -c ScriptFuncTable.cpp -o ScriptFuncTable.o $(CFLAGS)
 
-StdAfx.o: StdAfx.cpp
-	$(CC) -c StdAfx.cpp -o StdAfx.o $(CFLAGS)
+#StdAfx.o: StdAfx.cpp
+#	$(CC) -c StdAfx.cpp -o StdAfx.o $(CFLAGS)
 
 SymbolTable.o: SymbolTable.cpp
 	$(CC) -c SymbolTable.cpp -o SymbolTable.o $(CFLAGS)
@@ -100,7 +122,7 @@ os/ostime.o: os/ostime.cpp
 os/socket.o: os/socket.cpp
 	$(CC) -c os/socket.cpp -o os/socket.o $(CFLAGS)
 
-os/ConfigFile..o: os/ConfigFile.cpp
+os/ConfigFile.o: os/ConfigFile.cpp
 	$(CC) -c os/ConfigFile.cpp -o os/ConfigFile.o $(CFLAGS)
 
 os/log.o: os/log.cpp
@@ -130,8 +152,24 @@ os/osutils.o: os/osutils.cpp
 os/str.o: os/str.cpp
 	$(CC) -c os/str.cpp -o os/str.o $(CFLAGS)
 
+os/LogLevel.o: os/LogLevel.cpp
+	$(CC) -c os/LogLevel.cpp -o os/LogLevel.o $(CFLAGS)	
+	
+clib/log.o: clib/log.cpp
+	$(CC) -c clib/log.cpp -o clib/log.o $(CFLAGS)
+	
+clib/utility.o: clib/utility.cpp
+	$(CC) -c clib/utility.cpp -o clib/utility.o $(CFLAGS)
+	
+clib/thread.o: clib/thread.cpp
+	$(CC) -c clib/thread.cpp -o clib/thread.o $(CFLAGS)
+	
 
+	
 $(BIN): $(OBJ)
 #	$(DLLWRAP) -shared -ldl  $(OBJ)  -o $(BIN)
 	$(DLLWRAP) -shared -Wl,-soname,$(SOBIN)  $(OBJ)  -o ./bin/$(BIN) -lc
+
+$(BIN_EXEC): $(OBJ)
+	$(LINK) $(OBJ) -o bin/$(BIN_EXEC)
 

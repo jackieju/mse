@@ -29,9 +29,9 @@ char *MyError::ErrorMsg[] = {
 		""
 };
 
-//CScriptFuncTable CCompiler::functable[SCRIPTTABLE_NUM];
+CScriptFuncTable CCompiler::functable[SCRIPTTABLE_NUM];
 CClassDesTable CCompiler::classTable;
-//long CCompiler::g_lActiveScriptTable;
+long CCompiler::g_lActiveScriptTable;
 CPubFuncTable CCompiler::m_PubFuncTable;
 
 char *MyError::GetUserErrorMsg(int n)

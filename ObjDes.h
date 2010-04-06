@@ -10,17 +10,17 @@
 #endif // _MSC_VER > 1000
 #include "datatype.h"
 
-typedef struct _tagObjMemDes
+typedef struct _tagObjDes
 {
 	TYPEDES dt;				//数据类型
 	char szName[64];		//名称
 	long offset;			//offset
-}OBJMEMDES;
+}OBJDES;
 class cParser;
 class CObjDes  
 {
 private:
-	OBJMEMDES *m_MemberTable;	//成员列表
+	OBJDES *m_MemberTable;	//成员列表
 	long m_lTableSize;			//buffer大小
 	long m_lMemberNum;			//成员数
 	char m_szName[21];			//该obj的名称
@@ -35,7 +35,7 @@ public:
 	char*  GetObjName();
 	BOOL SetName(char* szName);
 	long GetSize();
-	OBJMEMDES *GetMemberByName(char* szName);
+	OBJDES *GetMemberByName(char* szName);
 
 };
 

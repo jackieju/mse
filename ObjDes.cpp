@@ -46,15 +46,15 @@ BOOL CObjDes::AddMember(char *szName, TYPEDES& dt)
 
 	if (this->m_lMemberNum == this->m_lTableSize)
 	{
-		OBJMEMDES* pNewTable = NULL;
+		OBJDES* pNewTable = NULL;
 		
-		pNewTable = new OBJMEMDES[m_lTableSize+50];
+		pNewTable = new OBJDES[m_lTableSize+50];
 		if (pNewTable == NULL)
 		{
 			REPORT_MEM_ERROR("Memory allocation failed\r\n");
 			return FALSE;
 		}
-		memcpy(pNewTable, this->m_MemberTable, sizeof(OBJMEMDES)*m_lMemberNum);
+		memcpy(pNewTable, this->m_MemberTable, sizeof(OBJDES)*m_lMemberNum);
 		delete m_MemberTable;
 		this->m_MemberTable = pNewTable;		
 		m_lTableSize += 50;
@@ -97,7 +97,7 @@ BOOL CObjDes::SetName(char* szName)
 	return TRUE;		
 }
 
-OBJMEMDES *CObjDes::GetMemberByName(char* szName)
+OBJDES *CObjDes::GetMemberByName(char* szName)
 {
 	//find
 	for (int i= 0; i< this->m_lMemberNum; i++)

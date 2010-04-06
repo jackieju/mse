@@ -22,6 +22,7 @@
 #ifndef __VMMANAGER_H__
 #define __VMMANAGER_H__
 
+#include <list>
 
 // define error code
 

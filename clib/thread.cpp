@@ -10,7 +10,7 @@ using namespace JUJU;
 
 #ifndef WIN32
 
-pthread_key_t tsd_key;
+pthread_key_t tsd_key1;
 #else
 #endif
 
@@ -60,7 +60,7 @@ static void * __stdcall new_thread(void *arg)
 	 * that relies on this call having been made is this one --
 	 * no other thread can access our TSD anyway. */
 #ifndef WIN32
-	ret = pthread_setspecific(tsd_key, p->ti);
+	ret = pthread_setspecific(tsd_key1, p->ti);
 	if (ret != 0) 
 	{
 	//	error(ret, "thread-pthread: pthread_setspecific failed: %s", strerror(errno));

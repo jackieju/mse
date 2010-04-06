@@ -232,8 +232,8 @@ void JUJU::QSort2(char *a, size_t n, size_t es, long (*cmp)(char*, char*, long, 
 		pc -= es;
 	}
 	pn = a + n*es;
-	s = min(pa-a,  pb-pa   ); vecswap(a,  pb-s, s);
-	s = min(pd-pc, pn-pd-es); vecswap(pb, pn-s, s);
+	s = MIN(pa-a,  pb-pa   ); vecswap(a,  pb-s, s);
+	s = MIN(pd-pc, pn-pd-es); vecswap(pb, pn-s, s);
     if ((s = pb-pa) > es) QSort2(a,    s/es, es, cmp, p1, p2 ,p3, q1, q2, q3);
 	if ((s = pd-pc) > es) QSort2(pn-s, s/es, es, cmp, p1, p2, p3, q1, q2, q3);
 }
@@ -286,8 +286,8 @@ void JUJU::QSort1(char *a, size_t n, size_t es, long (*cmp)(char*, char*, long, 
 		pc -= es;
 	}
 	pn = a + n*es;
-	s = min(pa-a,  pb-pa   ); vecswap(a,  pb-s, s);
-	s = min(pd-pc, pn-pd-es); vecswap(pb, pn-s, s);
+	s = MIN(pa-a,  pb-pa   ); vecswap(a,  pb-s, s);
+	s = MIN(pd-pc, pn-pd-es); vecswap(pb, pn-s, s);
 	if ((s = pb-pa) > es) QSort1(a,    s/es, es, cmp, p1, p2 ,p3);
 	if ((s = pd-pc) > es) QSort1(pn-s, s/es, es, cmp, p1, p2, p3);
 }
@@ -792,7 +792,9 @@ char* JUJU::utoa(wchar_t* uc){
 		if ((ret = wcstombs(str, wpTmp, out_len)) == (size_t)-1)
 		{
 			fprintf(stderr, "content:%s, locale:%s, error:%s\n", str, pTmp, strerror(errno));
+#ifndef _MACOS
 			fprintf(stderr, "language:%s\n", nl_langinfo(CODESET));
+#endif
 			fprintf(stderr, "result:%d\n", ret);
 			SAFEDELETE(str);
 			return NULL;
@@ -846,7 +848,9 @@ void JUJU::utoa(wchar_t* uc, char* str, int max_len){
 		if ((ret = wcstombs(str, wpTmp, max_len-1)) == (size_t)-1)
 		{
 			fprintf(stderr, "content:%s, locale:%s, error:%s\n", str, pTmp, strerror(errno));
+			#ifndef _MACOS
 			fprintf(stderr, "language:%s\n", nl_langinfo(CODESET));
+			#endif
 			fprintf(stderr, "result:%d\n", ret);
 			SAFEDELETE(str);
 			return;

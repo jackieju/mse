@@ -63,7 +63,7 @@ CExp::CExp(long lCode, char* sMsg, char* file, long nLine,  long lState, long lL
 	m_lLevel = lLevel;
 }
 
-CExp::~CExp()
+CExp::~CExp() throw ()
 {
 	SAFEDELETE(pLow);
 }
