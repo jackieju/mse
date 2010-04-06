@@ -117,22 +117,29 @@ PRODUCTIONS
 	if (cd == NULL){
 		strcat(szName, ".c");
 						CCompiler cc;
-			//	std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
-				cc.Compile(szName);
+	                         std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+								if (m_conf)	
+									cc.setConf(*m_conf);
+								cc.getClassPath().push_back(JUJU::getFilePath(c->getCurSrcFile()));
+	                            cc.Compile(szName);
 	}
   .)";" .
   
   LoadLib = "load" identifier 
   (.
-   	// load external library 
-	std::string lib = GetCurrSym();
-	std::string libfile = lib+".dll";
-	std::string libintfile = lib+".int";
+	    // load external library 
+	    std::string lib = GetCurrSym();
+	#ifdef 	WIN32
+	    std::string libfile = lib+".dll";
+	#else
+		std::string libfile = "lib"+lib+".so";
+	#endif
+	    std::string libintfile = lib+".int";
 #ifdef WIN32
 		m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
 #else
-	char* c1 = (char*)(lib+".so").c_str();
-	char* c2 = (char*)(lib+".int").c_str();
+	    char* c1 = (char*)(libfile).c_str();
+	    char* c2 = (char*)(libintfile).c_str();
 	m_PubFuncTable->LoadLib(c1, c2);
 #endif
 /* for the further if VM run in another process than compiler run

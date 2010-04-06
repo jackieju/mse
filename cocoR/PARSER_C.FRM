@@ -22,7 +22,7 @@ unsigned short int -->ParserClass::SymSet[][MAXSYM] = {
   -->SymSets
   {0x0}
 };
-BOOL -->ParserClass::init(CClassDesTable *table, CPubFuncTable* pft){
+BOOL -->ParserClass::init(CClassDesTable *table, CPubFuncTable* pft, CConfigure* c){
 	m_classTable = table;
 	m_PubFuncTable = pft;
 	m_conf = c;
@@ -634,6 +634,9 @@ BOOL cParser::AddClass(CClassDes& obj)
 	return TRUE;
 */
     m_classTable->addClass(&obj);
+	std::string msg = "add classes";
+	debug(msg);
+    return TRUE;
 
     return TRUE;
 
@@ -702,6 +705,8 @@ void cParser::SetByteCodeFilePath(char* szPath)
 
 -->ParserClass::-->ParserClass(CCompiler* c, AbsScanner *S, CRError *E) : CRParser(S,E)
 {
+	m_conf = NULL;
+	
 	m_LoopTree = new CLoopTree();
 
 	m_pMainFunction = new CFunction;

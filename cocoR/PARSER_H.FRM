@@ -22,7 +22,7 @@
 #include "Function.h"
 #include "PubFuncTable.h"
 #include "ClassDesTable.h"
-
+#include "Configure.h"
 
 //////////////////////////	
 // add by jackie juju
@@ -103,7 +103,7 @@ public:
 
 	CPubFuncTable* m_PubFuncTable;
 
-	BOOL init(CClassDesTable *table, CPubFuncTable* pft);
+	BOOL init(CClassDesTable *table, CPubFuncTable* pft, CConfigure* c=NULL);
 	void destroy();
 
 	int UnitSize(TYPEDES& type);                //实际数据类型的size
@@ -127,6 +127,19 @@ public:
 		Scanner->GetName(&Scanner->CurrSym, szNextSymName, MAX_IDENTIFIER_LENGTH-1);//得到名称;
 		return szNextSymName;
 	}
+	
+	void setConfig(CConfigure* p){
+		m_conf = p;
+		if (p)
+			showOptions();
+	}
+	void showOptions(){
+		if (m_conf==NULL){
+			printf("Option is empty\n");
+			return;
+		}
+		printf("debug=%s\n", m_conf->get("debug").c_str());
+	}
 private:
 
     CCompiler *c; // used to load other object when parsing current source
@@ -144,7 +157,7 @@ private:
 
     char curFileName[_MAX_PATH];  // current source file name
 
-
+	CConfigure* m_conf; // options
 
 	//一元操作符栈
 	EXPRESSIONOP m_ExpOp;
@@ -195,6 +208,14 @@ private:
     virtual void Get();
     void ExpectWeak (int n, int follow);
     int  WeakSeparator (int n, int syFol, int repFol);
+	void debug(std::string s){
+		if (m_conf){
+			const char* d = m_conf->get("debug").c_str();
+			if (!stricmp(d, "yes"))
+				printf("%s\n", s);
+		}
+	}
+	
   private:
     -->ProdHeaders
 

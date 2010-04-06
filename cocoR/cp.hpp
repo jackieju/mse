@@ -24,7 +24,6 @@
 #include "ClassDesTable.h"
 #include "Configure.h"
 
-
 //////////////////////////	
 // add by jackie juju
 #define MAX_IDENTIFIER_LENGTH 64
@@ -216,7 +215,7 @@ private:
 				printf("%s\n", s);
 		}
 	}
-
+	
   private:
     void C();
     void Import();

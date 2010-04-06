@@ -51,10 +51,8 @@ unsigned short int cParser::SymSet[][MAXSYM] = {
   
   {0x0}
 };
-
-
 BOOL cParser::init(CClassDesTable *table, CPubFuncTable* pft, CConfigure* c){
-    m_classTable = table;
+	m_classTable = table;
 	m_PubFuncTable = pft;
 	m_conf = c;
 	// show options
@@ -174,11 +172,11 @@ void cParser::Import()
 	    if (cd == NULL){
 	            strcat(szName, ".c");
 	                                            CCompiler cc;
-	                         std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
-								if (m_conf)	
-									cc.setConf(*m_conf);
-								cc.getClassPath().push_back(JUJU::getFilePath(c->getCurSrcFile()));
-	                            cc.Compile(szName);
+	                             std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+	                                                            if (m_conf)     
+	                                                                    cc.setConf(*m_conf);
+	                                                            cc.getClassPath().push_back(JUJU::getFilePath(c->getCurSrcFile()));
+	                                cc.Compile(szName);
 	    };
 	Expect(SemicolonSym);
 }
@@ -188,19 +186,19 @@ void cParser::LoadLib()
 	Expect(loadSym);
 	Expect(identifierSym);
 	
-	    // load external library 
-	    std::string lib = GetCurrSym();
-	#ifdef 	WIN32
-	    std::string libfile = lib+".dll";
-	#else
-		std::string libfile = "lib"+lib+".so";
-	#endif
-	    std::string libintfile = lib+".int";
+	        // load external library 
+	        std::string lib = GetCurrSym();
+	    #ifdef          WIN32
+	        std::string libfile = lib+".dll";
+	    #else
+	            std::string libfile = "lib"+lib+".so";
+	    #endif
+	        std::string libintfile = lib+".int";
 	#ifdef WIN32
 	            m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
 	#else
-	    char* c1 = (char*)(libfile).c_str();
-	    char* c2 = (char*)(libintfile).c_str();
+	        char* c1 = (char*)(libfile).c_str();
+	        char* c2 = (char*)(libintfile).c_str();
 	    m_PubFuncTable->LoadLib(c1, c2);
 	#endif
 	/* for the further if VM run in another process than compiler run
@@ -3184,6 +3182,8 @@ BOOL cParser::AddClass(CClassDes& obj)
     m_classTable->addClass(&obj);
 	std::string msg = "add classes";
 	debug(msg);
+    return TRUE;
+
     return TRUE;
 
 }
