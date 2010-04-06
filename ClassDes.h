@@ -70,7 +70,7 @@ public:
 		char msg[1024] = "";
 		std::string *ret = new std::string("");
 		std::string &r = *ret;
-		r += "Class";
+		r += "Class ";
 		r += this->GetFullName() ;
 		r += "\r\n";
 		r += "member:\r\n===========================\r\n";
@@ -90,6 +90,8 @@ public:
 			r += msg;
 		}
 		r += "===========================\r\n";
+//		printf("====>%s\n", ret->c_str());
+//		printf("====>ok\n");
 		return ret;
 
 	}

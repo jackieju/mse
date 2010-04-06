@@ -34,7 +34,11 @@ class CRParser {
     void SemError(int ErrorNo);
     // Records semantic error ErrorNo
 
+
+	
+
   protected:
+
     virtual void Get() = 0;
     int  In(unsigned short int *SymbolSet, int i);
     void Expect(int n);
@@ -42,6 +46,7 @@ class CRParser {
     AbsScanner *Scanner;
     CRError    *Error;
     int        Sym;
+
 };
 
 #endif // CR_PARSER_H

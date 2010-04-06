@@ -171,7 +171,7 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 	char szMsg[300];
 	HMODULE	hDll = NULL;			// dll句柄
 #ifndef WIN32
-
+	printf("loading so %s ...\n",szDLLName);
 	hDll = (HMODULE)dlopen(szDLLName, RTLD_NOW/*RTLD_LAZY*/);
 #else
 	hDll = LoadLibrary(szDLLName);

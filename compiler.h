@@ -1,9 +1,12 @@
 #ifndef __COMPILER_H__
 #define __COMPILER_H__
 #include <string.h>
+#include <vector>
 #include "clib.h"
 #include "cocoR/CR_ERROR.hpp"
 #include "cocoR/cp.hpp"
+#include "Configure.h"
+#include "fcntl.h"
 
 #define SCRIPTTABLE_NUM 10
 class MyError : public CRError {
@@ -51,6 +54,73 @@ static long g_lActiveScriptTable;
 	char* getCurSrcFile(){
 		return m_szSourceFile;
 	}
+	CConfigure* getConf(){
+		return& m_conf;
+	}
+	
+	void setConf(CConfigure& conf){
+		std::map<std::string, std::string> & _map = *conf.map();
+		std::map<std::string, std::string>::iterator it;
+		printf("\nCompiler options:\n");
+		for ( it=_map.begin() ; it != _map.end(); it++ ){
+			m_conf.set((*it).first,(*it).second);
+			printf("%s=%s\n", (*it).first.c_str(), (*it).second.c_str());
+		}
+		printf("\n");
+		printf("Classpath:\n");
+		std::string cp = m_conf.get("classpath");
+		if (!cp.empty()){
+			char* str = (char*)cp.c_str();
+			char* pch = NULL;
+		  	pch = strtok (str,";");
+  			while (pch != NULL)
+  			{
+				class_path.push_back(pch);
+    			printf ("\t%s\n",pch);
+    			pch = strtok (NULL, ";");
+  			}
+		}
+		printf("\n");
+			
+	}
+	
+	std::string findSrc(std::string filename){
+#ifdef _MACOS	// binary and text files has no difference in unix
+		int mode = O_RDONLY;
+#else
+		int mode = O_RDONLY | O_BINARY;
+#endif
+		int src = NULL;
+		
+		// find from current path
+		src = open(filename.c_str(), mode);
+	
+		if (src != -1){
+			close(src);
+			return filename;
+		}
+			
+		// find in classpath
+		int i = 0;
+		std::string path="";
+		printf("try\n");
+		for (i = 0;i<class_path.size(); i++){
+			path=class_path[i]+PATH_SEPARATOR_S+filename;
+			printf("\t%s ...\n", path.c_str());
+			src = open(path.c_str(), mode);
+			if (src != -1){
+				close(src);
+				printf("\tfound\n");
+				return path;
+			}
+		}
+		return "";
+	}
+	
+	std::vector<std::string>& getClassPath(){
+		return class_path;
+	}
+	
 protected:
 	
 private:
@@ -61,6 +131,8 @@ private:
 	static char m_szErrMsg[1024];
 	static char m_szErrFile[_MAX_PATH];
 	char m_szSourceFile[_MAX_PATH];
+	CConfigure m_conf;
+	std::vector<std::string> class_path;
 };
 
 

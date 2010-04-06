@@ -17,6 +17,8 @@
 #include "os/CSS_LOCKEX.H"
 #include "ScriptFuncTable.h"
 
+
+
 static FILE *lst = stderr;
 static int Listinfo = 0;
 char CCompiler::m_szErrMsg[1024] = "";
@@ -112,7 +114,10 @@ CCompiler::~CCompiler()
 
 BOOL CCompiler::Compile(char *szFileName)
 {
+
 	int S_src;
+
+	
 	
 	//if (this->m_Parser.m_ExeCodeTable == NULL || this->m_Parser.m_PubFuncTable == NULL)
 	//	{
@@ -131,22 +136,26 @@ BOOL CCompiler::Compile(char *szFileName)
 	strcpy(this->m_szSourceFile, szFileName);
 	
 	// open the source file S_src
-#ifdef _MACOS
-	// binary and text files has no difference in unix
-		if ((S_src = open(szFileName, O_RDONLY)) == -1) {
-#else
-	if ((S_src = open(szFileName, O_RDONLY | O_BINARY)) == -1) {
-#endif
+	std::string path = findSrc(szFileName);
+	if (path.empty()){
 		fprintf(stderr, "Unable to open input file %s\n", szFileName);
 		sprintf(m_szErrMsg, "Unable to open input file %s\n", szFileName);		
 		return FALSE;
 	}
-	
+	else {
+#ifdef _MACOS	// binary and text files has no difference in unix
+		int mode = O_RDONLY;
+#else
+		int mode = O_RDONLY | O_BINARY;
+#endif
+		S_src = open(path.c_str(), mode);
+	}
 	// instantiate Scanner, Parser and Error handler
 	cScanner m_Scanner(S_src, 0);
 	MyError m_Error(szFileName, &m_Scanner);	
 	cParser m_Parser(this, &m_Scanner, &m_Error);
-	m_Parser.init(&CCompiler::classTable, &CCompiler::m_PubFuncTable );
+	m_Parser.init(&CCompiler::classTable, &CCompiler::m_PubFuncTable, &m_conf);
+//	m_Parser.setConfig(&m_conf);
 	m_Parser.setSourceFileName(szFileName);
 	//m_Error.Init(szFileName);
 	//m_Parser.Init();

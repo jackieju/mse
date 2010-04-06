@@ -138,7 +138,7 @@ void CFunction::Output(char *szName)
 	file = fopen(szName, "w");
 	if (file == NULL)
 	{
-		printf("can not open file %s", szName);
+		printf("can not open file %s\n", szName);
 		return;
 	}
 //	char *temp = new char[65536];

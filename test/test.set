@@ -1,8 +1,0 @@
-************************command table*********************
-index   mode   line   code    op1   op2   op3
-0000: mode=0000 line=0017 opcode = 10f3     ret()
-************************segment*********************
-index offset size name
-0000: 0000,    4,    name
-0001: 0004,    4,    obj
-0002: 0008,    4,    a

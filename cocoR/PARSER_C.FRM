@@ -23,8 +23,11 @@ unsigned short int -->ParserClass::SymSet[][MAXSYM] = {
   {0x0}
 };
 BOOL -->ParserClass::init(CClassDesTable *table, CPubFuncTable* pft){
-    m_classTable = table;
+	m_classTable = table;
 	m_PubFuncTable = pft;
+	m_conf = c;
+	// show options
+	showOptions();
 	return TRUE;
 }
 
@@ -631,6 +634,7 @@ BOOL cParser::AddClass(CClassDes& obj)
 	return TRUE;
 */
     m_classTable->addClass(&obj);
+
     return TRUE;
 
 }
