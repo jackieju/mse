@@ -879,7 +879,7 @@ std::string JUJU::getFileExt(char* fullName){
 	return fn;
 };
 
-// get file extension name
+// get path of dir file is located
 std::string JUJU::getFilePath(char* fullName){
 	std::string f = fullName;
 	int pos1 = f.rfind(PATH_SEPARATOR);

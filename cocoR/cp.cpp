@@ -173,9 +173,13 @@ void cParser::Import()
 	            strcat(szName, ".c");
 	                                            CCompiler cc;
 	                             std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
+	                                    printf("%s\n", c->getCurSrcFile());
+	                                    printf("%s\n", JUJU::getFilePath(c->getCurSrcFile()).c_str());
+	                                    printf("%s\n", szName);
 	                                                            if (m_conf)     
 	                                                                    cc.setConf(*m_conf);
-	                                                            cc.getClassPath().push_back(JUJU::getFilePath(c->getCurSrcFile()));
+	                                                            
+	                                                            cc.getClassPath().insert(cc.getClassPath().begin(), JUJU::getFilePath(c->getCurSrcFile()));
 	                                cc.Compile(szName);
 	    };
 	Expect(SemicolonSym);
@@ -246,7 +250,7 @@ void cParser::Definition()
 		
 		      char szName[MAX_IDENTIFIER_LENGTH];
 		      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-		      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ;
+		      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°;
 		if (Sym == LparenSym) {
 			FunctionDefinition();
 			this->m_pCurClassDes->AddMember(szName, *type);
@@ -305,7 +309,7 @@ void cParser::Type(PTYPEDES type)
 			              /*      #ifdef __SUPPORT_OBJ
 			                      char szName[MAX_IDENTIFIER_LENGTH];
 			                      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-			                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ                         
+			                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°                     
 			                      type->type = dtGeneral;
 			                      type->objID = GetObjIDByName(szName); 
 			                      if (type->objID == 0)
@@ -386,7 +390,7 @@ void cParser::FunctionDefinition()
 	    
 	    char szName[MAX_IDENTIFIER_LENGTH];
 	    memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	    Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ
+	    Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°
 	
 	    if (strlen(szName) > 20)
 	            GenError(105);
@@ -434,7 +438,7 @@ void cParser::ClassDef()
 	      // get name
 	      char *szName = new char[MAX_IDENTIFIER_LENGTH];
 	      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-	      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ;
+	      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°;
 	ClassBody();
 	Expect(SemicolonSym);
 }
@@ -442,7 +446,7 @@ void cParser::ClassDef()
 void cParser::ClassBody()
 {
 	
-	// ÀûÓÃCFunctionÀ´´æ·ÅÀà³ÉÔ±
+	// åˆ©ç”¨CFunctionæ¥å­˜æ”¾ç±»æˆå‘˜
 	CFunction* pSaved = this->m_pMainFunction;      // save current function
 	CFunction function;
 	function.m_SymbolTable.m_pParser = this;
@@ -458,7 +462,7 @@ void cParser::ClassBody()
 	Expect(RbraceSym);
 	
 	/*
-	//Ìí¼Óclass
+	//æ·»åŠ class
 	if (!Error->Errors)
 	{
 	      CObjDes* pClass = new CObjDes(this);
@@ -645,7 +649,7 @@ void cParser::FormalParameter()
 	     if (!m_pMainFunction->PopDigit(&op, &type1, &DT1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
 	     {
 	
-	             if (type->objID > 0 && type->type == dtGeneral && type->refLevel == 0)//Èç¹ûÊÇ½á¹¹£¬ Éú³ÉËûµÄÖ¸Õë
+	             if (type->objID > 0 && type->type == dtGeneral && type->refLevel == 0)//å¦‚æœæ˜¯ç»“æ„ï¼Œ ç”Ÿæˆä»–çš„æŒ‡é’ˆ
 	             {
 	                     type->refLevel++;
 	             }
@@ -657,7 +661,7 @@ void cParser::FormalParameter()
 	     else
 	     {
 	             
-	             int dimsize[64];//Êı×é×î´óÎ¬Êı64
+	             int dimsize[64];//æ•°ç»„æœ€å¤§ç»´æ•°64
 	             int i = 0;
 	             int arraysize = op;//total size
 	             dimsize[i] = op;
@@ -670,7 +674,7 @@ void cParser::FormalParameter()
 	                     arraysize *= op;
 	             }
 	
-	             //Èç¹ûÊÇÊı×é£¬ ·ÖÅäÖ¸ÕëÀàĞÍ
+	             //å¦‚æœæ˜¯æ•°ç»„ï¼Œ åˆ†é…æŒ‡é’ˆç±»å‹
 	             long temp;
 	             long index;
 	             temp = AllocTempVar(type->type, 1);
@@ -678,7 +682,7 @@ void cParser::FormalParameter()
 	             {
 	                     GenError(98);
 	             }
-	             //ÉèÖÃÀàĞÍºÍÃû×Ö
+	             //è®¾ç½®ç±»å‹å’Œåå­—
 	             index = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount -1;
 	             strcpy(m_pMainFunction->m_SymbolTable.tableEntry[index].szName, szName);
 	             type->dim = i-1;
@@ -815,13 +819,13 @@ void cParser::ForStatement()
 	}
 	Expect(SemicolonSym);
 	
-	    //Ñ­»·´ÓÏÂÒ»¾ä¿ªÊ¼
+	    //å¾ªç¯ä»ä¸‹ä¸€å¥å¼€å§‹
 	    int loopEntry = this->m_pMainFunction->m_nCurrentCmdNum;
 	    int jzCmd = 0;
 	    
-	    //Ñ¹Õ»
-	    this->AddNewLoop();//Ìí¼ÓÒ»¸öĞÂµÄlooptree
-	    this->m_curloop->m_entry = loopEntry;//ÉèÖÃĞÂlooptreeµÄÈë¿Ú
+	    //å‹æ ˆ
+	    this->AddNewLoop();//æ·»åŠ ä¸€ä¸ªæ–°çš„looptree
+	    this->m_curloop->m_entry = loopEntry;//è®¾ç½®æ–°looptreeçš„å…¥å£
 	
 	;
 	if (Sym >= identifierSym && Sym <= numberSym ||
@@ -873,7 +877,7 @@ void cParser::ForStatement()
 	Expect(RparenSym);
 	Statement();
 	
-	    long nContinue;//continue Óï¾äµÄÌø×ªÄ¿µÄµØ¡£
+	    long nContinue;//continue è¯­å¥çš„è·³è½¬ç›®çš„åœ°ã€‚
 	    nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
 	    this->m_curloop->SetContinue(nContinue);
 	
@@ -901,7 +905,7 @@ void cParser::IfStatement()
 	Expression();
 	Expect(RparenSym);
 	
-	    //ÅĞ¶Ï
+	    //åˆ¤æ–­
 	    {
 	            long op1;
 	            long type1;
@@ -931,10 +935,10 @@ void cParser::IfStatement()
 	            }
 	    }
 	
-	    //¼ÇÂ¼Ìø×ªÖ¸ÁîµÄĞòºÅ
+	    //è®°å½•è·³è½¬æŒ‡ä»¤çš„åºå·
 	    int jzcmd = this->m_pMainFunction->m_nCurrentCmdNum;
-	    //¼ÓÈëÅĞ¶ÏÓï¾ä
-	    ADDCOMMAND1(__jz, CC, 0)//Ìø×ªÄ¿±êÔÚÏÂÃæ²¹ÉÏ;
+	    //åŠ å…¥åˆ¤æ–­è¯­å¥
+	    ADDCOMMAND1(__jz, CC, 0)//è·³è½¬ç›®æ ‡åœ¨ä¸‹é¢è¡¥ä¸Š;
 	Statement();
 	        int nextcmd; bool bElse = false;
 	if (Sym == elseSym) {
@@ -943,21 +947,21 @@ void cParser::IfStatement()
 		            bElse = true;
 		            int jmpcmd = this->m_pMainFunction->m_nCurrentCmdNum;
 		            ADDCOMMAND1(__jmp, CC, 0);
-		            //²¹ÉÏjnzµÄÌø×ªÄ¿±ê
+		            //è¡¥ä¸Šjnzçš„è·³è½¬ç›®æ ‡
 		            nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
 		            this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
 		
 		Statement();
 		
 		            nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
-		            //²¹ÉÏjmpµÄÌø×ªÄ¿±ê
+		            //è¡¥ä¸Šjmpçš„è·³è½¬ç›®æ ‡
 		            this->m_pMainFunction->m_pCmdTable[jmpcmd].op[0] = nextcmd;
 		
 	}
 	
 	if (!bElse)
 	{
-	           //²¹ÉÏjnzµÄÌø×ªÄ¿±ê
+	           //è¡¥ä¸Šjnzçš„è·³è½¬ç›®æ ‡
 	           nextcmd = this->m_pMainFunction->m_nCurrentCmdNum;
 	           this->m_pMainFunction->m_pCmdTable[jzcmd].op[0] = nextcmd;
 	   };
@@ -1022,14 +1026,14 @@ void cParser::WhileStatement()
 	
 	  int loopentry = this->m_pMainFunction->m_nCurrentCmdNum;
 	
-	  //Ñ¹Õ»
-	  this->AddNewLoop();//Ìí¼ÓÒ»¸öĞÂµÄlooptree
-	  this->m_curloop->m_entry = loopentry;//ÉèÖÃĞÂlooptreeµÄÈë¿Ú
+	  //å‹æ ˆ
+	  this->AddNewLoop();//æ·»åŠ ä¸€ä¸ªæ–°çš„looptree
+	  this->m_curloop->m_entry = loopentry;//è®¾ç½®æ–°looptreeçš„å…¥å£
 	
 	;
 	Expression();
 	
-	//ÅĞ¶Ï
+	//åˆ¤æ–­
 	{
 	   long op1;
 	   long type1;
@@ -1065,7 +1069,7 @@ void cParser::WhileStatement()
 	Expect(RparenSym);
 	Statement();
 	
-	 long nContinue;//continue Óï¾äµÄÌø×ªÄ¿µÄµØ¡£
+	 long nContinue;//continue è¯­å¥çš„è·³è½¬ç›®çš„åœ°ã€‚
 	 nContinue = this->m_pMainFunction->m_nCurrentCmdNum;
 	 this->m_curloop->SetContinue(nContinue);
 	
@@ -1163,7 +1167,7 @@ void cParser::LogORExp()
 		              long op1, op2;
 		              long type1, type2;
 		              TYPEDES dt1, dt2;
-		              //pop³ö³ËÊıºÍ±»³ËÊı
+		              //popå‡ºä¹˜æ•°å’Œè¢«ä¹˜æ•°
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -1191,7 +1195,7 @@ void cParser::LogORExp()
 	              long t;
 	              TYPEDES DT;
 	              m_pMainFunction->PopDigit(&g, &t, &DT);
-	              //½«½á¹û´æÈëÁÙÊ±±äÁ¿
+	              //å°†ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 	              
 	              _typedes(DT1, dtLong)
 	              if (m_pMainFunction->AddVal(NULL, DT1))
@@ -1222,7 +1226,7 @@ void cParser::LogANDExp()
 		InclORExp();
 		
 		              //add command
-		              //pop³ö³ËÊıºÍ±»³ËÊı
+		              //popå‡ºä¹˜æ•°å’Œè¢«ä¹˜æ•°
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -1252,7 +1256,7 @@ void cParser::LogANDExp()
 	              TYPEDES dt;
 	              m_pMainFunction->PopDigit(&g, &t, &dt);
 	              
-	              //½«½á¹û´æÈëÁÙÊ±±äÁ¿
+	              //å°†ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 	              if (m_pMainFunction->AddVal(NULL, dt1))
 	              {                       
 	                      long temp;
@@ -1316,7 +1320,7 @@ void cParser::EqualExp()
 		RelationExp();
 		
 		              //add command
-		              //pop³ö³ËÊıºÍ±»³ËÊı
+		              //popå‡ºä¹˜æ•°å’Œè¢«ä¹˜æ•°
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -1355,7 +1359,7 @@ void cParser::EqualExp()
 	              TYPEDES dt;
 	              if (m_pMainFunction->PopDigit(&g, &t, &dt))
 	              {
-	                      //½«½á¹û´æÈëÁÙÊ±±äÁ¿
+	                      //å°†ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 	                      if (m_pMainFunction->AddVal(NULL,  dt1))
 	                      {                       
 	                              long temp;
@@ -1403,7 +1407,7 @@ void cParser::RelationExp()
 		ShiftExp();
 		
 		            //add command
-		            //pop³ö³ËÊıºÍ±»³ËÊı
+		            //popå‡ºä¹˜æ•°å’Œè¢«ä¹˜æ•°
 		            if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		            {
 		            //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -1431,13 +1435,13 @@ void cParser::RelationExp()
 	
 	    if (type >= 0)
 	    {
-	            // popµô¶àÓÚµÄ²Ù×÷Êı, ÒòÎªÕâÊ±½á¹ûÒÑÔÚ__AXÖĞ
+	            // popæ‰å¤šäºçš„æ“ä½œæ•°, å› ä¸ºè¿™æ—¶ç»“æœå·²åœ¨__AXä¸­
 	            long g;
 	            long t;
 	            TYPEDES dt;
 	            m_pMainFunction->PopDigit(&g, &t, &dt);
 	
-	            //½«½á¹û´æÈëÁÙÊ±±äÁ¿
+	            //å°†ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 	            _typedes(dt_temp, dtLong)
 	            if (m_pMainFunction->AddVal(NULL,  dt_temp))
 	            {                       
@@ -1484,7 +1488,7 @@ void cParser::AddExp()
 		              long op1, op2;
 		              long type1, type2;
 		              TYPEDES dt1, dt2;
-		              //pop³ö³ËÊıºÍ±»³ËÊı
+		              //popå‡ºä¹˜æ•°å’Œè¢«ä¹˜æ•°
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		              //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -1494,7 +1498,7 @@ void cParser::AddExp()
 		              else
 		              {
 		
-		                      //ÀàĞÍ×ª»»
+		                      //ç±»å‹è½¬æ¢
 		                      CAST
 		                      //get address mode
 		                      int address_mode = (type1<<8)|(short)type2;
@@ -1502,16 +1506,16 @@ void cParser::AddExp()
 		
 		                      
 		                      if (dt1.dim >0)
-		                      {//Èç¹ûÊÇÊı×é±äÁ¿
-		                              //µÃµ½ÔöÁ¿
+		                      {//å¦‚æœæ˜¯æ•°ç»„å˜é‡
+		                              //å¾—åˆ°å¢é‡
 		                              int size = UnitSize(dt1);
 		                              for (int i=1; i<dt1.dim;i++)
 		                              {
 		                                      size *= dt1.dimsize[i];
 		                              }
-		                              //ÔöÁ¿³ËÒÔop2µÃµ½Êµ¼ÊÔöÁ¿,´æÈë_AX
+		                              //å¢é‡ä¹˜ä»¥op2å¾—åˆ°å®é™…å¢é‡,å­˜å…¥_AX
 		                              ADDCOMMAND2(__mul, type2<<8, op2, size)
-		                              //¼Ó·¨
+		                              //åŠ æ³•
 		                              if (dt1.type == dtFloat && dt1.refLevel==0)
 		                              {
 		                                      if (type == 0)
@@ -1545,7 +1549,7 @@ void cParser::AddExp()
 		                                      ADDCOMMAND2(__add, address_mode, op1, op2)      
 		                              }
 		                      }       
-		                      //½«AXÖĞµÄ½á¹û´æÈëÁÙÊ±±äÁ¿
+		                      //å°†AXä¸­çš„ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 		                      if (m_pMainFunction->AddVal(NULL,  dt1))
 		                      {                       
 		                              long temp;
@@ -1567,7 +1571,7 @@ void cParser::MultExp()
 	        char szName[MAX_IDENTIFIER_LENGTH];     memset(szName, 0, MAX_IDENTIFIER_LENGTH);
 	CastExp();
 	
-	     Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ
+	     Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°
 	     int type = -1;//0: mult 1: div 2:percent;
 	while (Sym == StarSym ||
 	       Sym >= SlashSym && Sym <= PercentSym) {
@@ -1583,14 +1587,14 @@ void cParser::MultExp()
 		} else GenError(102);
 		CastExp();
 		
-		              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ
+		              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°
 		              
 		              //add command
 		              long op1, op2;
 		              long type1, type2;
 		              TYPEDES dt1, dt2;
 		
-		              //pop³ö³ËÊıºÍ±»³ËÊı
+		              //popå‡ºä¹˜æ•°å’Œè¢«ä¹˜æ•°
 		              if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		              {
 		                      //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -1617,7 +1621,7 @@ void cParser::MultExp()
 		                                      else if (type == 2) ADDCOMMAND2(__mod, address_mode, op1, op2)
 		                      }
 		                      
-		                      //½«AXÖĞµÄ½á¹û´æÈëÁÙÊ±±äÁ¿
+		                      //å°†AXä¸­çš„ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 		                      if (m_pMainFunction->AddVal(NULL, dt1))
 		                      {                       
 		                              long temp;
@@ -1638,9 +1642,9 @@ void cParser::MultExp()
 void cParser::CastExp()
 {
 	
-	    //±£´æÒ»Ôª²Ù×÷·ûÕ»
+	    //ä¿å­˜ä¸€å…ƒæ“ä½œç¬¦æ ˆ
 	    EXPRESSIONOP* pSavedStack = this->m_pExpOpPt;
-	    //Çå¿ÕÒ»Ôª²Ù×÷·ûÕ»
+	    //æ¸…ç©ºä¸€å…ƒæ“ä½œç¬¦æ ˆ
 	    m_pExpOpPt = &m_ExpOp;
 	    //int op;
 	
@@ -1650,7 +1654,7 @@ void cParser::CastExp()
 	    while (this->PopOp(&op))
 	    {               
 	
-	            //²Ù×÷Êı³öÕ»
+	            //æ“ä½œæ•°å‡ºæ ˆ
 	            long op1;
 	            long type1;
 	            TYPEDES dt1;    
@@ -1661,7 +1665,7 @@ void cParser::CastExp()
 	            int address_mode = (type1<<8);
 	            address_mode |= log2(UnitSize(dt1))<<14;
 	            
-	            //Ìí¼ÓÃüÁî
+	            //æ·»åŠ å‘½ä»¤
 	            switch (op)
 	            {
 	            case PlusSym:                           
@@ -1691,12 +1695,12 @@ void cParser::CastExp()
 	                            if (dt1.refLevel <1)
 	                                    GenError(102);
 	                            dt1.refLevel--;
-	                            //È¡²Ù×÷µÄ×Ö½ÚÀàĞÍ
+	                            //å–æ“ä½œçš„å­—èŠ‚ç±»å‹
 	                            int opsize = log2(UnitSize(dt1));
 	                            opsize = opsize<< 6;
 	                            type1 |= opsize; 
 	
-	                            //½«type1µÄ¼ä½Ó·ÃÎÊ¼¶±ğÌá¸ßÒ»¼¶
+	                            //å°†type1çš„é—´æ¥è®¿é—®çº§åˆ«æé«˜ä¸€çº§
 	                            int level = (type1 & 0x30) >> 4;
 	                            if (level == 3)
 	                            {
@@ -1716,7 +1720,7 @@ void cParser::CastExp()
 	                            type1 &= 0xffcf;
 	                            type1 |= j;
 	*/
-	                            //ÈëÕ»
+	                            //å…¥æ ˆ
 	                            m_pMainFunction->PushDigit(op1, type1, dt1);
 	                    }
 	                    break;
@@ -1741,7 +1745,7 @@ void cParser::CastExp()
 	                            else
 	                            {
 	                                    if (dt1.objID > 0)
-	                                    {//Èç¹ûÊ±obj£¬ ²»È¡µØÖ·
+	                                    {//å¦‚æœæ—¶objï¼Œ ä¸å–åœ°å€
 	                                            m_pMainFunction->PushDigit(op1, type1, dt1);
 	                                    }
 	                                    else
@@ -1766,7 +1770,7 @@ void cParser::CastExp()
 	            default :GenError(93); break;
 	            }               
 	    }
-	    //»Ö¸´Ò»ÔªÔËËã·ûÕ»
+	    //æ¢å¤ä¸€å…ƒè¿ç®—ç¬¦æ ˆ
 	    this->ClearOpStack();
 	    m_pExpOpPt = pSavedStack;  
 }
@@ -1823,15 +1827,15 @@ void cParser::PostFixExp()
 				                              }
 				                              else
 				                              {       
-				                              /*´¦Àía[b]µÄÁ÷³Ì(Òª¿¼ÂÇÖ¸Õë£¬ Êı×é£¬ ¶àÎ¬Êı×é£¬ ×÷Îª²ÎÊı´«½øÀ´µÄÊı×éºÍÖ¸Õë£©
-				                                      1. µÃµ½bÏÂ±ê´ú±íµÄµ¥Î»³¤¶È(Èç¹ûÊÇÊı×é, Í¨¹ıÎ¬Êı¼ÆËã, Èç¹ûÊÇÖ¸Õë, reflvl¼õÒ»ºó¼ÆËãUnitSize)
-				                                      2. b*µ¥Î»³¤¶È= offset 
+				                              /*å¤„ç†a[b]çš„æµç¨‹(è¦è€ƒè™‘æŒ‡é’ˆï¼Œ æ•°ç»„ï¼Œ å¤šç»´æ•°ç»„ï¼Œ ä½œä¸ºå‚æ•°ä¼ è¿›æ¥çš„æ•°ç»„å’ŒæŒ‡é’ˆï¼‰
+				                                      1. å¾—åˆ°bä¸‹æ ‡ä»£è¡¨çš„å•ä½é•¿åº¦(å¦‚æœæ˜¯æ•°ç»„, é€šè¿‡ç»´æ•°è®¡ç®—, å¦‚æœæ˜¯æŒ‡é’ˆ, reflvlå‡ä¸€åè®¡ç®—UnitSize)
+				                                      2. b*å•ä½é•¿åº¦= offset 
 				                                      3. a + offset -> temp
-				                                      4. push temp, ¼ä½ÓÑ°Ö·
+				                                      4. push temp, é—´æ¥å¯»å€
 				                                      */
 				                                      int offset;
 				                                      BOOL bIsArray = TRUE;
-				                                      if (dt1.dim >0)//ÊÇÊı×é
+				                                      if (dt1.dim >0)//æ˜¯æ•°ç»„
 				                                      {
 				                                              bIsArray = TRUE;
 				                                              offset= UnitSize(dt1);
@@ -1839,41 +1843,41 @@ void cParser::PostFixExp()
 				                                              {
 				                                                      offset *= dt1.dimsize[i];
 				                                              }
-				                                              //²»Éú³ÉĞÂµÄtypedes, Ö±½ÓĞŞ¸Ädt1, Ê¹Ö®Î¬Êı¼õÒ»
+				                                              //ä¸ç”Ÿæˆæ–°çš„typedes, ç›´æ¥ä¿®æ”¹dt1, ä½¿ä¹‹ç»´æ•°å‡ä¸€
 				                                              if (dt1.dim >1)
 				                                                      memcpy(dt1.dimsize, dt1.dimsize+1, sizeof(long)*(dt1.dim-1));                                   
 				                                              dt1.dim--;                                                      
 				                                      }
 				                                      else
-				                                      {//²»ÊÇÊı×é, ÊÇÖ¸Õë
+				                                      {//ä¸æ˜¯æ•°ç»„, æ˜¯æŒ‡é’ˆ
 				                                              bIsArray = FALSE;
-				                                              if (dt1.refLevel > 0)//ÊÇÖ¸ÕëÇÒ²»ÊÇÖ¸ÕëÊı×é
+				                                              if (dt1.refLevel > 0)//æ˜¯æŒ‡é’ˆä¸”ä¸æ˜¯æŒ‡é’ˆæ•°ç»„
 				                                              {
-				                                                      //²»Éú³ÉĞÂµÄtypedes, Ö±½ÓĞŞ¸Ädt1, Ê¹Ö®*ºÅ¼õÒ»
+				                                                      //ä¸ç”Ÿæˆæ–°çš„typedes, ç›´æ¥ä¿®æ”¹dt1, ä½¿ä¹‹*å·å‡ä¸€
 				                                                      dt1.refLevel--;
 				                                                      offset = UnitSize(dt1);
 				                                              }
-				                                              else//¼È²»ÊÇÖ¸ÕëÒ²²»ÊÇÊı×é
+				                                              else//æ—¢ä¸æ˜¯æŒ‡é’ˆä¹Ÿä¸æ˜¯æ•°ç»„
 				                                                      GenError(101);                                          
 				                                      }
 				
-				                                      //Æ«ÒÆÁ¿ = µ¥Î»³¤¶È* ÏÂ±êaddcommand(mul, DC, ÏÂ±ê, µ¥Î»³¤¶È)
+				                                      //åç§»é‡ = å•ä½é•¿åº¦* ä¸‹æ ‡addcommand(mul, DC, ä¸‹æ ‡, å•ä½é•¿åº¦)
 				                                      ADDCOMMAND2(__mul, (type2<<8)|0x8080, op2, offset)
-				                                      //Ôö¼ÓÁÙÊ±±äÁ¿´æ·ÅÖĞ¼ä½á¹û
+				                                      //å¢åŠ ä¸´æ—¶å˜é‡å­˜æ”¾ä¸­é—´ç»“æœ
 				                                      long temp = this->AllocTempVar(dtLong);
 				                                      if (temp == -1)
 				                                      {
 				                                              GenError(98);
 				                                      }
-				                                      //¾ÓÎÀ»ª2001-08-22
+				                                      //å±…å«å2001-08-22
 				                                      long lIndirect = (type1>>4)&0x03;
-				                                      if (bIsArray == FALSE && lIndirect>0)//Èç¹ûÊÇÖ¸Õë£¬ Ôò¼ä½ÓÑ°Ö·
+				                                      if (bIsArray == FALSE && lIndirect>0)//å¦‚æœæ˜¯æŒ‡é’ˆï¼Œ åˆ™é—´æ¥å¯»å€
 				                                              ADDCOMMAND2(__add, DR|0x1000, op1, _AX)
 				                                      else
 				                                              ADDCOMMAND2(__add, DR, op1, _AX)
-				                                      //½«½á¹û±£´æµ½temp
+				                                      //å°†ç»“æœä¿å­˜åˆ°temp
 				                                      ADDCOMMAND2(__mov, DR, temp, _AX)
-				                                      //ÈëÕ», ×÷ÎªÖ¸ÕëÓÃ
+				                                      //å…¥æ ˆ, ä½œä¸ºæŒ‡é’ˆç”¨
 				                                      m_pMainFunction->PushDigit(temp, AMODE_MEM|0x10|((log2(UnitSize(dt1)))<<6), dt1);
 				}
 				};
@@ -1884,7 +1888,7 @@ void cParser::PostFixExp()
 				{
 				                      char szName[MAX_IDENTIFIER_LENGTH];
 				                      memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-				                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ
+				                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°
 				                      long index = m_PubFuncTable->FindFuncByName(szName);
 				                      FUNCCALL fn;
 				                      fn.name = szName;
@@ -1968,7 +1972,7 @@ void cParser::PostFixExp()
 				                                      {
 				                                              char szName[MAX_IDENTIFIER_LENGTH];
 				                                              memset(szName, 0, MAX_IDENTIFIER_LENGTH);
-				                                              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ                                 
+				                                              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°                             
 				                                              
 				                                              #if 0
 				                                              //get offset
@@ -1994,11 +1998,11 @@ void cParser::PostFixExp()
 				                                                      ADDCOMMAND2(__mov, DR, temp, _AX)
 				                                                      if ((dtTemp.dim ==0 && dtTemp.objID == 0 )
 				                                                              ||(dtTemp.objID > 0 && dtTemp.refLevel > 0))
-				                                                              {//Èç¹û²»ÊÇÊı×éºÍobj
+				                                                              {//å¦‚æœä¸æ˜¯æ•°ç»„å’Œobj
 				                                                                      
-				                                                                      //È¡¸ÄmemberµÄopsize
+				                                                                      //å–æ”¹memberçš„opsize
 				                                                                      int opsize;
-				                                                                      if (dtTemp.refLevel > 0) //Èç¹ûÊÇÖ¸ÕëÀàĞÍ
+				                                                                      if (dtTemp.refLevel > 0) //å¦‚æœæ˜¯æŒ‡é’ˆç±»å‹
 				                                                                              opsize = log2(OPSIZE_PTR);
 				                                                                      else
 				                                                                              opsize = log2(typesize(dtTemp.type, dtTemp.objID));
@@ -2009,10 +2013,10 @@ void cParser::PostFixExp()
 				                                                              else
 				                                                              {
 				                                                                      
-				                                                                      //Èç¹ûÊÇÊı×é»òobj, Éú³ÉÁÙÊ±±äÁ¿´æ·ÅÊı×éµØÖ·
+				                                                                      //å¦‚æœæ˜¯æ•°ç»„æˆ–obj, ç”Ÿæˆä¸´æ—¶å˜é‡å­˜æ”¾æ•°ç»„åœ°å€
 				                                                                      if (dtTemp.dim != 0)
 				                                                                      {                                                                       
-				                                                                              /*¾ÓÎÀ»ª2001-08-22ĞŞ¸Ä
+				                                                                              /*å±…å«å2001-08-22ä¿®æ”¹
 				                                                                              dtTemp.refLevel++;
 				                                                                              dtTemp.dim--;
 				                                                                              */
@@ -2042,7 +2046,7 @@ void cParser::PostFixExp()
 				                              long op1;
 				                              long type1;
 				                              TYPEDES dt1;
-				                              //pop³ö±»¼ÓÊı
+				                              //popå‡ºè¢«åŠ æ•°
 				                              if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				                              {
 				                                      //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -2062,14 +2066,14 @@ void cParser::PostFixExp()
 				                                              int address_mode = (type1<<8);
 				                                              address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
 				                                              if (dt1.dim >0)
-				                                              {//Èç¹ûÊÇÊı×é±äÁ¿
-				                                                      //µÃµ½ÔöÁ¿
+				                                              {//å¦‚æœæ˜¯æ•°ç»„å˜é‡
+				                                                      //å¾—åˆ°å¢é‡
 				                                                      int size = UnitSize(dt1);
 				                                                      for (int i=1; i<dt1.dim;i++)
 				                                                      {
 				                                                              size *= dt1.dimsize[i];
 				                                                      }
-				                                                      //¼Ó·¨
+				                                                      //åŠ æ³•
 				                                                      ADDCOMMAND2(__add, (type1<<8)|0x80, op1, size)
 				                                              }
 				                                              else
@@ -2078,7 +2082,7 @@ void cParser::PostFixExp()
 				                                                      ADDCOMMAND2(__add, address_mode, op1, 1)        
 				                                              }       
 				                                              ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
-				                                              //½«AXÖĞµÄ½á¹û´æÈëÁÙÊ±±äÁ¿
+				                                              //å°†AXä¸­çš„ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 				                                              m_pMainFunction->PushDigit(op1, type1, dt1);
 				                                      }
 				                              }
@@ -2092,7 +2096,7 @@ void cParser::PostFixExp()
 				                              long op1;
 				                              long type1;
 				                              TYPEDES dt1;
-				                              //pop³ö±»¼ÓÊı
+				                              //popå‡ºè¢«åŠ æ•°
 				                              if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				                              {
 				                                      //      REPORT_COMPILE_ERROR("POP UP FAILED");
@@ -2112,14 +2116,14 @@ void cParser::PostFixExp()
 				                                              int address_mode = (type1<<8);
 				                                              address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
 				                                              if (dt1.dim >0)
-				                                              {//Èç¹ûÊÇÊı×é±äÁ¿
-				                                                      //µÃµ½ÔöÁ¿
+				                                              {//å¦‚æœæ˜¯æ•°ç»„å˜é‡
+				                                                      //å¾—åˆ°å¢é‡
 				                                                      int size = UnitSize(dt1);
 				                                                      for (int i=1; i<dt1.dim;i++)
 				                                                      {
 				                                                              size *= dt1.dimsize[i];
 				                                                      }
-				                                                      //¼Ó·¨
+				                                                      //åŠ æ³•
 				                                                      ADDCOMMAND2(__sub, (type1<<8)|0x80, op1, size)
 				                                              }
 				                                              else
@@ -2128,7 +2132,7 @@ void cParser::PostFixExp()
 				                                                      ADDCOMMAND2(__sub, address_mode, op1, 1)        
 				                                              }       
 				                                              ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
-				                                              //½«AXÖĞµÄ½á¹û´æÈëÁÙÊ±±äÁ¿
+				                                              //å°†AXä¸­çš„ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 				                                              m_pMainFunction->PushDigit(op1, type1, dt1);
 				                                      }
 				                              }
@@ -2174,7 +2178,7 @@ void cParser::Primary()
 			Get();
 			
 			
-			  {       Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ
+			  {       Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°
 			  
 			          
 			          int address = -1;
@@ -2185,8 +2189,8 @@ void cParser::Primary()
 			          }else
 			              address = GetSymAddress(szName);
 			
-			           //Èç¹ûadress<0ÊÇº¯ÊıÃû
-			                    if (address >= 0 )//Èç¹û²»ÊÇº¯ÊıÃû£¬ ÊÇ±äÁ¿Ãû¡£
+			           //å¦‚æœadress<0æ˜¯å‡½æ•°å
+			                    if (address >= 0 )//å¦‚æœä¸æ˜¯å‡½æ•°åï¼Œ æ˜¯å˜é‡åã€‚
 			                    {
 			                            TYPEDES dt;
 			                            SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
@@ -2205,7 +2209,7 @@ void cParser::Primary()
 			                            
 			                                    if ((dt.dim ==0 && dt.objID == 0 )
 			                                            ||(dt.objID > 0 && dt.refLevel > 0))
-			                                    {//Èç¹û²»ÊÇÊı×éºÍobj
+			                                    {//å¦‚æœä¸æ˜¯æ•°ç»„å’Œobj
 			                                            int opsize;
 			                                            if (dt.refLevel > 0) 
 			                                                    opsize = log2((int)OPSIZE_PTR);
@@ -2215,7 +2219,7 @@ void cParser::Primary()
 			                                            m_pMainFunction->PushDigit(address, AMODE_MEM|(opsize << 6), dt);
 			                                    }
 			                                    else
-			                                    {//Èç¹ûÊÇÊı×é»òobj, Éú³ÉÁÙÊ±±äÁ¿´æ·ÅÊı×éµØÖ·
+			                                    {//å¦‚æœæ˜¯æ•°ç»„æˆ–obj, ç”Ÿæˆä¸´æ—¶å˜é‡å­˜æ”¾æ•°ç»„åœ°å€
 			                                            if (dt.dim != 0)
 			                                            {
 			                                                    long temp = AllocTempVar(dtLong, 1);
@@ -2225,7 +2229,7 @@ void cParser::Primary()
 			                                                    }
 			                                                    
 			                                                    ADDCOMMAND2(__ea, DD, temp, address)
-			                                                    /*¾ÓÎÀ»ª2001£­8£­22ĞŞ¸Ä
+			                                                    /*å±…å«å2001ï¼8ï¼22ä¿®æ”¹
 			                                                    dt.refLevel++;
 			                                                    dt.dim--;
 			                                                    */
@@ -2274,7 +2278,7 @@ void cParser::Primary()
 			                                                break;
 			                                        }
 			                                        memset(pCh, 0, Scanner->CurrSym.Len+1);
-			                                                            Scanner->GetName(&Scanner->CurrSym, pCh, Scanner->CurrSym.Len);//µÃµ½Ãû³Æ
+			                                                            Scanner->GetName(&Scanner->CurrSym, pCh, Scanner->CurrSym.Len);//å¾—åˆ°åç§°
 			                                           char* string = NULL;
 			                                        string = AnalyzeConstString(pCh);
 			                                     if (string == NULL)
@@ -2314,7 +2318,7 @@ void cParser::Primary()
 			Get();
 			
 			            {
-			                    Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//µÃµ½Ãû³Æ
+			                    Scanner->GetName(&Scanner->NextSym, szName, MAX_IDENTIFIER_LENGTH-1);//å¾—åˆ°åç§°
 			                    _typedes(dt,dtChar);
 			                    m_pMainFunction->PushDigit(szName[1], AMODE_DIRECT, dt);
 			            }
@@ -2506,7 +2510,7 @@ void cParser::Creator()
 	TYPEDES dt1;
 	   memset(&dt1, 0, sizeof(TYPEDES));
 	   dt1.type = dtGeneral;
-	// ½«AXÖĞµÄ½á¹û´æÈëÁÙÊ±±äÁ¿
+	// å°†AXä¸­çš„ç»“æœå­˜å…¥ä¸´æ—¶å˜é‡
 	   if (m_pMainFunction->AddVal(NULL,  dt1))
 	   {                       
 	                   long temp;
@@ -2577,12 +2581,12 @@ void cParser::ActualParameters(FUNCCALL* pFuncEntry)
 		                            int address_mode = (type<<8)&0xff00;
 		                            address_mode |= (log2(UnitSize(dt1))<<14);
 		                            
-		                            /*              ±£Áô
+		                            /*              ä¿ç•™
 		                            if (dt1.dim > 0)
 		                            {
 		                            _typedes(dt, dtInt)
 		                            long temp;
-		                            //Èç¹ûÊÇÊı×é, °ÑËüµÄµØÖ·´æÈëÁÙÊ±±äÁ¿, ´«ÈëÁÙÊ±±äÁ¿
+		                            //å¦‚æœæ˜¯æ•°ç»„, æŠŠå®ƒçš„åœ°å€å­˜å…¥ä¸´æ—¶å˜é‡, ä¼ å…¥ä¸´æ—¶å˜é‡
 		                            if (m_pMainFunction->AddVal(NULL, dt))
 		                            {                       
 		                            temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;

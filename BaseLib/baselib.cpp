@@ -11,7 +11,7 @@
 #ifdef _MACOS
 #define __stdcall 
 #endif
-
+extern "C"{
 void __stdcall put_str(char* msg)
 {
 	if (msg == NULL)
@@ -37,13 +37,14 @@ void __stdcall put(char* format, long data)
 	printf(format, data);
 	return;
 }
+/*
 // string manipulation
 char* __stdcall strcpy(char* dest, char* src)
 {
 	if (dest == NULL || src == NULL)
 		throw new CExp(CExp::err_invalid_param, "invalid param", CExp::stat_null);
 	return strcpy(dest, src);
-}
+}*/
 
 
 float __stdcall AToF(char* string)
@@ -56,5 +57,7 @@ float __stdcall AToF(char* string)
 	}
 	ret = (float)atof(string);
 	return ret;
+}
+
 }
 

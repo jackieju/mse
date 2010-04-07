@@ -38,7 +38,7 @@ int main(int num, char** args){
 
 	g_PubFuncTable.LoadLib("baselib.dll", "baselib.int");
 #else
-	g_PubFuncTable.LoadLib("libBaselib.so", "../baselib.int");
+//	g_PubFuncTable.LoadLib("libbaselib.so", "../baselib.int");
 #endif
 	CCompiler::classTable.getClass("test\\test");
 //	vm.LoadObject(CCompiler::classTable.getClass("test\\test"));

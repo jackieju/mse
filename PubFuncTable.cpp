@@ -105,6 +105,7 @@ BOOL CPubFuncTable::AddFunction(long pfn, char *szName, char cParamNum)
 */
 int CPubFuncTable::FindFuncByName(char *szName)
 {
+//printf("--->FindFuncByName:%s", szName);
 	if (szName == NULL)
 		return -2;
 
@@ -113,9 +114,13 @@ int CPubFuncTable::FindFuncByName(char *szName)
 
 	for (int i= 0; i< this->m_iFuncNum; i++)
 	{
-		if (!strcmp(this->m_FuncTable[i].szName, szName))
+	//	printf("--->m_FuncTable[%d]:%s", i, this->m_FuncTable[i].szName);
+		if (!strcmp(this->m_FuncTable[i].szName, szName)){
+//			printf("\n--->%s=%x\n", szName, i);
 			return i;
+		}
 	}
+//	printf("\n--->%s not found \n", szName);
 	return -1;
 }
 
@@ -141,9 +146,13 @@ BOOL CPubFuncTable::AddPubFunction(HMODULE hDll, char* fnName, char* szName, cha
 	//puts("reach SE_AddPubFunction");
 	if (pfn == NULL)
 	{
+		#ifdef WIN32
 		DWORD dwError = OSGetErrorNo();
 		//DWORD dwError = 0;
 		printf("PS:: Get address of function '%s' failed, last error code: %d\n", fnName, dwError);
+		#else
+		printf("PS:: Get address of function '%s' failed, last error: %s\n", fnName, dlerror());
+		#endif
 		return FALSE;
 	}
 	//puts("try to load g_PubFuncTable.AddFunction");
@@ -169,6 +178,19 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 		return -1;
 
 	char szMsg[300];
+	
+	// check if already loaded
+	long h = NULL;
+	h = m_libs[szDLLName];
+//	printf("->>>>>>>h=%x\n", h);
+	if (h != NULL){
+		
+			snprintf(szMsg, 300, "SE:: lib %s already loaded, skip", szDLLName);
+			nLOG(szMsg, 100);
+			return h;
+	
+	}
+	
 	HMODULE	hDll = NULL;			// dll句柄
 #ifndef WIN32
 	printf("loading so %s ...\n",szDLLName);
@@ -197,7 +219,7 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 		printf("\n");
 	}
 	
-	m_libs.push_back((long)hDll);
+
 
 	//open file
 	char fnname[256];
@@ -238,8 +260,12 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 		}
 	}
 	fclose(file);
-	snprintf(szMsg, 300,"PS:: %d external function added.", index);
+	snprintf(szMsg, 300,"PS:: %d external function of lib %s added.", index, szDLLName);
 	nLOG(szMsg, 5);
+	
+	m_libs[szDLLName]=(long)hDll;
 
+	printf(szMsg);
+	printf("\n");
 	return 0;
 }

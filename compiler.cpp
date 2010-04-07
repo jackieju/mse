@@ -133,16 +133,17 @@ BOOL CCompiler::Compile(char *szFileName)
 		sprintf(m_szErrMsg, "No input file sepcfied");
 		return FALSE;
 	}
-	strcpy(this->m_szSourceFile, szFileName);
+
 	
 	// open the source file S_src
 	std::string path = findSrc(szFileName);
 	if (path.empty()){
-		fprintf(stderr, "Unable to open input file %s\n", szFileName);
-		sprintf(m_szErrMsg, "Unable to open input file %s\n", szFileName);		
+		fprintf(stderr, "Unable to open input file %s.\n", szFileName);
+		sprintf(m_szErrMsg, "Unable to open input file %s.\n", szFileName);		
 		return FALSE;
 	}
 	else {
+			strcpy(this->m_szSourceFile, path.c_str());
 #ifdef _MACOS	// binary and text files has no difference in unix
 		int mode = O_RDONLY;
 #else
@@ -179,7 +180,7 @@ BOOL CCompiler::Compile(char *szFileName)
         time(&t);
 		ptm = localtime(&t);
 	
-		sprintf(msg, "----------------------------------------------------------------\n%04d-%02d-%02d %02d:%02d:%02d\tCompile %s\n----------------------------------------------------------------\n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, szFileName);
+		sprintf(msg, "----------------------------------------------------------------\n%04d-%02d-%02d %02d:%02d:%02d\tCompile %s\n----------------------------------------------------------------\n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, m_szSourceFile);
 		//fwrite(msg, 1, strlen(msg), file);
 		fprintf(file, msg);
 	}
@@ -200,16 +201,19 @@ BOOL CCompiler::Compile(char *szFileName)
 		m_Error.SummarizeErrors();
 	//write end
 	{
-		if (!m_Error.Errors)
-			fprintf(file, "Compile file '%s' succeeded\r\n", szFileName);
-		else 
-			fprintf(file, "Compile file '%s' failed\r\n", szFileName);
+		// if (!m_Error.Errors)
+		// 	fprintf(file, "Compile file '%s' succeeded\r\n", m_szSourceFile);
+		// else 
+		// 	fprintf(file, "Compile file '%s' failed\r\n", m_szSourceFile);
 		char msg[1024];
 		time_t t;
         struct tm *ptm;
         time(&t);
 		ptm = localtime(&t);
-		sprintf(msg, "%04d-%02d-%02d %02d:%02d:%02d compile end \n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec);
+		if (!m_Error.Errors)
+			sprintf(msg, "%04d-%02d-%02d %02d:%02d:%02d \tCompile %s succeeded \n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, m_szSourceFile);
+		else
+			sprintf(msg, "%04d-%02d-%02d %02d:%02d:%02d \tCompile %s failed \n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, m_szSourceFile);
 		//fwrite(msg, 1, strlen(msg), file);
 		fprintf(file, msg);
 	}

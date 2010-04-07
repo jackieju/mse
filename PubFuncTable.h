@@ -9,6 +9,7 @@
 #pragma once
 #endif // _MSC_VER > 1000
 #define MAX_FUNCNAME_LENGTH 128
+#include <map>
 
 //存放公用函数信息的结构
 typedef struct _tagFunctionEntry
@@ -26,7 +27,8 @@ class CPubFuncTable
 {
 	int m_iFuncNum;
 	int m_iMaxFuncNum;
-	std::vector<long>	m_libs;
+	std::map<std::string, long>	m_libs;
+
 
 public:
 	CPubFuncTable();
