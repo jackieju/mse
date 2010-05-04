@@ -65,7 +65,8 @@ string exec_cmd(string user, string cmd, std::map<string, string> p){
 
 	// test
 	BOOL ret = c.Compile("test/test.c");
-	
+	CClassDes* pc = CCompiler::classTable.getClass("test\\test");
+	vm.LoadObject(pc);
 	return r;
 }
 
