@@ -131,7 +131,7 @@ printf("1>");
 #endif
 
 
-		printf("Started thread (%s)", name);
+	//	printf("Started thread (%s)", name);
 //	printf("Started thread %ld (%s)", number, name);
 
 //	debug("lib.thread", 0, "Started thread %ld (%s)", 

@@ -7,10 +7,13 @@
 CC   = g++ 
 
 CLIB_OBJ = clib/thread.o clib/log.o clib/utility.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o os/protected.o os/mutex.o os/LogLevel.o 
-OBJ  = Configure.o ObjTable.o ClassDesTable.o main.o ObjectInst.o Class.o ClassDes.o Exp.o VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o $(CLIB_OBJ) $(RES) 
+OBJ = Configure.o ObjTable.o ClassDesTable.o  ObjectInst.o Class.o ClassDes.o Exp.o VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o $(CLIB_OBJ) $(RES) 
+EXEC_OBJ  =  $(OBJ) main.o 
+CGI_OBJ = $(OBJ) cgi-bin/cs_cgi.o
 #OBJ  = $(objs) $(RES)
 #OBJ  = $(objs)
 BIN_EXEC = mse
+CGI = cgi-bin/cs.cgi
 #BIN  = libSE.so.1.0
 #SOBIN=$(BIN:.so.1.0=.so)
 CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./ -D_64
@@ -20,7 +23,7 @@ LFLAGS=-g
 
 .PHONY: all all-before all-after clean clean-custom
 
-all: all-before $(BIN_EXEC) all-after
+all: all-before $(BIN_EXEC) $(CGI) all-after
 
 
 clean: clean-custom
@@ -29,6 +32,9 @@ clean: clean-custom
 DLLWRAP=g++
 main.o: main.cpp
 	$(CC) -c main.cpp -o main.o $(CFLAGS)
+	
+cgi-bin/cs_cgi.o: cgi-bin/cs_cgi.cpp
+	$(CC) -c cgi-bin/cs_cgi.cpp -o cgi-bin/cs_cgi.o $(CFLAGS)
 	
 Configure.o: Configure.cpp
 	$(CC) -c Configure.cpp -o Configure.o $(CFLAGS)
@@ -174,6 +180,8 @@ $(BIN): $(OBJ)
 #	$(DLLWRAP) -shared -ldl  $(OBJ)  -o $(BIN)
 	$(DLLWRAP) -shared -Wl,-soname,$(SOBIN)  $(OBJ)  -o ./bin/$(BIN) -lc
 
-$(BIN_EXEC): $(OBJ)
-	$(LINK) $(OBJ) -o bin/$(BIN_EXEC) $(LFLAGS)
+$(BIN_EXEC): $(EXEC_OBJ)
+	$(LINK) $(EXEC_OBJ) -o bin/$(BIN_EXEC) $(LFLAGS)
 
+$(CGI): $(CGI_OBJ)
+	$(LINK) $(CGI_OBJ) -o $(CGI) $(LFLAGS)

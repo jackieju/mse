@@ -1,38 +1,38 @@
-************************command table*********************
-index   mode   line   code    op1   op2   op3
-0000: mode=8180 line=000c opcode = 1010     mov(0008,  000a)
-0001: mode=8181 line=000e opcode = 10f4     ea(0014,  0010)
-0002: mode=8183 line=000e opcode = 10f4     ea(0018,  0000)
-0003: mode=8181 line=000e opcode = 1010     mov(0014,  0018)
-0004: mode=8183 line=000f opcode = 10f4     ea(0024,  0008)
-0005: mode=8181 line=000f opcode = 10ac     (0020,  0024,  0002)
-0006: mode=8080 line=0010 opcode = 10a6     (3ef2c8)
-0007: mode=8183 line=0010 opcode = 10f4     ea(002c,  000c)
-0008: mode=8100 line=0010 opcode = 10a7     (002c)
-0009: mode=8183 line=0010 opcode = 10f4     ea(0030,  0010)
-000a: mode=8100 line=0010 opcode = 10a7     (0030)
-000b: mode=0000 line=0010 opcode = 10a8     ()
-000c: mode=8182 line=0010 opcode = 1010     mov(0034,  0001)
-000d: mode=8183 line=0011 opcode = 10ab     (0014)
-000e: mode=8182 line=0011 opcode = 1010     mov(003c,  0001)
-000f: mode=8181 line=0011 opcode = 10ac     (0038,  003c,  0000)
-0010: mode=0000 line=0012 opcode = 10f3     ret()
-************************segment*********************
-index offset size name
-0000: 0000,    4,    j
-0001: 0004,    4,    p
-0002: 0008,    4,    aa
-0003: 0012,    4,    
-0004: 0016,    4,    b
-0005: 0020,    4,    
-0006: 0024,    4,    
-0007: 0028,    4,    
-0008: 0032,    4,    a
-0009: 0036,    4,    
-000a: 0040,    4,    
-000b: 0044,    4,    
-000c: 0048,    4,    
-000d: 0052,    4,    
-000e: 0056,    4,    t
-000f: 0060,    4,    
-0010: 0064,    4,    
+************************command table*********************
+index   mode   line   code    op1   op2   op3
+0000: mode=8180 line=000c opcode = 1010     mov(0010,  000a)
+0001: mode=8181 line=000e opcode = 10f4     ea(0020,  0018)
+0002: mode=8183 line=000e opcode = 10f4     ea(0028,  0000)
+0003: mode=0181 line=000e opcode = 1010     mov(0020,  0028)
+0004: mode=8183 line=000f opcode = 10f4     ea(003c,  0008)
+0005: mode=8181 line=000f opcode = 10ac     (0034,  003c,  0002)
+0006: mode=8080 line=0010 opcode = 10a6     (301330)
+0007: mode=8183 line=0010 opcode = 10f4     ea(0048,  000c)
+0008: mode=8100 line=0010 opcode = 10a7     (0048)
+0009: mode=8183 line=0010 opcode = 10f4     ea(004c,  0010)
+000a: mode=8100 line=0010 opcode = 10a7     (004c)
+000b: mode=0000 line=0010 opcode = 10a8     ()
+000c: mode=8182 line=0010 opcode = 1010     mov(0050,  0001)
+000d: mode=8183 line=0011 opcode = 10ab     (0014)
+000e: mode=8182 line=0011 opcode = 1010     mov(005c,  0001)
+000f: mode=8101 line=0011 opcode = 10ac     (0054,  005c,  0000)
+0010: mode=0000 line=0012 opcode = 10f3     ret()
+************************segment*********************
+index offset size name
+0000: 0000,    8,    j
+0001: 0008,    8,    p
+0002: 0016,    4,    aa
+0003: 0020,    4,    
+0004: 0024,    8,    b
+0005: 0032,    8,    
+0006: 0040,    4,    
+0007: 0044,    8,    
+0008: 0052,    8,    a
+0009: 0060,    4,    
+000a: 0064,    8,    
+000b: 0072,    4,    
+000c: 0076,    4,    
+000d: 0080,    4,    
+000e: 0084,    8,    t
+000f: 0092,    8,    
+0010: 0100,    8,    

@@ -590,8 +590,8 @@ long OSthread_create_real(OSthread_func_t *func, const char *name, void *arg)
 
 //	printf("Started thread %ld (%s)", number, name);
 	
-	debug("OSlib.thread", 0, "Started thread %ld (%s)", 
-		number, name);
+//	debug("OSlib.thread", 0, "Started thread %ld (%s)", 
+// 		number, name);
 
 	return number;
 }

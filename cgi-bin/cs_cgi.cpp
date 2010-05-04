@@ -2,6 +2,23 @@
 #include <stdlib.h>
 #include <limits.h>
 #include <ctype.h>
+
+#include "clib.h"
+#include "stdio.h"
+#include "cocoR/cp.hpp"
+#include "cocoR/CR_ERROR.hpp"
+#include "compiler.h"
+#include "findfile.h"
+#include "mem.h"
+#include "VirtualMachine.h"
+#include "os/osutils.h"
+#include "Configure.h"
+
+CConfigure conf;
+CCompiler c;
+CVirtualMachine vm;
+CPubFuncTable g_PubFuncTable;
+
 unsigned int htoi(char s[])
 {
     unsigned int val = 0;
@@ -30,11 +47,36 @@ unsigned int htoi(char s[])
     }
     return val;
 }
-main()
-{
-    int i,n;
-printf ("Content type: text/plain\n\n");
 
+void init_cs(){
+	conf.set("debug","yes");
+	conf.set("classpath", "/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse/");
+	c.setConf(conf);
+}
+
+string exec_cmd(string user, string cmd, std::map<string, string> p){
+	string r = "hello";
+	// load user
+	
+	// get cmd
+	
+	// send cmd to user
+	// user::onCommand(command name, command param)
+
+	// test
+	BOOL ret = c.Compile("test/test.c");
+	
+	return r;
+}
+
+int main()
+{
+	
+
+	
+    int i,n;
+//printf ("Content type: text/plain\n\n");
+printf ("Content type: text/html\n\n");
 
 n=0;
     char qs[2000] ="";
@@ -45,7 +87,7 @@ n=0;
     for (i=0; i<n;i++){
         //int is-eq=0;
         char c=getchar();
-printf("%c", c);
+//printf("%c", c);
         switch (c){
             case '&':
                 *pqs='\n';
@@ -78,5 +120,11 @@ printf("%c", c);
 printf("%s\n",getenv("QUERY_STRING"));
 printf("qs=%s\n",qs);
 
+init_cs();
+map<string, string> m;
+exec_cmd("test", "cmd", m);
+
+
 fflush(stdout);
+return 0;
 }

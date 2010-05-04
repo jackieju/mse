@@ -340,7 +340,7 @@ bool CheckPath(const char* strDir)
 
 	if (strCopy[strlen(strCopy) - 1] == PATH_SEPARATOR)	// if it is a dir check it
 	{ 
-		if (chdir(strCopy) == 0)
+		if (access(strCopy, 0) == 0)
 			return TRUE;
 
 		// if it not exist, get its parent dir

@@ -338,61 +338,65 @@ bool JUJU::CheckPath(const char* strDir)
 {
 	assert(strDir);
 
-	char strCopy[MAX_PATH];
-//	char strTmp[MAX_PATH];
-	char* p;
+
+	char strCopy[MAX_PATH] = "";
+	
+	char* p = NULL;
 	
 	strcpy(strCopy, strDir);
 
-	if (strDir[strlen(strCopy) - 1] == PATH_SEPARATOR)	// if it is a dir check it
+	if (strCopy[strlen(strCopy) - 1] == PATH_SEPARATOR)	// if it is a dir check it
 	{ 
-		if (chdir(strDir) == 0)
+		
+		if (access(strCopy, 0) == 0)
 			return TRUE;
 
 		// if it not exist, get its parent dir
 		while (strCopy[strlen(strCopy) - 1] == PATH_SEPARATOR)
 			strCopy[strlen(strCopy) - 1] = '\0';
-
+		char strTmp[MAX_PATH]="";
+		strcpy(strTmp, strCopy);
+		// check parent
 		p = strrchr(strCopy, PATH_SEPARATOR);
-        if (p != NULL) 
-	    	*(p + sizeof(char)) ='\0';
-        else{
-            // if parent dir not exist, create it
+		if (p){
+			*(p + sizeof(char)) ='\0';
+			CheckPath(strCopy);
+			
+			// create if this is top foler or check parent return
 #ifdef WIN32 
-            if (mkdir(strDir/*,0777*/) != 0)
+		if (mkdir(strTmp/*,0777*/) != 0)
 #else
-            if (mkdir(strDir,0777) != 0)
+		if (mkdir(strTmp,0777) != 0)
 #endif
-                    //	if (mkdir(strCopy/*,0777*/) != 0)
-                    if (errno != EEXIST)
-                        return FALSE;
-                    return TRUE;
-        }
+//	if (mkdir(strCopy/*,0777*/) != 0)
+		if (errno != EEXIST)
+			return FALSE;
+		}
+		else{
 
+		// create if this is top foler 
+#ifdef WIN32 
+		if (mkdir(strCopy/*,0777*/) != 0)
+#else
+		if (mkdir(strCopy,0777) != 0)
+#endif
+//	if (mkdir(strCopy/*,0777*/) != 0)
+		if (errno != EEXIST)
+			return FALSE;
+		}	
+		
 	}
 	else									// if it includes a file name, truncate it
 	{
-        p = strrchr(strCopy, PATH_SEPARATOR);
-        if (p == NULL)
-            return TRUE;
-       	*(p + sizeof(char)) ='\0';
-    }
-    
-    
-    // check parent dir
-    //if (CheckPath((const char*)strCopy))
-    //    return FALSE;
-    CheckPath((const char*)strCopy);
-    // if parent dir not exist, create it
-#ifdef WIN32 
-    if (mkdir(strDir/*,0777*/) != 0)
-#else
-     if (mkdir(strDir,0777) != 0)
-#endif
-            //	if (mkdir(strCopy/*,0777*/) != 0)
-     if (errno != EEXIST)
-        return FALSE;
-     return TRUE;
+		
+		p = strrchr(strCopy, PATH_SEPARATOR);
+		if (p){
+			*(p + sizeof(char)) ='\0';
+			 CheckPath(strCopy);
+		}
+	}
+
+	return TRUE;
 }
 
 #ifdef WIN32
@@ -881,8 +885,11 @@ std::string JUJU::getFileExt(char* fullName){
 
 // get path of dir file is located
 std::string JUJU::getFilePath(char* fullName){
+	
 	std::string f = fullName;
+
 	int pos1 = f.rfind(PATH_SEPARATOR);
+
 	if (pos1 < 0) {
 		f = "";
 		return f;

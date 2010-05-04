@@ -66,10 +66,10 @@ public:
 	SYMBOLTABLEELE *GetMemberByName(char* szName){
 		return  this->m_memberTable.GetSym(szName);
 	};
-	std::string* output(){
+	std::string output(){
 		char msg[1024] = "";
-		std::string *ret = new std::string("");
-		std::string &r = *ret;
+		std::string r="";// = new std::string("");
+	//	std::string &r = ret;
 		r += "Class ";
 		r += this->GetFullName() ;
 		r += "\r\n";
@@ -90,9 +90,10 @@ public:
 			r += msg;
 		}
 		r += "===========================\r\n";
-//		printf("====>%s\n", ret->c_str());
+//		printf("====>%s\n", r.c_str());
 //		printf("====>ok\n");
-		return ret;
+		
+		return r;
 
 	}
 public:

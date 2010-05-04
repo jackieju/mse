@@ -134,11 +134,13 @@ void CFunction::Output(char *szName)
 	int i;
 	FILE *file = NULL;
 
-	
-	file = fopen(szName, "w");
+	char cpath[_MAX_PATH] = "";
+	getcwd(cpath, _MAX_PATH-1);
+	JUJU::CheckPath(szName);
+	file = fopen(szName, "w+");
 	if (file == NULL)
 	{
-		printf("can not open file %s\n", szName);
+		printf("can not open file %s, current path:%s, errno %d\n", szName, cpath, errno);
 		return;
 	}
 //	char *temp = new char[65536];
