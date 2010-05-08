@@ -130,7 +130,6 @@ void cParser::C()
 	
 	m_pCurClassDes = new CClassDes(this);
 	std::string className = JUJU::getFileName(curFileName);
-		printf("====>%s\n", curFileName);
 	m_pCurClassDes->SetName((char*)className.c_str());
 	m_classTable->addClass(m_pCurClassDes);
 	
@@ -154,11 +153,11 @@ void cParser::C()
 	
 	std::string name = m_pCurClassDes->GetFullName();
 	name += ".class";
-//	FILE* file = fopen(name.c_str(), "w");
-//	std::string s = m_pCurClassDes->output();
-//	fprintf(file, "%s", s.c_str());
-//	SAFEDELETE(s);
-//	fclose(file);
+	//FILE* file = fopen(name.c_str(), "w");
+	//std::string *s = m_pCurClassDes->output();
+	//fprintf(file, "%s", s->c_str());
+	//SAFEDELETE(s);
+	//fclose(file);
 	
 }
 
@@ -405,8 +404,6 @@ void cParser::FunctionDefinition()
 	    if (!this->Error->Errors)
 	    {
 	               char path[_MAX_PATH];
-
-
 	                            if (strlen(m_szByteCodeFilePath) == 0 )
 	                                    sprintf(path, "%s.%s", this->m_pCurClassDes->GetFullName(),szName);
 	                            else
@@ -2249,7 +2246,7 @@ void cParser::Primary()
 			                                    
 			                            }
 			                    }
-			          else
+			          else // address < 0
 			          {
 			                  //GenError(126);
 			                  if (this->m_PubFuncTable->FindFuncByName(szName) < 0)

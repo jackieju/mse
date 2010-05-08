@@ -102,11 +102,11 @@ PRODUCTIONS
     { Definition } EOF (. 
 	std::string name = m_pCurClassDes->GetFullName();
 	name += ".class";
-	FILE* file = fopen(name.c_str(), "w");
-	std::string *s = m_pCurClassDes->output();
-	fprintf(file, "%s", s->c_str());
-	SAFEDELETE(s);
-	fclose(file);
+  //FILE* file = fopen(name.c_str(), "w");
+  //std::string *s = m_pCurClassDes->output();
+  //fprintf(file, "%s", s->c_str());
+  //SAFEDELETE(s);
+  //fclose(file);
 
     .).
 
@@ -1825,7 +1825,7 @@ FunctionCall<&fn>
 			                          
 			                  }
 			          }
-			else
+			else // address < 0
 			{
 				//GenError(126);
 				if (this->m_PubFuncTable->FindFuncByName(szName) < 0)

@@ -37,8 +37,9 @@ CPubFuncTable::~CPubFuncTable()
 		delete m_FuncTable;
 }
 
-BOOL CPubFuncTable::AddFunction(long pfn, char *szName, char cParamNum)
+BOOL CPubFuncTable::AddFunction(void* pfn, char *szName, char cParamNum)
 {
+		printf("pfn is %lx\n", pfn);
 	char sMsg[201] = "";
 
 	if (szName == NULL)
@@ -86,8 +87,10 @@ BOOL CPubFuncTable::AddFunction(long pfn, char *szName, char cParamNum)
 		this->m_FuncTable[m_iFuncNum].uMinParamNum = uMinParamNum;
 		*/
 		this->m_FuncTable[m_iFuncNum].cParamNum = cParamNum;
+			printf("function address is %lx\n", this->m_FuncTable[m_iFuncNum].pfn);
 		m_iFuncNum++;
 	}
+
 	return TRUE;
 }
 
@@ -105,18 +108,20 @@ BOOL CPubFuncTable::AddFunction(long pfn, char *szName, char cParamNum)
 */
 int CPubFuncTable::FindFuncByName(char *szName)
 {
-//printf("--->FindFuncByName:%s", szName);
+	
+//printf("--->FindFuncByName:%s\n", szName);
 	if (szName == NULL)
 		return -2;
 
 	if (strlen(szName) == 0)
 		return -2;
-
+	//	printf("--->this=%x\n", this);
+//printf("--->fucntion number %d\n", m_iFuncNum);
 	for (int i= 0; i< this->m_iFuncNum; i++)
 	{
 	//	printf("--->m_FuncTable[%d]:%s", i, this->m_FuncTable[i].szName);
 		if (!strcmp(this->m_FuncTable[i].szName, szName)){
-//			printf("\n--->%s=%x\n", szName, i);
+		//	printf("\n--->%s=%x\n", szName, i);
 			return i;
 		}
 	}
@@ -139,7 +144,10 @@ int CPubFuncTable::FindFuncByName(char *szName)
 BOOL CPubFuncTable::AddPubFunction(HMODULE hDll, char* fnName, char* szName, char cParamNum)
 {
 #ifndef WIN32
-	FARPROC pfn = (long)dlsym((void *)hDll,fnName);
+	void* pfn = (void*)dlsym((void *)hDll,fnName);
+//	long a = (long)dlsym((void *)hDll,fnName);
+	printf("function (%s) address is %lx\n", fnName, pfn);
+//	printf("function (%s) address is %lx\n", fnName, a);
 #else
 	FARPROC pfn = GetProcAddress(hDll, fnName);
 #endif
@@ -156,7 +164,7 @@ BOOL CPubFuncTable::AddPubFunction(HMODULE hDll, char* fnName, char* szName, cha
 		return FALSE;
 	}
 	//puts("try to load g_PubFuncTable.AddFunction");
-	return AddFunction((long)pfn, szName, cParamNum);
+	return AddFunction(pfn, szName, cParamNum);
 }
 
 
@@ -202,6 +210,7 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 	{
 		snprintf(szMsg, 300, "SE:: Loadbrary(\"%s\") failed", szDLLName);
 		nLOG(szMsg, 1);
+		printf("%s\n", szMsg);
 #ifndef WIN32
 		char* dlerr = dlerror();
 		if (dlerr)
@@ -221,6 +230,7 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 	
 
 
+
 	//open file
 	char fnname[256];
 	long paramnum = 0;
@@ -232,10 +242,12 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 		unsigned long dwError = OSGetLastError();
 		snprintf(szMsg, 300,"PS:: SE_LoadFunctionFile: open file '%s' failed, last error code: %d.", szFileName, dwError);
 		nLOG(szMsg, 5);
+		printf("%s\n", szMsg);
 		return -3;
 	}
 	fseek(file, 0L, SEEK_SET);
 
+	
 	index = 0;
 	while (1)
 	{
@@ -262,6 +274,7 @@ long CPubFuncTable::LoadLib(char *szDLLName, char* szFileName)
 	fclose(file);
 	snprintf(szMsg, 300,"PS:: %d external function of lib %s added.", index, szDLLName);
 	nLOG(szMsg, 5);
+			printf("%s\n", szMsg);
 	
 	m_libs[szDLLName]=(long)hDll;
 

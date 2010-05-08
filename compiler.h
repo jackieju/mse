@@ -40,7 +40,7 @@ public:
 static  CScriptFuncTable functable[SCRIPTTABLE_NUM];
 static long g_lActiveScriptTable;
 	// table of classes, classes
-	static CClassDesTable classTable;
+	static CClassDesTable classDesTable;
 	// external native function (print, log, ...)
 	static CPubFuncTable m_PubFuncTable;
 	// compile source file
@@ -61,7 +61,7 @@ static long g_lActiveScriptTable;
 	void setConf(CConfigure& conf){
 		std::map<std::string, std::string> & _map = *conf.map();
 		std::map<std::string, std::string>::iterator it;
-		printf("\nCompiler options:\n");
+		printf("\n[Compiler options]:\n");
 		for ( it=_map.begin() ; it != _map.end(); it++ ){
 			m_conf.set((*it).first,(*it).second);
 			printf("%s=%s\n", (*it).first.c_str(), (*it).second.c_str());

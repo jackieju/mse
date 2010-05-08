@@ -28,7 +28,8 @@ all: all-before $(BIN_EXEC) $(CGI) all-after
 
 clean: clean-custom
 	rm -f $(OBJ) $(BIN)
-
+	rm -f main.o
+	rm -f cgi-bin/cs_cgi.o
 DLLWRAP=g++
 main.o: main.cpp
 	$(CC) -c main.cpp -o main.o $(CFLAGS)

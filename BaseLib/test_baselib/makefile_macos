@@ -1,0 +1,41 @@
+# Project: se
+
+#headers = $(shell echo ./*.h os/*.h)
+#srcs = $(shell echo ./*.cpp os/*.cpp)
+#objs = $(srcs:.cpp=.o)
+
+CC   = g++ 
+
+CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./ -D_64
+
+#CLIB_OBJ = clib/thread.o clib/log.o clib/utility.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o os/protected.o os/mutex.o os/LogLevel.o 
+OBJ  = test.o
+#OBJ  = $(objs) $(RES)
+#OBJ  = $(objs) 
+#BIN_EXEC = mse
+BIN  = test
+SOBIN=$(BIN:.so.1.0=.so)
+# -Wfatal-errors
+LINK=g++ 
+LFLAGS=-g 
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+
+clean: clean-custom
+	rm -f $(OBJ) $(BIN)
+
+DLLWRAP=g++
+
+	
+
+test.o: test.cpp
+	$(CC) -c test.cpp -o test.o $(CFLAGS)
+	
+$(BIN): $(OBJ)
+	g++  $(OBJ)  -o $(BIN) $(LFLAGS)
+
+
+

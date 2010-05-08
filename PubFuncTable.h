@@ -14,7 +14,11 @@
 //存放公用函数信息的结构
 typedef struct _tagFunctionEntry
 {
-	long pfn;                       //函数指针
+	#ifdef WIN32
+	FARPROC pfn;                       //函数指针
+	#else
+	void* pfn;
+	#endif 
 	char szName[MAX_FUNCNAME_LENGTH];  //函数名
 	/*unsigned int uMaxParamNum;	       //最多参数个数 
 	unsigned int uMinParamNum;         //最少参数个数*/
@@ -36,7 +40,7 @@ public:
 	FUNCTIONENTRY *m_FuncTable;	
 	
 	int FindFuncByName(char* szName);
-	BOOL AddFunction(long pfn, char* szName, char cParamNum);
+	BOOL AddFunction(void* pfn, char* szName, char cParamNum);
 	BOOL AddPubFunction(HMODULE hDll, char* fnName, char* szName, char cParamNum);
 	long LoadLib(char *szDLLName, char* szFileName);
 	

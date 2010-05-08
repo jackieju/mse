@@ -12,6 +12,11 @@
 #define __stdcall 
 #endif
 extern "C"{
+	
+	void __stdcall test(){
+		
+		printf("=== baselib test ===\n");
+	}
 void __stdcall put_str(char* msg)
 {
 	if (msg == NULL)

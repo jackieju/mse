@@ -32,7 +32,7 @@ char *MyError::ErrorMsg[] = {
 };
 
 CScriptFuncTable CCompiler::functable[SCRIPTTABLE_NUM];
-CClassDesTable CCompiler::classTable;
+CClassDesTable CCompiler::classDesTable;
 long CCompiler::g_lActiveScriptTable;
 CPubFuncTable CCompiler::m_PubFuncTable;
 
@@ -155,7 +155,7 @@ BOOL CCompiler::Compile(char *szFileName)
 	cScanner m_Scanner(S_src, 0);
 	MyError m_Error(szFileName, &m_Scanner);	
 	cParser m_Parser(this, &m_Scanner, &m_Error);
-	m_Parser.init(&CCompiler::classTable, &CCompiler::m_PubFuncTable, &m_conf);
+	m_Parser.init(&CCompiler::classDesTable, &CCompiler::m_PubFuncTable, &m_conf);
 //	m_Parser.setConfig(&m_conf);
 	m_Parser.setSourceFileName(szFileName);
 	//m_Error.Init(szFileName);
@@ -186,6 +186,7 @@ BOOL CCompiler::Compile(char *szFileName)
 	}
 	//m_Parser.m_pMainFunction = new CFunction;
 	// parse the source
+	clock_t s_c = clock();
 	m_Parser.Parse();
 	close(S_src);
 	
@@ -217,7 +218,11 @@ BOOL CCompiler::Compile(char *szFileName)
 		//fwrite(msg, 1, strlen(msg), file);
 		fprintf(file, msg);
 	}
-	
+		if (!m_Error.Errors)
+			printf("compile %s succeeded, cost %ld ms\n", m_szSourceFile, clock() - s_c);
+		else
+			printf("compile %s failed, cost %ld ms\n\n", m_szSourceFile, clock() - s_c);
+
 	if ( file && file != stderr )
 		fclose(file);
 	

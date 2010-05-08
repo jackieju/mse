@@ -140,6 +140,30 @@ extern "C"
 	}
 }
 #else
+#ifdef _MACOS
+#ifdef _64
+extern "C"
+{
+	
+	 static	__inline__ __attribute__ ((naked)) void 
+		_HGDispatchCall(long* /*ret*/, void* /*pfn*/, void* /*pArgs*/, unsigned long /*nSizeArgs*/ )
+		  {
+			  __asm__ __volatile__(
+			  "popq %rdx\n\t"
+			  "popq %rbx\n\t"
+			  "popq %rax\n\t"
+			  "popq %rcx\n\t"
+			  "addq (%rsp),%rcx\n\t"
+			 "movq %rdx, (%rcx)\n\t"
+			  "subq (%rsp),%rcx\n\t"
+				"movq %rcx,%rsp\n\t"			
+				"call %rax\n\t"			
+				"movq %rax,(%rbx)\n\t"
+				"ret"
+				);
+	}
+}
+#else
 extern "C"
 {
 	
@@ -161,40 +185,66 @@ extern "C"
 				);
 	}
 }
+#endif //#ifdef _64
+#else
+
+extern "C"
+{
+	
+	 static	__inline__ __attribute__ ((naked)) void __stdcall
+		_HGDispatchCall(long* /*ret*/, void* /*pfn*/, void* /*pArgs*/, unsigned long /*nSizeArgs*/ )
+		  {
+			  __asm__ __volatile__(
+			  "popl %edx\n\t"
+			  "popl %ebx\n\t"
+			  "popl %eax\n\t"
+			  "popl %ecx\n\t"
+			  "addl (%esp),%ecx\n\t"
+			  "movl %edx, (%ecx)\n\t"
+			  "subl (%esp),%ecx\n\t"
+				"movl %ecx,%esp\n\t"			
+				"call %eax\n\t"			
+				"movl %eax,(%ebx)\n\t"
+				"ret"
+				);
+	}
+}
+#endif //#ifdef _MACOS
 #endif
 
 BOOL __stdcall CallPubFunc(long lParamSize, void* pfn, void* pParam, long* pRet)
 {
-	
+	printf("==>pub functon lParamSize=%d, pfn=%x, pParam=%x, pRet=%x\n", lParamSize,pfn,pParam,pRet);
 	// debug code
 	//printf("CallPub: ParamBlockSize = %d, pData[0]: %x\n", lParamSize, *(long*)pParam);		
 
 		void* p = alloca(lParamSize+16/*_SCRATCH_SIZE*/);
 	memset(p, 0, lParamSize+16);	
 	memcpy(p, (void*)pParam, lParamSize);
-
+printf("==>pub functon lParamSize=%ld, pfn=%lx, pParam=%lx, pRet=%lx\n", lParamSize,pfn,p,pRet);
 
 #ifdef WIN32
 	_HGDispatchCall(pRet, (void*)pfn, p, lParamSize);
 #else
 #ifdef _MACOS
-	/*
+	//_HGDispatchCall(pRet, (void*)pfn, p, lParamSize);
+	
 			__asm__ __volatile__ (
 			//"pushl	%0;"
 			//"pushl	%1;"
 			//"pushl	%2;"
 			//"pushl	%3;"			
-			"movl %3, %%ebx\n\t"	// edx = pRet
-			"movl %2, %%eax\n\t"	// eax = pfn
-			"movl %1, %%ecx\n\t"	// ecx = p
-			"movl %0, %%edx\n\t"	// edx = lParamSize
+			"movq %3, %%rbx\n\t"	// edx = pRet
+			"movq %2, %%rax\n\t"	// eax = pfn
+			"movq %1, %%rcx\n\t"	// ecx = p
+			"movq %0, %%rdx\n\t"	// edx = lParamSize
 	//		"addl %%edx, %%ecx;"	// ecx = p + lParamsize = Scrach erea
 	//		"movl %%edx,(%%ecx);"	// scrach = return address;
 	//		"subl %%edx, %%ecx;"	// ecx = ecx - lParasize = p;
-			"movl %%ecx, %%esp\n\t"		// move stack point to p
-			"call %%eax\n\t"			// call function
-			"movl %%eax,(%%ebx)\n\t"	: 	:"r"(lParamSize) , "r"(p) , "r"(pfn) , "r"(pRet)
-			);	*/
+			"movq %%rcx, %%rsp\n\t"		// move stack point to p
+			"call %%rax\n\t"			// call function
+			"movq %%rax,(%%rbx)\n\t"	: 	:"r"(lParamSize) , "r"(p) , "r"(pfn) , "r"(pRet)
+			);	
 #else
 			__asm__ __volatile__ (
 			//"pushl	%0;"
@@ -1549,7 +1599,7 @@ BOOL CVirtualMachine::_ret(PCOMMAND cmd)
 **/
 BOOL CVirtualMachine::Run()
 {
-
+	printf("--->run\n");
 	m_Stopped.Reset();
 
 	m_nRemainCmdNum = 0;
@@ -1576,6 +1626,8 @@ BOOL CVirtualMachine::Run()
 
 	while (m_ToStop.Wait(0) == LOCKEX_ERR_TIMEOUT && !bError)
 	{
+		printf("--->__IP=%d, mode=%d\n", __IP, m_nWorkMode);
+		printf("--->line %d, code %d\n", m_pCurCall->pFunc->m_pCmdTable[__IP].line, m_pCurCall->pFunc->m_pCmdTable[__IP].opcode);
 		m_StatusLock.Lock();
 		opcode = m_pCurCall->pFunc->m_pCmdTable[__IP].opcode;
 		pcmd = &(m_pCurCall->pFunc->m_pCmdTable[__IP]);
@@ -1586,6 +1638,7 @@ BOOL CVirtualMachine::Run()
 			{
 				snprintf(msg, 200, "SE::%s IP: %d line: %d", m_pCurCall->pFunc->m_szName, __IP, pcmd->line);
 				nLOG(msg, 500);
+				printf("%s\n", msg);
 			}
 
 			if (m_nWorkMode >= VM_MODE_STEPDEBUG)
@@ -2762,20 +2815,31 @@ void CVirtualMachine::GetStatus(VMSTATUS* status)
 }
 
 CObjectInst* CVirtualMachine::LoadObject(CClassDes* c){
+	printf("==>LoadObject %x\n", c);
 	// lookup regestered class instance
 	CClass* pClass = m_classTable.getClass(c->GetFullName());
 	if (pClass == NULL)
 		pClass = m_classTable.createClassInst(c);
+	printf("==>class %s found\n", c->GetFullName());
 
 	// create object
 	CObjectInst* obj = m_objTable.createObjectInstance(pClass);
+	printf("==>create instance OK\n");
 	
 	// load "create" method
+	
 	//long index = 1;
+	this->Reset();
 	CFunction* pfn = c->getMethod("create");
 	LoadFunction(pfn);
+	printf("==>LoadFunction OK\n");
 	void* pthis = this;
 	AttachParam((BYTE*)&pthis, sizeof(int));
+	
+	printf("==>AttachParam OK\n");
+	
+	
+	this->Run();
 	return obj;
 
 }

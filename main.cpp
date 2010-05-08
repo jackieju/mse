@@ -35,12 +35,11 @@ int main(int num, char** args){
 	printf("compile ret=%d\n", ret);
 
 #ifdef WIN32
-
-	g_PubFuncTable.LoadLib("baselib.dll", "baselib.int");
+//	g_PubFuncTable.LoadLib("baselib.dll", "baselib.int");
 #else
 //	g_PubFuncTable.LoadLib("libbaselib.so", "../baselib.int");
 #endif
-	CCompiler::classTable.getClass("test\\test");
+	CCompiler::classDesTable.getClass("test\\test");
 //	vm.LoadObject(CCompiler::classTable.getClass("test\\test"));
 	//int index = 0;
 	//CFunction* pfn = CCompiler::classTable.getClass("test")->getFuncTable()->GetFunction("create", &index);
