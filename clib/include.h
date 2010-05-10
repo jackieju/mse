@@ -13,4 +13,5 @@
 #include "types.h"
 #include "clib_time.h"
 #include "str.h"
+#include "log.h"
 #endif //__INCLUDE_H__

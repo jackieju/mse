@@ -111,9 +111,14 @@ public:
 	}
 
 	~CLog();
-
+	static void setFile(char* file){
+		strncpy(logFileName, file, 255);
+	}
 	static std::string genFileName(char* cat=""){
- char fileName[256] = ""; // generated full filename
+		if (strlen(logFileName) == 0)
+			return "";
+			
+ 		char fileName[256] = ""; // generated full filename
       
         // get current time
         time_t t;
@@ -134,17 +139,19 @@ public:
 
 	void real_log(char *s){
 		std::string fileName = genFileName(this->category);
-		FILE* f = fopen(fileName.c_str(), "a+");
-        if (f == NULL)
-            return;
+		FILE* f = stdout;
+		if (strlen(fileName.c_str())>0)
+	 		f = fopen(fileName.c_str(), "a+");
+        //if (f == NULL)
+          //  return;
         
         
 		fprintf(f, "%s", s);
 
 		        
         fflush(f);
-        
-        fclose(f);
+        if (strlen(fileName.c_str())>0)
+        	fclose(f);
 
 
 	}
@@ -205,8 +212,10 @@ private:
 
 };
 
+void debug(char* fmt, ...);
 
 }
+
 #define cLOG(m) JUJU::_log(m, __FILE__, __LINE__, 10, "LOG")
 #define LOG0(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "LOG")
 #define ERR(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR")
@@ -219,4 +228,5 @@ private:
 //#endif
 //#define TRACE(m)  JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "TRC")
 #define TRACE1(m, category)  JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "TRC", category)
+using namespace JUJU;
 #endif

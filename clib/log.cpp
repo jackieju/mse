@@ -17,7 +17,15 @@ bool CLog::bUseCache = false;
 CLog CLog::pInst;// = new CLog;
 char CLog::logFileName[256] = "";
 	
+void JUJU::debug(char* fmt, ...){
 
+	 char msg[1001] = "";
+	 va_list v;
+	 va_start(v, fmt);
+	 vsnprintf(msg, 1000, fmt, v);
+	 va_end(v);
+	JUJU::CLog::Log(msg, __FILE__, __LINE__, 100, "DBG", "");
+}
 	void JUJU::_log(std::string  msg, char* file, long line, int l, char* type, char* filename){
         _log((char*)msg.c_str(), file, line, l, type, filename);        
     }
@@ -53,7 +61,7 @@ char CLog::logFileName[256] = "";
         fprintf(f, "%s [%s %d]\t%s\t(%s:%d)\r\n", p, type, l, msg, file, line);
         
         fflush(f);
-        
+  
         fclose(f);
         
     }
