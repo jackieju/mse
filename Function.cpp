@@ -62,9 +62,13 @@ bool CFunction::AddVal(char* szName, TYPEDES type)
 int CFunction::AddStaticData(int size_t, BYTE* pData)
 {
 
+	printf("-->addStaticData, size=%d, pData=%0lx\n", size_t, pData);
 	int size16;//按16bit字对齐后的大小
+#ifndef _64
 	size16 = size_t + (4 - size_t%4);
-
+#else
+	size16 = size_t + (8 - size_t%4);
+#endif
 	int start = m_nSSUsedSize;
 
 	//如果数组不够长
@@ -172,13 +176,23 @@ void CFunction::Output(char *szName)
 		fprintf(file, buffer);
 	}
 
-	fprintf(file, "************************segment*********************\r\n");
+	fprintf(file, "************************symbal table*********************\r\n");
 	fprintf(file, "index offset size name\r\n");
 
-	//output datasegment 
+	//output symbol table 
 	for (i = 0; i < this->m_SymbolTable.m_nSymbolCount; i++)
 	{
-		fprintf(file, "%04x: %04d,    %x,    %s\r\n", i, this->m_SymbolTable.tableEntry[i].address, this->m_SymbolTable.tableEntry[i].size_t, m_SymbolTable.tableEntry[i].szName);
+		fprintf(file, "%04x: %04x,    %x,    %s\r\n", i, this->m_SymbolTable.tableEntry[i].address, this->m_SymbolTable.tableEntry[i].size_t, m_SymbolTable.tableEntry[i].szName);
+	}
+	
+	//output static segment
+	fprintf(file, "************************static segment*********************\r\n");
+	for (i = 0; i < this->m_nSSUsedSize;)
+	{
+		fprintf(file, "%04x:", i);
+		for (int j=0; i<m_nSSUsedSize && j<8; j++,i+=1)
+		 fprintf(file, " %02x", m_staticSegment[i]);
+		fprintf(file,"\r\n");
 	}
 	fclose(file);
 }

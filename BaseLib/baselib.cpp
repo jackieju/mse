@@ -14,8 +14,15 @@
 extern "C"{
 	
 	void __stdcall test(){
-		
 		printf("=== baselib test ===\n");
+	}
+	void __stdcall test0(){
+	
+	}
+	void __stdcall test1(long l){
+		printf("=== baselib test ===\n");
+		printf("%d\n", l);
+	    printf("====================\n");	
 	}
 void __stdcall put_str(char* msg)
 {

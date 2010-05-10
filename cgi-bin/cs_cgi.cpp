@@ -65,6 +65,11 @@ string exec_cmd(string user, string cmd, std::map<string, string> p){
 
 	// test
 	BOOL ret = c.Compile("test/test.c");
+	if (!ret){
+		printf("==== compiler error ===\n");
+		return "==== compiler error ===\n";
+	}
+		
 //	CCompiler::classDesTable.dump();
 	CClassDes* pc = CCompiler::classDesTable.getClass("test/test");
 //	printf("this=%x,==>ps=%x", &CCompiler::classDesTable, pc);

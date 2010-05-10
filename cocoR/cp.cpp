@@ -32,9 +32,8 @@
 
 #define CAST Cast(op1, type1, dt1, op2, type2, dt2);
 
-extern int typesize(int type);
 
-int log2(int x);
+
 
 
 // add by jackie juju
@@ -44,6 +43,7 @@ int log2(int x);
 
 #include "cp.hpp"
 #include "cs.hpp"
+
 
 unsigned short int cParser::SymSet[][MAXSYM] = {
   /*EOF_Sym */
@@ -2289,11 +2289,11 @@ void cParser::Primary()
 			                                                Get();
 			                                                break;
 			                                        }
-			                    
+													printf("string=%lx, %s\n", string, string);
 			                                        int straddress = this->m_pMainFunction->m_nSSUsedSize;
 			                                        if (m_pMainFunction->AddStaticData(strlen(string)+1, (BYTE*)string)>=0)
 			                                        {       
-			                                                _typedes(dt, dtInt)
+			                                                _typedes(dt, dtStr)
 			                                                
 			                                                if (m_pMainFunction->AddVal(NULL,  dt))
 			                                                {
@@ -2333,13 +2333,15 @@ void cParser::Primary()
 			                     
 			                     float number = (float)atof(GetCurrSym());
 			                     _typedes(dt, dtFloat);                  
+								// Address mode: direct, Operation=4Byte =>0x80
 			                     m_pMainFunction->PushDigit(*(long*)&number, AMODE_DIRECT|OPSIZE_4B, dt);
 			             }
 			             else    // int
 			             {
 			                     
 			                     int number = atoi(GetCurrSym());
-			                     _typedes(dt, dtLong);                   
+			                     _typedes(dt, dtLong); 
+								 // Address mode: direct, Operation=4Byte =>0x80                  
 			                     m_pMainFunction->PushDigit(number, AMODE_DIRECT|OPSIZE_4B, dt);
 			             }
 			;
@@ -2546,9 +2548,14 @@ void cParser::ActualParameters(FUNCCALL* pFuncEntry)
 	            this->GenError(96);
 	            return;
 	    }
+	    
+	    // address mode of dest op is in hight byte
 	    int address_mode = (type<<8)&0xff00;
+	
+	    // set op number size
 	    address_mode |= (log2(UnitSize(dt1))<<14);
 	
+		printf("--->address mode = %x, unite size = %d, log2unitsize=%d, line %d", address_mode, UnitSize(dt1), log2(UnitSize(dt1)), Scanner->CurrSym.Line);
 	    if (pFuncEntry->nType)  // native function
 	            ADDCOMMAND1(__parampub, address_mode, op1)                      
 	    else
@@ -3209,39 +3216,7 @@ long cParser::GetClassIdByName(char *szName)
 }
 	*/
 
-long cParser::typesize(long type, long id)
-{
-	switch (type)
-	{
-	case dtChar:
-	case dtUChar:
-		return 1;break;
-	case dtShort:
-	case dtUShort:
-		return 2;break;
-	case dtInt:
-	case dtUInt:		
-	case dtLong:
-	case dtULong:
-	case dtFloat:
-		return 4;break;
-	case dtStr:
-		return sizeof(void*);break; //it's a pointer
-	case dtGeneral:		
-		/*if (id == 0)
-		{
-			nLOG("OBJECT WITH ERROR ID", 300);
-			return -1;
-		}
-		return m_ObjTable[id-1]->GetSize();*/
-		return sizeof(void*);break;//it's a pointer
-		break;
 
-/*	case dtDouble:
-		return 8;break;
-*/	default: return -1;
-	}
-}
 
 void cParser::SetByteCodeFilePath(char* szPath)
 {
@@ -3296,19 +3271,7 @@ cParser::~cParser()
 	SAFEDELETE(m_LoopTree);
     SAFEDELETE(m_pMainFunction);
 }
-int log2(int x)
-{
-	int i = 0;
-	while (x >= 2)
-	{
-		i++;
-		x /= 2;
-	}
-	if (i >=0 && i<3)
-		return i;
-	else
-		return 0;
-}
+
 
 bool cParser::doMove(long type1, long type2, long op1, long op2, TYPEDES& dt1, TYPEDES& dt2 )
 {

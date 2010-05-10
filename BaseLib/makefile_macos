@@ -6,7 +6,7 @@
 
 CC   = g++ 
 
-CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./ -D_64
+CFLAGS = -O0 -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./ -D_64
 
 #CLIB_OBJ = clib/thread.o clib/log.o clib/utility.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o os/protected.o os/mutex.o os/LogLevel.o 
 OBJ  = Exp.o baselib.o StdAfx.o

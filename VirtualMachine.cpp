@@ -211,40 +211,85 @@ extern "C"
 }
 #endif //#ifdef _MACOS
 #endif
-
-BOOL __stdcall CallPubFunc(long lParamSize, void* pfn, void* pParam, long* pRet)
+void test1(long l){
+	printf("-------------\n");
+	printf("--->%d\n", l);
+		printf("-------------\n");
+}
+BOOL __stdcall CallPubFunc(long lParamSize, void* pfn, void* pParam, long* pRet, int paramNum)
 {
-	printf("==>pub functon lParamSize=%d, pfn=%x, pParam=%x, pRet=%x\n", lParamSize,pfn,pParam,pRet);
+//	pfn = (void*)test1;
+	printf("==>pub functon lParamSize=%ld, pfn=%lx, pParam=%lx, pRet=%lx\n", lParamSize,pfn,pParam,pRet);
 	// debug code
 	//printf("CallPub: ParamBlockSize = %d, pData[0]: %x\n", lParamSize, *(long*)pParam);		
-
 		void* p = alloca(lParamSize+16/*_SCRATCH_SIZE*/);
+			printf("==>p=%lx\n", p);
 	memset(p, 0, lParamSize+16);	
+	
 	memcpy(p, (void*)pParam, lParamSize);
-printf("==>pub functon lParamSize=%ld, pfn=%lx, pParam=%lx, pRet=%lx\n", lParamSize,pfn,p,pRet);
+printf("==>pub functon lParamSize=%ld, pfn=%lx, pParam=%lx, pRet=%lx, paramNum=%d\n", lParamSize,pfn,p,pRet,paramNum);
 
 #ifdef WIN32
 	_HGDispatchCall(pRet, (void*)pfn, p, lParamSize);
 #else
 #ifdef _MACOS
+#ifdef _64
+	long p1 = 0;
+	long p2 = 0;
+	long p3 = 0;
+	long p4 = 0;
+	long p5 = 0;
+	long p6 = 0;
+	long* pp = (long*)p;
+	if (paramNum>=1)
+	  p1 = *(long*)pp;
+	if (paramNum>=2)
+	  p2 = *(++pp);
+	if (paramNum>=3)
+	  p3 = *(long*)(++pp);
+	if (paramNum>=4)
+	  p4 = *(long*)(++pp);
+	if (paramNum>=5)
+	  p5 = *(long*)(++pp);
+	if (paramNum>=6)
+	  p6 = *(long*)(++pp);
+	if (paramNum>=7){
+		p = ++pp;
+		lParamSize -= 6*8; // 64 bit OS 
+	}
+	else
+		lParamSize =0;
+	printf("%d %d %d %d %d %d\n", p1, p2, p3, p4, p5, p6);
 	//_HGDispatchCall(pRet, (void*)pfn, p, lParamSize);
 	
 			__asm__ __volatile__ (
 			//"pushl	%0;"
 			//"pushl	%1;"
 			//"pushl	%2;"
-			//"pushl	%3;"			
-			"movq %3, %%rbx\n\t"	// edx = pRet
-			"movq %2, %%rax\n\t"	// eax = pfn
-			"movq %1, %%rcx\n\t"	// ecx = p
-			"movq %0, %%rdx\n\t"	// edx = lParamSize
-	//		"addl %%edx, %%ecx;"	// ecx = p + lParamsize = Scrach erea
-	//		"movl %%edx,(%%ecx);"	// scrach = return address;
-	//		"subl %%edx, %%ecx;"	// ecx = ecx - lParasize = p;
-			"movq %%rcx, %%rsp\n\t"		// move stack point to p
-			"call %%rax\n\t"			// call function
-			"movq %%rax,(%%rbx)\n\t"	: 	:"r"(lParamSize) , "r"(p) , "r"(pfn) , "r"(pRet)
+			//"pushl	%3;"		
+			
+		//	"pushq %3;"
+		//	"pushq %%rsp;"
+			"movq %4, %%rdi\n\t"	// p1					=>mov    %rsi,%rdi // %4 实际是rcx
+			"movq %5, %%rsi\n\t"	// p2					=>mov    %r11,%rsi // %5 实际是r11
+			"movq %2, %%r11\n\t"	// r11 = pfn			=>mov    %rdx,%r11 // 提到前面，因为%2就是rdx, rdx后面会被用掉	
+			"movq %6, %%rdx\n\t"	// p3					=>mov    %r10,%rdx // %6 实际是r10
+			"movq %3, %%r10\n\t"	// r10 = pRet			=>mov    %rcx,%r10 // 提前到最前，因为%3就是rcx, rcx后面会被用掉
+			"movq %7, %%rcx\n\t"	// p4					=>mov    %r14,%rcx
+			"movq %8, %%r8\n\t"		// p5					=>mov    %r12,%r8
+			"movq %9, %%r9\n\t"		// p6					=>mov    %rbx,%r9		
+		//	"movq %1, %%rcx\n\t"	// ecx = p 				=>mov    %r13,%rcx
+		//	"movq %0, %%rdx\n\t"	// edx = lParamSize  	=>mov    %r15,%rdx
+			"addq %0, %1;"			// ecx = p + lParamsize = Scrach erea	=>add    %rax,%r13
+			"movq %%r10,(%1);"		// scrach = return address;
+			"subq %0, %1;"			// ecx = ecx - lParasize = p;
+			"movq %1, %%rsp\n\t"		// move stack point to p
+			"call %%r11\n\t"			// call function
+		//	"popq %%rsp;"
+			"movq (%%rsp), %%r10;"
+			"movq %%rax,(%%r10)\n\t"	: 	:"r"(lParamSize) , "r"(p) , "r"(pfn) , "r"(pRet), "r"(p1), "r"(p2), "r"(p3), "r"(p4), "r"(p5), "r"(p6)
 			);	
+#endif
 #else
 			__asm__ __volatile__ (
 			//"pushl	%0;"
@@ -265,6 +310,7 @@ printf("==>pub functon lParamSize=%ld, pfn=%lx, pParam=%lx, pRet=%lx\n", lParamS
 #endif	
 #endif
 
+		printf("====>call pub function ok\n");
 	return TRUE;
 }
 #include "opcode.h"
@@ -786,10 +832,12 @@ BOOL CVirtualMachine::_jmp(PCOMMAND cmd)
 
 BOOL CVirtualMachine::_ea(PCOMMAND cmd)
 {
-	int EA;
+	long EA;
 	CMD_PREPROCESS2
-		EA = (long)src;
+	EA = (long)src;
+
 	memcpy(dest, &EA, sizeof(long));
+	printf("-->EA: src=%lx, dest=%lx", src, dest);
 	__IP++;
 	return TRUE;
 }
@@ -842,8 +890,10 @@ BOOL CVirtualMachine::_endcallpub(PCOMMAND cmd)
 	void* pData = (void*) new char[pCallInfo->lParamBlockSize];
 	memset(pData, 0, pCallInfo->lParamBlockSize);
 	unsigned char* pDataPt = (unsigned char*)pData;
+	int paramNum = 0;
 	while (param != pCallInfo->paramPt)
 	{
+	
 		if ((BYTE*)pDataPt + param->size - (BYTE*)pData > pCallInfo->lParamBlockSize)
 		{
 			
@@ -868,11 +918,21 @@ BOOL CVirtualMachine::_endcallpub(PCOMMAND cmd)
 			return FALSE;
 		}
 		memcpy(pDataPt, param->pData, param->size);
-		pDataPt += param->size;		
+		pDataPt += param->size;	
+		paramNum++;
+		
+		// 字节对齐
+#ifdef _64	
+		if (param->size < 8)
+		{
+			pDataPt += 8- param->size;
+		}
+#else
 		if (param->size < 4)
 		{
 			pDataPt += 4- param->size;
 		}
+#endif
 		/*		//只考虑一重指针, 不允许有指针的指针
 		if (param->reflvl > 0)
 		*((int*)(param->pData)) += (int)memory;
@@ -918,7 +978,7 @@ BOOL CVirtualMachine::_endcallpub(PCOMMAND cmd)
 
 	try
 	{
-		CallPubFunc(pCallInfo->lParamBlockSize, (void*)pCallInfo->fn, (void*)pData, &__AX);		
+		CallPubFunc(pCallInfo->lParamBlockSize, (void*)pCallInfo->fn, (void*)pData, &__AX, paramNum);		
 	}
 	catch(CVMException *e)
 	{
@@ -1086,13 +1146,18 @@ BOOL CVirtualMachine::_parampub(PCOMMAND cmd)
 	short opsize;// 是字节操作, 字操作, 还双字操作
 	
 	// get opsize
-	opsize= (cmd->address_mode >> 14)&0x3;
+	
+	// get first 2 bit by shifting and masking with 0x000000011
+	opsize= (cmd->address_mode >> 14)&0x3; 
+
 	int size = 1;
+	// 0=>1Btype, 1=>2Byte, 2=>4Bytpe, 3=>8Btype ...
 	for (int i = 0; i< opsize; i++)
 	{
 		size *= 2;
 	}	
-
+	printf("--->parampub: address mode=0x%x, size=%d, dest=%lx\n", cmd->address_mode, size, dest);
+	
 	// get current function call info
 	FUNCTIONSTACKELE *pCallInfo = NULL;
 	if (m_FuncStack.empty() == true)
@@ -1104,11 +1169,17 @@ BOOL CVirtualMachine::_parampub(PCOMMAND cmd)
 	pCallInfo->paramPt->reflvl = op1reflvl;
 	pCallInfo->lParamBlockSize += pCallInfo->paramPt->size;
 	// 字节对齐
-	if (pCallInfo->paramPt->size < 4)
-	{
-		pCallInfo->lParamBlockSize+= 4-pCallInfo->paramPt->size;
-	}
-
+	#ifdef _64
+	 if (pCallInfo->paramPt->size < 8)
+	 {
+	 	pCallInfo->lParamBlockSize+= 8-pCallInfo->paramPt->size;
+	 }
+	#else
+		 if (pCallInfo->paramPt->size < 4)
+	 {
+	 	pCallInfo->lParamBlockSize+= 4-pCallInfo->paramPt->size;
+	 }
+	#endif
 	pCallInfo->paramPt->pNext = new PUBFUNCPARAM;
 	pCallInfo->paramPt = pCallInfo->paramPt->pNext;
 	pCallInfo->paramPt->pData = NULL;
