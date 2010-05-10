@@ -35,7 +35,6 @@
 
 
 
-
 // add by jackie juju
 /////////////////////////////////
 
@@ -43,7 +42,6 @@
 
 #include "cp.hpp"
 #include "cs.hpp"
-
 
 unsigned short int cParser::SymSet[][MAXSYM] = {
   /*EOF_Sym */
@@ -2289,7 +2287,7 @@ void cParser::Primary()
 			                                                Get();
 			                                                break;
 			                                        }
-													printf("string=%lx, %s\n", string, string);
+			                    
 			                                        int straddress = this->m_pMainFunction->m_nSSUsedSize;
 			                                        if (m_pMainFunction->AddStaticData(strlen(string)+1, (BYTE*)string)>=0)
 			                                        {       
@@ -2333,15 +2331,14 @@ void cParser::Primary()
 			                     
 			                     float number = (float)atof(GetCurrSym());
 			                     _typedes(dt, dtFloat);                  
-								// Address mode: direct, Operation=4Byte =>0x80
 			                     m_pMainFunction->PushDigit(*(long*)&number, AMODE_DIRECT|OPSIZE_4B, dt);
 			             }
 			             else    // int
 			             {
 			                     
 			                     int number = atoi(GetCurrSym());
-			                     _typedes(dt, dtLong); 
-								 // Address mode: direct, Operation=4Byte =>0x80                  
+			                     _typedes(dt, dtLong);                   
+			                     // Address mode: direct, Operation=4Byte =>0x80
 			                     m_pMainFunction->PushDigit(number, AMODE_DIRECT|OPSIZE_4B, dt);
 			             }
 			;
@@ -2548,14 +2545,11 @@ void cParser::ActualParameters(FUNCCALL* pFuncEntry)
 	            this->GenError(96);
 	            return;
 	    }
-	    
 	    // address mode of dest op is in hight byte
 	    int address_mode = (type<<8)&0xff00;
-	
 	    // set op number size
 	    address_mode |= (log2(UnitSize(dt1))<<14);
 	
-		printf("--->address mode = %x, unite size = %d, log2unitsize=%d, line %d", address_mode, UnitSize(dt1), log2(UnitSize(dt1)), Scanner->CurrSym.Line);
 	    if (pFuncEntry->nType)  // native function
 	            ADDCOMMAND1(__parampub, address_mode, op1)                      
 	    else

@@ -89,14 +89,12 @@ class CCompiler;
 const int MAXSYM = 6;
 const int MAXERROR = 110;
 
-
 class cParser : public CRParser, public CPUtil
 {
 
 // add by jackie
 public:
 	void SetByteCodeFilePath(char* szPath);
-//	long typesize(long type, long id);
 	void Cast(long& op1, long& type1, TYPEDES& dt1, long& op2, long& type2, TYPEDES& dt2);
 	long AllocTempVar(long type, long reflevel = 0);
 	long NeedCast(TYPEDES dt1, TYPEDES dt2, char& casted);

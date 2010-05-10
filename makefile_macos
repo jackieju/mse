@@ -12,6 +12,7 @@ EXEC_OBJ  =  $(OBJ) main.o
 CGI_OBJ = $(OBJ) cgi-bin/cs_cgi.o
 #OBJ  = $(objs) $(RES)
 #OBJ  = $(objs)
+pp = cocoR1/cp.cpp
 BIN_EXEC = mse
 CGI = cgi-bin/cs.cgi
 #BIN  = libSE.so.1.0
@@ -25,7 +26,7 @@ LFLAGS=-g
 
 all: all-before $(BIN_EXEC) $(CGI) all-after
 
-
+parser: $(pp)
 clean: clean-custom
 	rm -f $(OBJ) $(BIN)
 	rm -f main.o
@@ -40,7 +41,7 @@ cgi-bin/cs_cgi.o: cgi-bin/cs_cgi.cpp
 Configure.o: Configure.cpp
 	$(CC) -c Configure.cpp -o Configure.o $(CFLAGS)
 
-cocoR/cp.cpp: cocoR/msec.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
+cocoR1/cp.cpp: cocoR/msec.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
 	cd cocoR && ./cocor -A -F -X -S -G -C -L msec.atg
 	
 ObjectInst.o: ObjectInst.cpp
