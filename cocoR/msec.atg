@@ -21,9 +21,7 @@ COMPILER C
 
 #define CAST Cast(op1, type1, dt1, op2, type2, dt2);
 
-extern int typesize(int type);
 
-int log2(int x);
 
 
 // add by jackie juju
@@ -1870,7 +1868,7 @@ FunctionCall<&fn>
 			                    int straddress = this->m_pMainFunction->m_nSSUsedSize;
 			                    if (m_pMainFunction->AddStaticData(strlen(string)+1, (BYTE*)string)>=0)
 			                    {       
-			                            _typedes(dt, dtInt)
+			                            _typedes(dt, dtStr)
 			                            
 			                            if (m_pMainFunction->AddVal(NULL,  dt))
 			                            {
@@ -1914,6 +1912,7 @@ FunctionCall<&fn>
 			
 			int number = atoi(GetCurrSym());
 			_typedes(dt, dtLong);			
+			// Address mode: direct, Operation=4Byte =>0x80
 			m_pMainFunction->PushDigit(number, AMODE_DIRECT|OPSIZE_4B, dt);
 		}
 
@@ -1991,7 +1990,9 @@ FunctionCall<&fn>
 		this->GenError(96);
 		return;
 	}
+	// address mode of dest op is in hight byte
 	int address_mode = (type<<8)&0xff00;
+	// set op number size
 	address_mode |= (log2(UnitSize(dt1))<<14);
 
 	if (pFuncEntry->nType)	// native function

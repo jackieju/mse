@@ -659,39 +659,7 @@ long cParser::GetClassIdByName(char *szName)
 }
 	*/
 
-long cParser::typesize(long type, long id)
-{
-	switch (type)
-	{
-	case dtChar:
-	case dtUChar:
-		return 1;break;
-	case dtShort:
-	case dtUShort:
-		return 2;break;
-	case dtInt:
-	case dtUInt:		
-	case dtLong:
-	case dtULong:
-	case dtFloat:
-		return 4;break;
-	case dtStr:
-		return sizeof(void*);break; //it's a pointer
-	case dtGeneral:		
-		/*if (id == 0)
-		{
-			nLOG("OBJECT WITH ERROR ID", 300);
-			return -1;
-		}
-		return m_ObjTable[id-1]->GetSize();*/
-		return sizeof(void*);break;//it's a pointer
-		break;
 
-/*	case dtDouble:
-		return 8;break;
-*/	default: return -1;
-	}
-}
 
 void cParser::SetByteCodeFilePath(char* szPath)
 {
@@ -746,19 +714,7 @@ void cParser::SetByteCodeFilePath(char* szPath)
 	SAFEDELETE(m_LoopTree);
     SAFEDELETE(m_pMainFunction);
 }
-int log2(int x)
-{
-	int i = 0;
-	while (x >= 2)
-	{
-		i++;
-		x /= 2;
-	}
-	if (i >=0 && i<3)
-		return i;
-	else
-		return 0;
-}
+
 
 bool -->ParserClass::doMove(long type1, long type2, long op1, long op2, TYPEDES& dt1, TYPEDES& dt2 )
 {
