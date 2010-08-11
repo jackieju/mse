@@ -1,6 +1,7 @@
 // this source is to test the grammer and vm(interpretor)
 //#include "test.h"
 //
+use cgi;
 use object;
 use test::a::testobj;
 load baselib;

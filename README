@@ -33,6 +33,7 @@ $ /usr/local/apache2/bin/apachectl start
 (The position where you installed apache maybe different)
 
 3. access http://localhost/cgi-bin/cs.cgi from your browser
-
-
 You can change cgi-bin/cs_cgi.cpp as you want
+
+Add/Change syntax
+The grammar is defined in cocoR/cs.atg, you can change it and run "make parser" then "make -f makefile_macos"

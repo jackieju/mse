@@ -50,7 +50,7 @@ unsigned int htoi(char s[])
 
 void init_cs(){
 	conf.set("debug","yes");
-	conf.set("classpath", "/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse/");
+	conf.set("classpath", "/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse/lib;/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse");
 	c.setConf(conf);
 }
 
@@ -64,7 +64,7 @@ string exec_cmd(string user, string cmd, std::map<string, string> p){
 	// user::onCommand(command name, command param)
 
 	// test
-	BOOL ret = c.Compile("test/test.c");
+	BOOL ret = c.Compile("test/test.cs");
 	if (!ret){
 		printf("==== compiler error ===\n");
 		return "==== compiler error ===\n";
@@ -131,6 +131,7 @@ printf("qs=%s\n",qs);
 
 init_cs();
 map<string, string> m;
+// object->command(param), return
 exec_cmd("test", "cmd", m);
 
 

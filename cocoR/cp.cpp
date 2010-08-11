@@ -33,8 +33,6 @@
 #define CAST Cast(op1, type1, dt1, op2, type2, dt2);
 
 
-
-
 // add by jackie juju
 /////////////////////////////////
 
@@ -168,7 +166,7 @@ void cParser::Import()
 	    
 	    CClassDes* cd = this->m_classTable->getClass(szName);
 	    if (cd == NULL){
-	            strcat(szName, ".c");
+	            strcat(szName, SCRIPT_EXT);
 	                                            CCompiler cc;
 	                             std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
 	                                    printf("%s\n", c->getCurSrcFile());
@@ -1658,7 +1656,7 @@ void cParser::CastExp()
 	            TYPEDES dt1;    
 	            if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
 	            {
-	                    break;//genError(96);???????
+	                    break;//genError(96);
 	            }
 	            int address_mode = (type1<<8);
 	            address_mode |= log2(UnitSize(dt1))<<14;

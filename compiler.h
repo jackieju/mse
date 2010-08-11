@@ -8,6 +8,8 @@
 #include "Configure.h"
 #include "fcntl.h"
 
+#define SCRIPT_EXT ".cs"
+
 #define SCRIPTTABLE_NUM 10
 class MyError : public CRError {
 public:

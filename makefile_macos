@@ -41,8 +41,8 @@ cgi-bin/cs_cgi.o: cgi-bin/cs_cgi.cpp
 Configure.o: Configure.cpp
 	$(CC) -c Configure.cpp -o Configure.o $(CFLAGS)
 
-cocoR1/cp.cpp: cocoR/msec.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
-	cd cocoR && ./cocor -A -F -X -S -G -C -L msec.atg
+cocoR1/cp.cpp: cocoR/cs.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
+	cd cocoR && ./cocor -A -F -X -S -G -C -L cs.atg
 	
 ObjectInst.o: ObjectInst.cpp
 	$(CC) -c ObjectInst.cpp -o ObjectInst.o $(CFLAGS)
