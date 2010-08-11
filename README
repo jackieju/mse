@@ -1,0 +1,38 @@
+-------- MACOS & linuxe ------------
+
+Make:
+$ make -f makefile_macos
+
+test mse:
+$ cd bin
+$ ./mse
+change the main.cpp as you want to test, and rebuild again
+
+test cgi from apache:
+1. Modify the configuration file of your apache
+$ vi /usr/local/apache2/conf/httpd.conf 
+
+add line
+ScriptAlias /cgi-bin/ "/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse/cgi-bin/"
+in block
+<IfModule alias_module>
+...
+</IfModule>
+
+add lines
+<Directory "/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse/cgi-bin">
+    AllowOverride None
+    Options None
+    Order allow,deny
+    Allow from all
+</Directory>
+Please change the position of cgi-bin folder to your own
+
+2. start apache
+$ /usr/local/apache2/bin/apachectl start
+(The position where you installed apache maybe different)
+
+3. access http://localhost/cgi-bin/cs.cgi from your browser
+
+
+You can change cgi-bin/cs_cgi.cpp as you want

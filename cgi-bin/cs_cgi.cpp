@@ -81,8 +81,8 @@ int main()
 {
 	
 
-	debug("a=%s, b=%s", "aa", "bb");
-	return 0;
+//	debug("a=%s, b=%s", "aa", "bb");
+//return 0;
     int i,n;
 //printf ("Content type: text/plain\n\n");
 printf ("Content type: text/html\n\n");
