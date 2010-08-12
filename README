@@ -37,3 +37,4 @@ You can change cgi-bin/cs_cgi.cpp as you want
 
 Add/Change syntax
 The grammar is defined in cocoR/cs.atg, you can change it and run "make parser" then "make -f makefile_macos"
+There is a "grep.pl" under cocoR folder, you can use it to see the clean grammar definition without code
