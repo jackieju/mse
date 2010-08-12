@@ -13,12 +13,13 @@
 #include "VirtualMachine.h"
 #include "os/osutils.h"
 #include "Configure.h"
+#include "cscript.h"
 
-CConfigure conf;
-CCompiler c;
-CVirtualMachine vm;
-CPubFuncTable g_PubFuncTable;
-
+CConfigure  conf;
+ CCompiler c;
+ CVirtualMachine vm;
+ CPubFuncTable g_PubFuncTable;
+CS* cs;
 unsigned int htoi(char s[])
 {
     unsigned int val = 0;
@@ -49,9 +50,10 @@ unsigned int htoi(char s[])
 }
 
 void init_cs(){
+	cs = new CS();
 	conf.set("debug","yes");
 	conf.set("classpath", "/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse/lib;/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse");
-	c.setConf(conf);
+	cs->setConf(conf);
 }
 
 string exec_cmd(string user, string cmd, std::map<string, string> p){
@@ -60,26 +62,32 @@ string exec_cmd(string user, string cmd, std::map<string, string> p){
 	
 	// get cmd
 	
+	cLOG("11");
 	// send cmd to user
 	// user::onCommand(command name, command param)
-
+#if 0
 	// test
-	BOOL ret = c.Compile("test/test.cs");
-	if (!ret){
-		printf("==== compiler error ===\n");
-		return "==== compiler error ===\n";
-	}
+ 	BOOL ret = c.Compile("test/test.cs");
+	// if (!ret){
+	// 	printf("==== compiler error ===\n");
+	// 	return "==== compiler error ===\n";
+	// }
 		
 //	CCompiler::classDesTable.dump();
 	CClassDes* pc = CCompiler::classDesTable.getClass("test/test");
 //	printf("this=%x,==>ps=%x", &CCompiler::classDesTable, pc);
 	vm.LoadObject(pc);
+#endif
+	cs->loadobj("test/test");
+	
+	cLOG("111");
 	return r;
 }
 
 int main()
 {
-	
+
+	cLOG("1");
 
 //	debug("a=%s, b=%s", "aa", "bb");
 //return 0;
@@ -134,7 +142,9 @@ map<string, string> m;
 // object->command(param), return
 exec_cmd("test", "cmd", m);
 
+	cLOG("2");
 
 fflush(stdout);
+SAFEDELETE(cs);
 return 0;
 }

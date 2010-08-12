@@ -114,9 +114,9 @@ PRODUCTIONS
 		strcat(szName, SCRIPT_EXT);
 						CCompiler cc;
 	                         std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
-					printf("%s\n", c->getCurSrcFile());
-					printf("%s\n", JUJU::getFilePath(c->getCurSrcFile()).c_str());
-					printf("%s\n", szName);
+					printf("current file: %s\n", c->getCurSrcFile());
+					printf("crrent file path: %s\n", JUJU::getFilePath(c->getCurSrcFile()).c_str());
+					printf("use %s\n", szName);
 								if (m_conf)	
 									cc.setConf(*m_conf);
 								

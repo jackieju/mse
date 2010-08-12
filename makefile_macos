@@ -7,7 +7,7 @@
 CC   = g++ 
 
 CLIB_OBJ = clib/thread.o clib/log.o clib/utility.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o os/protected.o os/mutex.o os/LogLevel.o 
-OBJ = Configure.o ObjTable.o ClassDesTable.o  ObjectInst.o Class.o ClassDes.o Exp.o VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o $(CLIB_OBJ) $(RES) 
+OBJ = cscript.o Configure.o ObjTable.o ClassDesTable.o  ObjectInst.o Class.o ClassDes.o Exp.o VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o $(CLIB_OBJ) $(RES) 
 EXEC_OBJ  =  $(OBJ) main.o 
 CGI_OBJ = $(OBJ) cgi-bin/cs_cgi.o
 #OBJ  = $(objs) $(RES)
@@ -34,6 +34,9 @@ clean: clean-custom
 DLLWRAP=g++
 main.o: main.cpp
 	$(CC) -c main.cpp -o main.o $(CFLAGS)
+
+cscript.o: cscript.cpp
+	$(CC) -c cscript.cpp -o cscript.o $(CFLAGS)
 	
 cgi-bin/cs_cgi.o: cgi-bin/cs_cgi.cpp
 	$(CC) -c cgi-bin/cs_cgi.cpp -o cgi-bin/cs_cgi.o $(CFLAGS)
