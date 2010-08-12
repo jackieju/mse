@@ -1,6 +1,6 @@
 #!perl
 my $a; 
-open FH, '<', 'Ncpp.atg';
+open FH, '<', 'cs.atg';
 
 while ( <FH>){
 $a = $a.$_;
