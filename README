@@ -1,3 +1,18 @@
+MSE
+C-style mud/webgame script engine
+1. This script syntax is inherit from C/java/javascript, it's easy to learn, easy to read, easy to maintain.
+2. It support weak-type variable, you don't need define the type when declare a variable.
+3. It's designed for huge concurrency runtime, so any object can be defined as "real global" accross multi-server.
+If a variable is defined like:
+	global world;
+The object "world" wil be stored on global memcached cluster.
+Every font web server will read/write it synchronizedly and safely.
+
+In addition to above feature, I hope it can be a kind of light-wight and high-efficient programning language. ( So an template toolkit should be developled in the future)
+
+
+Installation and development guide:
+
 -------- MACOS & linuxe ------------
 
 Make:
@@ -38,3 +53,7 @@ You can change cgi-bin/cs_cgi.cpp as you want
 Add/Change syntax
 The grammar is defined in cocoR/cs.atg, you can change it and run "make parser" then "make -f makefile_macos"
 There is a "grep.pl" under cocoR folder, you can use it to see the clean grammar definition without code
+
+
+-------- windows ------------
+Not available currently
