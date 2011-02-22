@@ -1,19 +1,25 @@
-MSE
+MSE (NC)
+
 C-style mud/webgame script engine
+
+C was dead after forced to mix OO, java was born to be rebirth of C, but was dead after J2EE was "invented".
+The original reason why we need computer language is we need a "language", not "framework" with tons of document.
+We need a kind of "language" we can just use it to create world, without reading tons of documents about "framework".
+
 1. This script syntax is inherit from C/java/javascript, it's easy to learn, easy to read, easy to maintain.
-2. It support weak-type variable, you don't need define the type when declare a variable.
+2. It supports weak-type variable, you don't need define the type before use it.
 3. It's designed for huge concurrency runtime, so any object can be defined as "real global" accross multi-server.
 If a variable is defined like:
 	global world;
-The object "world" wil be stored on global memcached cluster.
-Every font web server will read/write it synchronizedly and safely.
+The object "world" wil be stored on global memcached cluster automatically.
+Every front web server will read/write it synchronized and safely.
 
-In addition to above feature, I hope it can be a kind of light-wight and high-efficient programning language. ( So an template toolkit should be developled in the future)
+In addition to above feature, I hope it can be a kind of light-wight and high-efficient web programming language. ( So an template toolkit should be developed in the future)
 
 
 Installation and development guide:
 
--------- MACOS & linuxe ------------
+-------- MACOS & linux ------------
 
 Make:
 $ make -f makefile_macos

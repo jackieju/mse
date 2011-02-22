@@ -21,22 +21,13 @@ public:
 		c.setConf(conf);
 	};
 	
-	void loadobj(std::string s){
-		CClassDes* pc = NULL;
-		pc = CCompiler::classDesTable.getClass((char*)(s.c_str()));
-		if (pc == NULL){
-			 	BOOL ret = c.Compile("test/test.cs");
-				if (!ret){
-						printf("==== compiler error ===\n");
-				//		return "==== compiler error ===\n";
-						return;
-				}
-				pc = CCompiler::classDesTable.getClass((char*)(s.c_str()));
-				printf("-->pc=%x",pc);
-		}
-		vm.LoadObject(pc);
-		return;
-	};
+	void setOutput(FILE* file){
+		if (file)
+			c.setOutput(file);
+	}
+	
+
+	void loadobj(std::string s);
 
 };
 #endif

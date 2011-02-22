@@ -137,6 +137,7 @@ void CFunction::Output(char *szName)
 {
 	int i;
 	FILE *file = NULL;
+	char szMsg[1024] = "";
 
 	char cpath[_MAX_PATH] = "";
 	getcwd(cpath, _MAX_PATH-1);
@@ -144,7 +145,8 @@ void CFunction::Output(char *szName)
 	file = fopen(szName, "w+");
 	if (file == NULL)
 	{
-		printf("can not open file %s, current path:%s, errno %d\n", szName, cpath, errno);
+		snprintf(szMsg, 1000, "can not open file %s, current path:%s, errno %d\n", szName, cpath, errno);
+		ERR(szMsg);
 		return;
 	}
 //	char *temp = new char[65536];

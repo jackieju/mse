@@ -19,7 +19,7 @@
 
 
 
-static FILE *lst = stderr;
+static FILE *output = stderr;
 static int Listinfo = 0;
 char CCompiler::m_szErrMsg[1024] = "";
 char CCompiler::m_szErrFile[_MAX_PATH] = "";
@@ -86,15 +86,23 @@ while (i>0 && ListName[i] != '.') i--;
 if (i>0) ListName[i] = '\0';
 
 strcat(ListName, ".lst");
-if ((lst = fopen(ListName, "w")) == NULL) {
+FILE* f = NULL;
+if ((f = fopen(ListName, "w")) == NULL) {
     fprintf(stderr, "Unable to open List file %s\n", ListName);
     return;
 }
-Error->SetOutput(lst);
+Error->SetOutput(f);
 Error->PrintListing(Scanner);
-fclose(lst);
+
+Error->SetOutput(output);
+fprintf(output, "Generated source list file %s", ListName);
+fclose(f);
 }
 
+void CCompiler::setOutput(FILE *f){
+	if (f)
+		output = f;
+}
 
 CCompiler::CCompiler()
 {
@@ -154,6 +162,7 @@ BOOL CCompiler::Compile(char *szFileName)
 	// instantiate Scanner, Parser and Error handler
 	cScanner m_Scanner(S_src, 0);
 	MyError m_Error(szFileName, &m_Scanner);	
+//	m_Error.SetOutput(output);
 	cParser m_Parser(this, &m_Scanner, &m_Error);
 	m_Parser.init(&CCompiler::classDesTable, &CCompiler::m_PubFuncTable, &m_conf);
 //	m_Parser.setConfig(&m_conf);
@@ -161,17 +170,23 @@ BOOL CCompiler::Compile(char *szFileName)
 	//m_Error.Init(szFileName);
 	//m_Parser.Init();
 	
-	FILE* file = NULL;
-	file = fopen(m_szErrFile, "a");
-	if (file)
-		m_Error.SetOutput(file);
-	else
-	{
-		fprintf(stderr, "can not open error list output	file '%s', output to stderr\n", m_szErrFile);
-		sprintf(m_szErrMsg, "can not open error list output	file '%s'\n, output to stderr", m_szErrFile);
-		m_Error.SetOutput(stderr);
-		file = stderr;
+
+	if (strlen(m_szErrFile)>0){
+		FILE* file = NULL;	
+		file = fopen(m_szErrFile, "a");
+		if (file)
+			m_Error.SetOutput(file);
+		else
+		{
+			fprintf(stderr, "can not open error list output	file '%s', output to stderr\n", m_szErrFile);
+			sprintf(m_szErrMsg, "can not open error list output	file '%s'\n, output to stderr", m_szErrFile);
+			m_Error.SetOutput(output);
+			file = stderr;
+		}
+	}else{
+		m_Error.SetOutput(output);
 	}
+
 	//write time
 	{
 		char msg[1024];
@@ -182,7 +197,7 @@ BOOL CCompiler::Compile(char *szFileName)
 	
 		sprintf(msg, "----------------------------------------------------------------\n%04d-%02d-%02d %02d:%02d:%02d\tCompile %s\n----------------------------------------------------------------\n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, m_szSourceFile);
 		//fwrite(msg, 1, strlen(msg), file);
-		fprintf(file, msg);
+		fprintf(output, msg);
 	}
 	//m_Parser.m_pMainFunction = new CFunction;
 	// parse the source
@@ -216,19 +231,20 @@ BOOL CCompiler::Compile(char *szFileName)
 		else
 			sprintf(msg, "%04d-%02d-%02d %02d:%02d:%02d \tCompile %s failed \n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, m_szSourceFile);
 		//fwrite(msg, 1, strlen(msg), file);
-		fprintf(file, msg);
+		fprintf(output, msg);
 	}
-		if (!m_Error.Errors)
-			printf("compile %s succeeded, cost %ld ms\n", m_szSourceFile, clock() - s_c);
-		else
-			printf("compile %s failed, cost %ld ms\n\n", m_szSourceFile, clock() - s_c);
+	if (!m_Error.Errors)
+		printf("compile %s succeeded, cost %ld ms\n", m_szSourceFile, clock() - s_c);
+	else
+		printf("compile %s failed, cost %ld ms\n\n", m_szSourceFile, clock() - s_c);
 
-	if ( file && file != stderr )
-		fclose(file);
+	if ( output && output != stderr && output!=stdout)
+		fclose(output);
 	
 	if (m_Error.Errors)
 	{
 		sprintf(m_szErrMsg, "%s have some error", szFileName);
+		ERR(m_szErrMsg);
 		return FALSE;
 	}
 	

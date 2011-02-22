@@ -169,9 +169,9 @@ void cParser::Import()
 	            strcat(szName, SCRIPT_EXT);
 	                                            CCompiler cc;
 	                             std::string s = JUJU::getFilePath(c->getCurSrcFile())+szName;
-	                                    printf("%s\n", c->getCurSrcFile());
-	                                    printf("%s\n", JUJU::getFilePath(c->getCurSrcFile()).c_str());
-	                                    printf("%s\n", szName);
+	                                    printf("current file: %s\n", c->getCurSrcFile());
+	                                    printf("crrent file path: %s\n", JUJU::getFilePath(c->getCurSrcFile()).c_str());
+	                                    printf("use %s\n", szName);
 	                                                            if (m_conf)     
 	                                                                    cc.setConf(*m_conf);
 	                                                            
@@ -1948,12 +1948,19 @@ void cParser::PostFixExp()
 				            };
 				break;
 			case MinusGreaterSym:  
+				{int state = 0;
 				Get();
-				Expect(LbraceSym);
+				while (Sym == LbraceSym) {
+					Get();
+					state++;
+				}
 				Expect(identifierSym);
-				Expect(RbraceSym);
+				while (Sym == RbraceSym) {
+					Get();
+					state++;
+				}
 				
-				                      {                               
+				              if (state == 0)         {                               
 				                              //pop
 				                              TYPEDES dt;
 				                              long type;
@@ -2030,6 +2037,7 @@ void cParser::PostFixExp()
 				                                      }
 				                              }
 				                      }
+				                      } // int state
 				                      ;
 				break;
 			case identifierSym:  
@@ -2192,7 +2200,8 @@ void cParser::Primary()
 			                            SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
 			                            if (pElement == NULL)
 			                            {
-			                                    GenError(115);
+			                                                            printf("===>generror 115, symbol name=%s", szName);
+			                                    GenError(115); // not found it symbol table, check it in runtime
 			                            }
 			                            else
 			                            {

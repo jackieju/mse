@@ -51,6 +51,7 @@ unsigned int htoi(char s[])
 
 void init_cs(){
 	cs = new CS();
+	cs->setOutput(stdout);
 	conf.set("debug","yes");
 	conf.set("classpath", "/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse/lib;/Users/juweihua/studio/projects/WebMudFramework/ScriptEngine/mse");
 	cs->setConf(conf);

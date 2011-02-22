@@ -1508,9 +1508,9 @@ FunctionCall<&fn>
                           
                           
                           
-                          | ( "->" "{" identifier "}" 
+                          | ( (. {int state = 0;.) "->" {"{"(. state++ .)} identifier {"}"(. state++ .)} 
 (.
-			{				
+		if (state == 0)	{				
 				//pop
 				TYPEDES dt;
 				long type;
@@ -1587,12 +1587,15 @@ FunctionCall<&fn>
 					}
 				}
 			}
+			} // int state
 			
 .)
 			)			  
+		
 						  
 						  | identifier        
-						/*  | (["::" identifier ])*/
+						  /*| (["::" identifier ])
+					      | (["::" "{"identifier"}" ])*/
                           | "++"
 
 (.
@@ -1757,9 +1760,10 @@ FunctionCall<&fn>
  		
  			
 			int address = -1;
-			
+			bool bThis = false;
 			if (strcmp(szName, "this")==0){
 			// TODO: get address of current object
+			   bThis = true;
 				address = 0;
 			}else
 			    address = GetSymAddress(szName);
@@ -1771,7 +1775,8 @@ FunctionCall<&fn>
 			                  SYMBOLTABLEELE *pElement = m_pMainFunction->m_SymbolTable.GetSym(szName);
 			                  if (pElement == NULL)
 			                  {
-			                          GenError(115);
+									  printf("===>generror 115, symbol name=%s", szName);
+			                          GenError(115); // not found it symbol table, check it in runtime
 			                  }
 			                  else
 			                  {

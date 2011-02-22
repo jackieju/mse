@@ -53,6 +53,8 @@ static long g_lActiveScriptTable;
 		strcpy(m_szErrFile, szFileName);
 	}
 	
+	void setOutput(FILE *f);
+	
 	char* getCurSrcFile(){
 		return m_szSourceFile;
 	}
