@@ -118,8 +118,8 @@ public:
 		bStdOut = t;
 	}
 	static std::string genFileName(char* cat=""){
-		if (strlen(logFileName) == 0)
-			return "";
+	//	if (strlen(logFileName) == 0)
+	//		return "";
 			
  		char fileName[256] = ""; // generated full filename
       

@@ -161,7 +161,7 @@ PRODUCTIONS
 (. 
 		if (type->type < dtFirstType  || type->type > dtLastType)
 		{
-			GenError(99);
+			GENERR(99);
 		}
 		
 		//指针类型
@@ -262,14 +262,14 @@ ClassBody	";" .
 						delete pClass;
 						pClass = NULL;
 					}
-					GenError(118);					
+					GENERR(118);					
 					break;
 				}
 			}
 		}
 		if (!this->AddObj(*pClass))
 		{
-			GenError(119);				
+			GENERR(119);				
 			if (pClass)
 			{
 				delete pClass;
@@ -303,10 +303,10 @@ ClassBody	";" .
 			type->type = dtGeneral;
 			type->objID = GetObjIDByName(szName); 
 			if (type->objID == 0)
-				GenError(120);
+				GENERR(120);
 			#else
 			// TODO
-				GenError(120);
+				GENERR(120);
 			#endif
 */
 	type->type = dtGeneral; type->refLevel = 0;
@@ -366,7 +366,7 @@ ArraySize
 	Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
 
 	if (strlen(szName) > 20)
-		GenError(105);
+		GENERR(105);
 	else
 		strcpy(m_pMainFunction->m_szName, szName);
 		
@@ -394,7 +394,7 @@ ArraySize
   this->m_pMainFunction->m_iParamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
   if 	(!m_pCurClassDes->getFuncTable()->AddFunction(this->m_pMainFunction))
 		{
-			GenError(114);
+			GENERR(114);
 		}		
  
   .).
@@ -423,7 +423,7 @@ ArraySize
 			type->refLevel++;
 		}
 		if (!AllocVar(type, szName))
-			GenError(113);
+			GENERR(113);
 		else
 			m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
 	}
@@ -449,7 +449,7 @@ ArraySize
 		temp = AllocTempVar(type->type, 1);
 		if (temp == -1)
 		{
-			GenError(98);
+			GENERR(98);
 		}
 		//设置类型和名字
 		index = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount -1;
@@ -604,14 +604,14 @@ ArraySize
 		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 		{
 			//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
 		{
 			if (dt1.type == dtFloat)
 			{
-				GenError(112);
+				GENERR(112);
 			}
 			else
 			{
@@ -671,7 +671,7 @@ ArraySize
 	if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
 	{
 	//	REPORT_COMPILE_ERROR("POP UP FAILED");
-		this->GenError(96);
+		GENERR(96);
 		return;
 	}
 	int address_mode = type&0x00ff;
@@ -717,14 +717,14 @@ ArraySize
 		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 		{
 			//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
 		{
 			if (dt1.type == dtFloat)
 			{
-				GenError(112);
+				GENERR(112);
 			}
 			else
 			{
@@ -811,7 +811,7 @@ LogANDExp
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
@@ -875,7 +875,7 @@ InclORExp
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
@@ -947,7 +947,7 @@ InclORExp
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
@@ -1018,7 +1018,7 @@ InclORExp
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
@@ -1081,7 +1081,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 		//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
@@ -1174,7 +1174,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 		{
 			//	REPORT_COMPILE_ERROR("POP UP FAILED");
-			GenError(96);
+			GENERR(96);
 			return;
 		}
 		else
@@ -1188,7 +1188,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			{
 				if (type == 0) ADDCOMMAND2(__fmul, address_mode, op1, op2)					
 					else if (type == 1) ADDCOMMAND2(__fdiv, address_mode, op1, op2)				
-					else GenError(109);
+					else GENERR(109);
 			}
 			else
 			{
@@ -1208,7 +1208,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			}
 			else
 			{
-				this->GenError(98);
+				GENERR(98);
 			}
 		}
 
@@ -1237,7 +1237,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		TYPEDES dt1;	
 		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) ||type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE)
 		{
-			break;//genError(96);
+			break;//GENERR(96);
 		}
 		int address_mode = (type1<<8);
 		address_mode |= log2(UnitSize(dt1))<<14;
@@ -1252,7 +1252,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			{
 				int opsize;
 				if (!m_pMainFunction->AddVal(NULL, dt1))
-					GenError(98);
+					GENERR(98);
 				if (dt1.type == dtFloat)
 				{
 					opsize = (type1>>6)&0xc0;
@@ -1270,7 +1270,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		case StarSym:  
 			{
 				if (dt1.refLevel <1)
-					GenError(102);
+					GENERR(102);
 				dt1.refLevel--;
 				//取操作的字节类型
 				int opsize = log2(UnitSize(dt1));
@@ -1281,14 +1281,14 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				int level = (type1 & 0x30) >> 4;
 				if (level == 3)
 				{
-					GenError(103);
+					GENERR(103);
 					break;
 				}
 				level ++;
 				type1 |= level << 4;
 /*				int j = (type1>>4)&0x3;
 				if (j < 1)
-					GenError(102);//is not a point
+					GENERR(102);//is not a point
 				else
 					j--;
 				j = j << 4;
@@ -1304,7 +1304,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		case BangSym: 
 			{
 				if (!m_pMainFunction->AddVal(NULL, dt1))
-					GenError(98);
+					GENERR(98);
 				int opsize = (type1>>6)&0x03;
 				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
 				ADDCOMMAND1(__notr, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
@@ -1317,7 +1317,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				temp = AllocTempVar(dtLong, 1);
 				if (temp == -1)
 				{
-					GenError(98);
+					GENERR(98);
 				}
 				else
 				{
@@ -1337,14 +1337,14 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		case TildeSym: //'~'
 			{
 				if (!m_pMainFunction->AddVal(NULL, dt1))
-					GenError(98);
+					GENERR(98);
 				int opsize = (type1>>6)&0xc0;
 				ADDCOMMAND2(__mov, (0x100|(opsize<<14))|(type1), m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, op1)
 				ADDCOMMAND1(__not, type1<<8, m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address)
 				m_pMainFunction->PushDigit(m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount -1].address, type1, dt1);
 			}
 			break;
-		default :GenError(93); break;
+		default :GENERR(93); break;
 		}		
 	}
 	//恢复一元运算符栈
@@ -1377,7 +1377,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				if (!m_pMainFunction->PopDigit(&op2, &type2, &dt2) || !m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE || type2 <FIRST_ADDRESS_MODE || type2 >LAST_ADDRESS_MODE)
 				{
 					//	REPORT_COMPILE_ERROR("POP UP FAILED");
-					GenError(96);
+					GENERR(96);
 					return;
 					
 				}
@@ -1414,7 +1414,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 							offset = UnitSize(dt1);
 						}
 						else//既不是指针也不是数组
-							GenError(101);						
+							GENERR(101);						
 					}
 
 					//偏移量 = 单位长度* 下标addcommand(mul, DC, 下标, 单位长度)
@@ -1423,7 +1423,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 					long temp = this->AllocTempVar(dtLong);
 					if (temp == -1)
 					{
-						GenError(98);
+						GENERR(98);
 					}
 					//居卫华2001-08-22
 					long lIndirect = (type1>>4)&0x03;
@@ -1453,7 +1453,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				CFunction* pScript = m_pCurClassDes->getFuncTable()->GetFunction(szName, &index);
 				if (pScript == NULL)
 				{	
-					GenError(97);
+					GENERR(97);
 					Get();
 					return;
 				}
@@ -1487,14 +1487,14 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		
 		            //pop
 		            if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 != dtGeneral){
-		                     GenError(96);
+		                     GENERR(96);
 		                    return;
 		            }else
 					{
 					     long temp = AllocTempVar(dtGeneral);
 				    	 if (temp == -1)
 						 {
-	                     GenError(98);
+	                     GENERR(98);
 						}
 						// get effective address for object member
 						ADDCOMMAND3(__eaobj, AMODE_OBJ|AMODE_MEM<<8, temp, op1, address);
@@ -1515,7 +1515,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				long op;
 				if (!m_pMainFunction->PopDigit(&op, &type, &dt))
 				{
-					GenError(96);
+					GENERR(96);
 				}
 				else
 				{
@@ -1530,7 +1530,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 						OBJMEMDES* pMember = this->m_ObjTable[dt.objID-1]->GetMemberByName(szName);
 						if (pMember == NULL)
 						{
-							GenError(121);					
+							GENERR(121);					
 						}
 						else
 						{	
@@ -1541,7 +1541,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 							
 							if (temp == -1)
 							{
-								GenError(98);
+								GENERR(98);
 							}
 							
 							//add(op, offset) = address
@@ -1605,7 +1605,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				{
 					//	REPORT_COMPILE_ERROR("POP UP FAILED");
-								GenError(96);
+								GENERR(96);
 			return;
 
 				}
@@ -1613,7 +1613,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				{
 					if (dt1.type == dtFloat)
 					{
-						GenError(112);
+						GENERR(112);
 					}
 					else
 					{
@@ -1655,7 +1655,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
 				{
 					//	REPORT_COMPILE_ERROR("POP UP FAILED");
-								GenError(96);
+								GENERR(96);
 			return;
 
 				}
@@ -1663,7 +1663,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 				{
 					if (dt1.type == dtFloat)
 					{
-						GenError(112);
+						GENERR(112);
 					}
 					else
 					{
@@ -1715,7 +1715,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 	            cc.Compile(szName);
 	    }
 		// TODO generete correct error
-		//GenError(100);
+		//GENERR(100);
 		//return;
 	}
 		int address = m_pMainFunction->AddStaticData(strlen(szName)+1, (BYTE*)szName);
@@ -1774,14 +1774,14 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			                  if (pElement == NULL)
 			                  {
 									  printf("===>generror 115, symbol name=%s", szName);
-			                          GenError(115); // not found it symbol table, check it in runtime
+			                          GENERR(115); // not found it symbol table, check it in runtime
 			                  }
 			                  else
 			                  {
 			                          memcpy(&dt ,&(pElement->type), sizeof(TYPEDES));
 			                          /*if (pdt == NULL)
 			                          {
-			                          GenError(111);
+			                          GENERR(111);
 			                          }
 			                          else*/
 			                  
@@ -1803,7 +1803,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			                                          long temp = AllocTempVar(dtLong, 1);
 			                                          if (temp == -1)
 			                                          {
-			                                                  GenError(98);
+			                                                  GENERR(98);
 			                                          }
 			                                          
 			                                          ADDCOMMAND2(__ea, DD, temp, address)
@@ -1826,12 +1826,12 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			          }
 			else // address < 0
 			{
-				//GenError(126);
+				//GENERR(126);
 				if (this->m_PubFuncTable->FindFuncByName(szName) < 0)
 				{
 					long index = 0;
 					if (m_pCurClassDes->getFuncTable()->GetFunction(szName, &index) == NULL)
-						GenError(104);
+						GENERR(104);
 					else
 						m_pCurClassDes->getFuncTable()->ReleaseFunc();
 				}
@@ -1849,7 +1849,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			                    pCh = new char[Scanner->CurrSym.Len+1];
 			                    if (pCh == NULL)
 			                    {
-			                            GenError(106);
+			                            GENERR(106);
 			                            Get();
 			                            break;
 			                    }
@@ -1861,7 +1861,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			                    {
 			                            if (pCh)
 			                                    delete pCh;
-			                            GenError(100);                          
+			                            GENERR(100);                          
 			                            Get();
 			                            break;
 			                    }
@@ -1881,7 +1881,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			                    }
 			                    else
 			                    {
-			                            this->GenError(98);
+			                            this->GENERR(98);
 			                    }
 			                   	
 								if (string)
@@ -1940,7 +1940,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 	}
 	else
 	{
-		this->GenError(98);
+		GENERR(98);
 	}
 				
 	}
@@ -1949,7 +1949,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 	// check param number
 	//if (lParamNum != pFuncEntry->pVF->m_iParamNum)
 	//{
-	//	GenError(123);
+	//	GENERR(123);
 	//}
 
 	//addcommand
@@ -1966,7 +1966,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 	}
 	else
 	{
-		this->GenError(98);
+		this->GENERR(98);
 	}
 	}
   .).
@@ -1988,7 +1988,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 	if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE )
 	{
 	//	REPORT_COMPILE_ERROR("POP UP FAILED");
-		this->GenError(96);
+		this->GENERR(96);
 		return;
 	}
 	// address mode of dest op is in hight byte
@@ -2009,7 +2009,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
   			// modified on 20030331 by weihua ju
 //			if (cParamNum > pFuncEntry->params.size()-1)
 //			{
-//				GenError(106);
+//				GENERR(106);
 //			}
 
 			//pop
@@ -2019,7 +2019,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			if (!m_pMainFunction->PopDigit(&op1, &type, &dt1)|| type <FIRST_ADDRESS_MODE || type >LAST_ADDRESS_MODE)
 			{
 				//	REPORT_COMPILE_ERROR("POP UP FAILED");
-				this->GenError(96);
+				GENERR(96);
 				return;
 			}
 			else
@@ -2061,7 +2061,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		if ((pFuncEntry->nType!=0) && cParamNum != pFuncEntry->pfn->cParamNum)
 		{
 
-			GenError(106);
+			GENERR(106);
 		}
 	//lParamNum = cParamNum;
   .)

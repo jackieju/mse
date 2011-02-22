@@ -38,7 +38,6 @@ class CRParser {
     virtual void Get() = 0;
     int  In(unsigned short int *SymbolSet, int i);
     void Expect(int n);
-    void GenError(int ErrorNo, char* file, int line);
 	void GenError(int ErrorNo);
     AbsScanner *Scanner;
     CRError    *Error;

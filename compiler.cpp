@@ -198,7 +198,13 @@ BOOL CCompiler::Compile(char *szFileName)
 		sprintf(msg, "----------------------------------------------------------------\n%04d-%02d-%02d %02d:%02d:%02d\tCompile %s\n----------------------------------------------------------------\n", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, m_szSourceFile);
 		//fwrite(msg, 1, strlen(msg), file);
 		fprintf(output, msg);
+		
+		sprintf(msg, "%04d-%02d-%02d %02d:%02d:%02d\tCompile %s", ptm->tm_year+1900, ptm->tm_mon+1, ptm->tm_mday, ptm->tm_hour, ptm->tm_min, ptm->tm_sec, m_szSourceFile);
+		
+		LOG(msg, "compiler");
 	}
+	
+	
 	//m_Parser.m_pMainFunction = new CFunction;
 	// parse the source
 	clock_t s_c = clock();
@@ -245,8 +251,18 @@ BOOL CCompiler::Compile(char *szFileName)
 	{
 		sprintf(m_szErrMsg, "%s have some error", szFileName);
 		ERR(m_szErrMsg);
+			
+		char msg[1024]="";
+		snprintf(msg, 1000, "Compile %s failed.", szFileName);	
+		LOG(msg, "compiler");
+		
 		return FALSE;
 	}
 	
+	{
+		char msg[1024]="";
+		snprintf(msg, 1000, "Compile %s successfully.", szFileName);	
+		LOG(msg, "compiler");
+	}
 	return TRUE;
 }
