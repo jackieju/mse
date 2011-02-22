@@ -45,7 +45,7 @@ Configure.o: Configure.cpp
 	$(CC) -c Configure.cpp -o Configure.o $(CFLAGS)
 
 cocoR1/cp.cpp: cocoR/cs.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
-	cd cocoR && ./cocor -A -F -X -S -G -C -L cs.atg
+	cd cocoR && ./cocor -A -F -X -S -G -C -L -D cs.atg
 	
 ObjectInst.o: ObjectInst.cpp
 	$(CC) -c ObjectInst.cpp -o ObjectInst.o $(CFLAGS)
