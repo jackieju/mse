@@ -11,6 +11,7 @@
 #include "cr_parse.hpp"
 #include "cr_error.hpp"
 #include <stdio.h>
+#include "clib/log.h"
 
 const int NSETBITS = 16;
 
@@ -35,6 +36,16 @@ void CRParser::GenError(int ErrorNo)
 //++++ it directly, that is fine, but there is no consistency check performed
 {
   Error->StoreErr(ErrorNo, Scanner->NextSym);
+}
+
+void CRParser::GenError(int ErrorNo, char* file, int line)
+//++++ GenError is supposed to be "private" for Coco/R only.  If a user calls
+//++++ it directly, that is fine, but there is no consistency check performed
+{
+  Error->StoreErr(ErrorNo, Scanner->NextSym);
+  char szMsg[1024] = "";
+  snprintf(szMsg, 1000, "Compilation error %d, %d, %d, %d", ErrorNo,Scanner->NextSym.Line, Scanner->NextSym.Col, Scanner->NextSym.Pos);
+  JUJU::CLog::Log("Compilation erro", file, line, 10, "LOG", "compiler");
 }
 
 void CRParser::SynError(int ErrorNo)

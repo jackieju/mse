@@ -2186,9 +2186,10 @@ void cParser::Primary()
 			  
 			          
 			          int address = -1;
-			          
+			          bool bThis = false;
 			          if (strcmp(szName, "this")==0){
 			          // TODO: get address of current object
+			             bThis = true;
 			                  address = 0;
 			          }else
 			              address = GetSymAddress(szName);

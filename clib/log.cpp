@@ -14,6 +14,7 @@ __gnu_cxx::hash_map<char*, JUJU::CLog*> JUJU::CLog::log_list;
 #endif
 
 bool CLog::bUseCache = false;
+bool CLog::bStdOut = true;
 CLog CLog::pInst;// = new CLog;
 char CLog::logFileName[256] = "";
 	

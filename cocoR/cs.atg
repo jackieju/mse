@@ -1439,8 +1439,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 }
 .)
                           | 
-(.
-	
+(.	
 {
 			char szName[MAX_IDENTIFIER_LENGTH];
 			memset(szName, 0, MAX_IDENTIFIER_LENGTH);
@@ -1475,8 +1474,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			}
 
 						  
-.)
-FunctionCall<&fn>
+.)FunctionCall<&fn>
 (.}.)
                           | ("." identifier)  
                           (.

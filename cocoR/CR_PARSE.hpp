@@ -38,11 +38,14 @@ class CRParser {
     virtual void Get() = 0;
     int  In(unsigned short int *SymbolSet, int i);
     void Expect(int n);
-    void GenError(int ErrorNo);
+    void GenError(int ErrorNo, char* file, int line);
+	void GenError(int ErrorNo);
     AbsScanner *Scanner;
     CRError    *Error;
     int        Sym;
 };
+
+#define GENERR(x) JUJU::CLog::Log("Compilation error ", __FILE__, __LINE__, 10, "LOG", "compiler");GenError(x);
 
 #endif // CR_PARSER_H
 

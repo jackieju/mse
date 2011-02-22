@@ -114,6 +114,9 @@ public:
 	static void setFile(char* file){
 		strncpy(logFileName, file, 255);
 	}
+	static void enableStdOut(bool t){
+		bStdOut = t;
+	}
 	static std::string genFileName(char* cat=""){
 		if (strlen(logFileName) == 0)
 			return "";
@@ -139,21 +142,18 @@ public:
 
 	void real_log(char *s){
 		std::string fileName = genFileName(this->category);
-		FILE* f = stdout;
-		if (strlen(fileName.c_str())>0)
+		FILE* f = NULL;
+		if (strlen(fileName.c_str())>0){
 	 		f = fopen(fileName.c_str(), "a+");
+			fprintf(f, "%s", s);
+			fflush(f);
+        	fclose(f);
+		}
         //if (f == NULL)
           //  return;
         
-        
-		fprintf(f, "%s", s);
-
-		        
-        fflush(f);
-        if (strlen(fileName.c_str())>0)
-        	fclose(f);
-
-
+        if (bStdOut && strlen(logFileName)>0)
+			fprintf(stdout, "%s", s);
 	}
 	void flush(){
        
@@ -207,6 +207,7 @@ private:
 	thread* pth;
 #endif
 	static bool bUseCache;
+	static bool bStdOut;
 	int level;
 
 
@@ -216,7 +217,10 @@ void debug(char* fmt, ...);
 
 }
 
+// simple log, no cache
 #define cLOG(m) JUJU::_log(m, __FILE__, __LINE__, 10, "LOG")
+
+// cached log
 #define LOG0(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "LOG")
 #define ERR(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR")
 #define ERR2(m, c) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR", c)
