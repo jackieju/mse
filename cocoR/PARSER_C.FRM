@@ -121,7 +121,7 @@ BOOL cParser::AllocVar(PTYPEDES type, char *szName)
 	}
 */
 
-		if (m_pMainFunction) // in function definition
+	if (m_pMainFunction) // in function definition
 		return m_pMainFunction->AddVal(szName, *type);
 	else
 		return this->m_pCurClassDes->AddMember(szName, *type);

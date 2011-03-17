@@ -83,6 +83,7 @@ static int IsIP(char *ip)
 
 int OSMakeServerTCPSocket(int port)
 {
+
     struct sockaddr_in addr;
     int s;
     int reuse;
@@ -97,9 +98,12 @@ int OSMakeServerTCPSocket(int port)
 #endif
         goto error;
     }
-
+	printf("=>socket created %d\n", s);
+	memset(&addr, 0, sizeof(addr));
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
+
+	addr.sin_port = htons(port);
+
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
     reuse = 1;
@@ -111,7 +115,7 @@ int OSMakeServerTCPSocket(int port)
 
     if (bind(s, (struct sockaddr *) &addr, sizeof(addr)) == -1) 
 	{
-        printf("bind failed");
+        printf("bind failed, error %d\n", errno);
         goto error;
     }
 
@@ -475,6 +479,7 @@ int OSReadLineFromSocket(int fd, char *line, int max)
 //        ret = read(fd, line, 1);
 		ret = recv(fd, line, 1, 0);
         if (ret == SOCKET_ERROR) {
+
             if (errno == EAGAIN) continue;
             if (errno == EINTR) continue;
             printf("read failed");

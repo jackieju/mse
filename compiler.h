@@ -96,17 +96,19 @@ static long g_lActiveScriptTable;
 #endif
 		int src = NULL;
 		
+		std::string cwd = std::string(JUJU::getWorkingPath());
+		std::string path=cwd+PATH_SEPARATOR_S+filename;
 		// find from current path
-		src = open(filename.c_str(), mode);
-	
+		src = open(path.c_str(), mode);
+		
 		if (src != -1){
 			close(src);
-			return filename;
+			return  path;
 		}
 			
 		// find in classpath
 		int i = 0;
-		std::string path="";
+
 		printf("try\n");
 		for (i = 0;i<class_path.size(); i++){
 			path=class_path[i]+PATH_SEPARATOR_S+filename;

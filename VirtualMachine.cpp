@@ -448,6 +448,12 @@ void CVirtualMachine::LoadFunction(CFunction *pFunc)
 //	return bRet;
 }
 
+/*
+	load new function
+	1. create new stack element for new call
+	2. push new call to call stack
+	3. set current call to new call, set IP to 0, 
+*/
 void CVirtualMachine::_LoadFunc(CFunction *pFunc)
 {
 	if (pFunc == NULL)
@@ -460,6 +466,7 @@ void CVirtualMachine::_LoadFunc(CFunction *pFunc)
 	}
 	
 
+	// create new stack element for new function call
 	//分配虚拟内存
 	int TotalSize = pFunc->m_SymbolTable.m_nTotalSize + pFunc->m_nSSUsedSize;
 	CALLSTACKELE newStackEle;
@@ -488,12 +495,13 @@ void CVirtualMachine::_LoadFunc(CFunction *pFunc)
 	pStackEle->DataSeg = pStackEle->VMemory + pFunc->m_nSSUsedSize;
 	pStackEle->StaticSeg = pStackEle->VMemory;
 
-	// push to call stack
+	// push new call to call stack
 	m_CallStack.push_back(*pStackEle);
 	m_pCurCall = &(m_CallStack.back());
-
+	
 	if (pFunc->m_staticSegment)
 		memcpy(pStackEle->StaticSeg, pFunc->m_staticSegment, pFunc->m_nSSUsedSize);
+		
 
 	__IP = 0;
 //	return TRUE;
@@ -2887,13 +2895,14 @@ void CVirtualMachine::GetStatus(VMSTATUS* status)
 
 CObjectInst* CVirtualMachine::LoadObject(CClassDes* c){
 	printf("==>LoadObject %x\n", c);
-	// lookup regestered class instance
+	
+	// lookup regestered class instance, create new class instance if not foudn
 	CClass* pClass = m_classTable.getClass(c->GetFullName());
 	if (pClass == NULL)
 		pClass = m_classTable.createClassInst(c);
 	printf("==>class %s found\n", c->GetFullName());
 
-	// create object
+	// create object according to class instance
 	CObjectInst* obj = m_objTable.createObjectInstance(pClass);
 	printf("==>create instance OK\n");
 	

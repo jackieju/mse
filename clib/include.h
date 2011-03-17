@@ -14,4 +14,5 @@
 #include "clib_time.h"
 #include "str.h"
 #include "log.h"
+#include "exp.h"
 #endif //__INCLUDE_H__

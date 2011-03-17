@@ -150,6 +150,7 @@ private:
 private:
 	std::map<std::string, config_value>	m_map;
 };*/
+	char* getWorkingPath();
 
 }
 #endif // _UTILITY_H

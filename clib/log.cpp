@@ -27,8 +27,34 @@ void JUJU::debug(char* fmt, ...){
 	 va_end(v);
 	JUJU::CLog::Log(msg, __FILE__, __LINE__, 100, "DBG", "");
 }
+ void JUJU::CLog::debug2(char* fmt, char* file, int line, ...){
+
+	 char msg[1001] = "";
+	 va_list v;
+	 va_start(v, fmt);
+	 vsnprintf(msg, 1000, fmt, v);
+	 va_end(v);
+	JUJU::CLog::Log(msg, file, line, 100, "DBG", "");
+}
+
+	 void JUJU::CLog::Log(char* msg, char* file, long line, int l, char* type, char* category = "", ...){
+		char szMsg[1024]="";
+		va_list v;
+	 	va_start(v, msg);
+		vsnprintf(szMsg, 1000, msg, v);
+				
+		if (category == NULL || strlen(category) == 0)
+			getDefInst()->_log(szMsg, file, line, l, type);
+		else{
+			getInst(category)->_log(szMsg, file, line, l, type);
+		}
+		
+		va_end(v);
+	}
 	void JUJU::_log(std::string  msg, char* file, long line, int l, char* type, char* filename){
-        _log((char*)msg.c_str(), file, line, l, type, filename);        
+
+        _log((char*)msg.c_str(), file, line, l, type, filename);    
+     
     }
   
 	void JUJU::_log(char*  msg, char* file, long line, int l, char* type, char* filename){
@@ -57,7 +83,8 @@ void JUJU::debug(char* fmt, ...){
         FILE* f = fopen(fileName, "a+");
         if (f == NULL)
             return;
-        
+
+       
         
         fprintf(f, "%s [%s %d]\t%s\t(%s:%d)\r\n", p, type, l, msg, file, line);
         

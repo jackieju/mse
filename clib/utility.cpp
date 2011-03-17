@@ -897,3 +897,33 @@ std::string JUJU::getFilePath(char* fullName){
 	std::string fn = f.substr(0, pos1+1);
 	return fn;
 };
+
+static char szWorkingPath[512] = "";
+char* JUJU::getWorkingPath()
+{
+	if (strlen(szWorkingPath) == 0){
+#ifdef WIN32
+	char *pPath = NULL;
+
+	// Cut the file name, reserve the path name
+	if ( GetModuleFileName( NULL, szWorkingPath, 512 ) != 0 )
+	{
+		if ((pPath = strrchr(szWorkingPath, '\\')) == NULL)
+		{
+			printf("Error in parsing path: %s, and we use default path:'.'\n", szPath);
+			strcpy(szPath, ".");
+		}
+
+		*pPath = 0;
+	}
+	else
+	{
+		printf("Error in parsing path: %s, and we use default path:'.'\n", szPath);
+		strcpy(szPath, ".");
+	}
+#else
+	getcwd(szWorkingPath, 512);
+#endif
+	}
+	return szWorkingPath;
+}

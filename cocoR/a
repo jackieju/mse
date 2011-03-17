@@ -1,2418 +1,458 @@
-*
-* You have some suspicious patch lines:
-*
-* In ClassDesTable.h
-* trailing whitespace (line 15)
-ClassDesTable.h:15:	hash_map<char*, CClassDes*> tables;
-* In ClassTable.h
-* trailing whitespace (line 14)
-ClassTable.h:14://#include <ext/hash_map>
-* trailing whitespace (line 20)
-ClassTable.h:20:	hash_map<char*, CClass*> m_table;
-* trailing whitespace (line 33)
-ClassTable.h:33:		//std::string name = c->GetFullName();
-* trailing whitespace (line 35)
-ClassTable.h:35:		
-* In Exp.h
-* trailing whitespace (line 45)
-Exp.h:45:	virtual	~CExp() throw ();
-* In ObjectInst.h
-* trailing whitespace (line 31)
-ObjectInst.h:31:	hash_map<char*, CObjectInst*> members;
-* In Request.h
-* trailing whitespace (line 248)
-Request.h:248:	BOOL InsertSimpleParam(char dataType, unsigned char *content, LONG lIndex);
-* In clib/include.h
-* trailing whitespace (line 7)
-clib/include.h:7:
-* trailing whitespace (line 13)
-clib/include.h:13:#include "types.h"
-* In clib/utility.h
-* trailing whitespace (line 58)
-clib/utility.h:58:#ifndef MIN 
-* trailing whitespace (line 59)
-clib/utility.h:59:#define MIN(a,b) (((a)<(b)) ? (a) : (b))
-* In cocoR/PARSER_C.FRM
-* trailing whitespace (line 13)
-cocoR/PARSER_C.FRM:13:#include "clib.h"
-* trailing whitespace (line 36)
-cocoR/PARSER_C.FRM:36:    Sym = Scanner->Get();//aa
-* trailing whitespace (line 142)
-cocoR/PARSER_C.FRM:142:   函数名称     : cParser::PushExpOp
-* trailing whitespace (line 143)
-cocoR/PARSER_C.FRM:143:   函数功能	    : 一元运算符入栈
-* trailing whitespace (line 144)
-cocoR/PARSER_C.FRM:144:   变量说明     : 
-* trailing whitespace (line 145)
-cocoR/PARSER_C.FRM:145:   int op: 运算符
-* trailing whitespace (line 146)
-cocoR/PARSER_C.FRM:146:   返回值       : 
-* trailing whitespace (line 147)
-cocoR/PARSER_C.FRM:147:   编写人       : 居卫华
-* trailing whitespace (line 148)
-cocoR/PARSER_C.FRM:148:   完成日期     : 2001 - 6 - 6
-* trailing whitespace (line 324)
-cocoR/PARSER_C.FRM:324:函数名称     : cParser::NeedCast
-* trailing whitespace (line 325)
-cocoR/PARSER_C.FRM:325:函数功能	    : 判断是否需要类型转换, 并返回转换码和要转换的运算数
-* trailing whitespace (line 326)
-cocoR/PARSER_C.FRM:326:变量说明     : 
-* trailing whitespace (line 327)
-cocoR/PARSER_C.FRM:327:TYPEDES dt1 : 运算数1
-* trailing whitespace (line 328)
-cocoR/PARSER_C.FRM:328:TYPEDES dt2 : 运算数2
-* trailing whitespace (line 329)
-cocoR/PARSER_C.FRM:329:char &casted : [OUT]要被转换的运算数 
-* trailing whitespace (line 330)
-cocoR/PARSER_C.FRM:330:返回值       : 要进行的类型转换代号, -1表示不需要转换
-* trailing whitespace (line 331)
-cocoR/PARSER_C.FRM:331:编写人       : 居卫华
-* trailing whitespace (line 332)
-cocoR/PARSER_C.FRM:332:完成日期     : 2001 - 6 - 8
-* trailing whitespace (line 343)
-cocoR/PARSER_C.FRM:343:	//如果是指针, 则不能进行转换
-* trailing whitespace (line 352)
-cocoR/PARSER_C.FRM:352:	//指针都转换成long
-* trailing whitespace (line 355)
-cocoR/PARSER_C.FRM:355:		//指针不能同浮点进行运算 
-* trailing whitespace (line 366)
-cocoR/PARSER_C.FRM:366:		//指针不能同浮点进行运算 
-* trailing whitespace (line 381)
-cocoR/PARSER_C.FRM:381:	//如果类型相同, 不需要转换
-* trailing whitespace (line 509)
-cocoR/PARSER_C.FRM:509:	case 0:// 空操作数(dummy type)
-* trailing whitespace (line 524)
-cocoR/PARSER_C.FRM:524:   函数名称     : cParser::AllocTempVar
-* trailing whitespace (line 525)
-cocoR/PARSER_C.FRM:525:   函数功能	    : 分配一个临时变量
-* trailing whitespace (line 526)
-cocoR/PARSER_C.FRM:526:   变量说明     : 
-* trailing whitespace (line 527)
-cocoR/PARSER_C.FRM:527:   long type	: 变量的类型
-* trailing whitespace (line 528)
-cocoR/PARSER_C.FRM:528:   返回值       : 变量的地址, -1 表示失败
-* trailing whitespace (line 529)
-cocoR/PARSER_C.FRM:529:   编写人       : 居卫华
-* trailing whitespace (line 530)
-cocoR/PARSER_C.FRM:530:   完成日期     : 2001 - 6 - 8
-* trailing whitespace (line 548)
-cocoR/PARSER_C.FRM:548:   函数名称     : cParser::Cast
-* trailing whitespace (line 549)
-cocoR/PARSER_C.FRM:549:   函数功能	    : 自动类型转换
-* trailing whitespace (line 550)
-cocoR/PARSER_C.FRM:550:   变量说明     : 
-* trailing whitespace (line 551)
-cocoR/PARSER_C.FRM:551:   返回值       : 
-* trailing whitespace (line 552)
-cocoR/PARSER_C.FRM:552:   编写人       : 居卫华
-* trailing whitespace (line 553)
-cocoR/PARSER_C.FRM:553:   完成日期     : 2001 - 6 - 11
-* trailing whitespace (line 557)
-cocoR/PARSER_C.FRM:557:			long castcode = -1; //cast操作码
-* trailing whitespace (line 558)
-cocoR/PARSER_C.FRM:558:			char casted = 0;	//被转换类型的运算数
-* trailing whitespace (line 562)
-cocoR/PARSER_C.FRM:562:				//类型转换
-* trailing whitespace (line 563)
-cocoR/PARSER_C.FRM:563:				long temp;//临时变量地址, 存放转换后的变量
-* trailing whitespace (line 564)
-cocoR/PARSER_C.FRM:564:				long type;//目标类型
-* trailing whitespace (line 565)
-cocoR/PARSER_C.FRM:565:				long am;  //cast指令的寻址方式
-* trailing whitespace (line 585)
-cocoR/PARSER_C.FRM:585:					am = am << 8;//temp的寻址方式
-* trailing whitespace (line 589)
-cocoR/PARSER_C.FRM:589:						am |= (type1&0x00ff) /*| (((type2&0x30)<<8)&0xff00)*/;//整条指令的寻址方式
-* trailing whitespace (line 591)
-cocoR/PARSER_C.FRM:591:						//修改运算数
-* trailing whitespace (line 599)
-cocoR/PARSER_C.FRM:599:						am |= (type2&0xff) /*| (((type1&0x30)<<8)&0xff00)*/;//整条指令的寻址方式					
-* trailing whitespace (line 601)
-cocoR/PARSER_C.FRM:601:						//修改运算数
-* trailing whitespace (line 814)
-cocoR/PARSER_C.FRM:814:	              int dimsize[64];//数组最大维数64
-* trailing whitespace (line 845)
-cocoR/PARSER_C.FRM:845:	TYPEDES dt;//无效
-* trailing whitespace (line 867)
-cocoR/PARSER_C.FRM:867:            //类型转换
-* trailing whitespace (line 868)
-cocoR/PARSER_C.FRM:868:            long castcode = -1; //cast操作码
-* trailing whitespace (line 869)
-cocoR/PARSER_C.FRM:869:            char casted = 0;        //被转换类型的运算数
-* trailing whitespace (line 870)
-cocoR/PARSER_C.FRM:870:            //类型转换
-* trailing whitespace (line 871)
-cocoR/PARSER_C.FRM:871:            long temp;//临时变量地址, 存放转换后的变量
-* trailing whitespace (line 872)
-cocoR/PARSER_C.FRM:872:            long type;//目标类型
-* trailing whitespace (line 875)
-cocoR/PARSER_C.FRM:875:            long am;  //cast指令的寻址方式
-* trailing whitespace (line 892)
-cocoR/PARSER_C.FRM:892:                    if (DT1.refLevel > 0)//是指针
-* trailing whitespace (line 894)
-cocoR/PARSER_C.FRM:894:                            if (DT2.refLevel == 0 // 不是指针
-* trailing whitespace (line 895)
-cocoR/PARSER_C.FRM:895:                                    && DT2.type != dtLong //不是长整型
-* trailing whitespace (line 980)
-cocoR/PARSER_C.FRM:980:            {//需要转换
-* trailing whitespace (line 983)
-cocoR/PARSER_C.FRM:983:                    am = am << 8;//temp的寻址方式
-* trailing whitespace (line 985)
-cocoR/PARSER_C.FRM:985:                    am |= (type2&0xff) /*| (((type2&0x30)<<8)&0xff00)*/;//整条指令的寻址方式                                        
-* trailing whitespace (line 987)
-cocoR/PARSER_C.FRM:987:                    //修改运算数
-* In cocoR/PARSER_H.FRM
-* trailing whitespace (line 16)
-cocoR/PARSER_H.FRM:16:#include "clib.h"
-* trailing whitespace (line 56)
-cocoR/PARSER_H.FRM:56:}EXPRESSIONOP;//表达式栈使用的操作栈的节点
-* trailing whitespace (line 109)
-cocoR/PARSER_H.FRM:109:	int UnitSize(TYPEDES& type);                //实际数据类型的size
-* trailing whitespace (line 110)
-cocoR/PARSER_H.FRM:110:	//void Init(CClassTable *table, CPubFuncTable* ptf);                                       //初始化
-* trailing whitespace (line 111)
-cocoR/PARSER_H.FRM:111:	void SetPubFuncTable(CPubFuncTable* pTable);       //设置脚本将使用的基本函数表
-* trailing whitespace (line 122)
-cocoR/PARSER_H.FRM:122:		Scanner->GetName(&Scanner->CurrSym, szCurrSymName, MAX_IDENTIFIER_LENGTH-1);//得到名称;
-* trailing whitespace (line 127)
-cocoR/PARSER_H.FRM:127:		Scanner->GetName(&Scanner->CurrSym, szNextSymName, MAX_IDENTIFIER_LENGTH-1);//得到名称;
-* trailing whitespace (line 136)
-cocoR/PARSER_H.FRM:136:	// class 描述表
-* trailing whitespace (line 140)
-cocoR/PARSER_H.FRM:140:	long m_lClassDesNum;				//定义的class描述个数
-* trailing whitespace (line 141)
-cocoR/PARSER_H.FRM:141:	long m_lClassDesTableSize;		//列表大小
-* trailing whitespace (line 149)
-cocoR/PARSER_H.FRM:149:	//一元操作符栈
-* trailing whitespace (line 151)
-cocoR/PARSER_H.FRM:151:	EXPRESSIONOP* m_pExpOpPt;//栈指针
-* trailing whitespace (line 170)
-cocoR/PARSER_H.FRM:170:	BOOL PopOp(int* op);    //pop一元操作符
-* trailing whitespace (line 171)
-cocoR/PARSER_H.FRM:171:	void PushExpOp(int op); //push一元操作符
-* In cocoR/cp.cpp
-* trailing whitespace (line 14)
-cocoR/cp.cpp:14:#include "cc.hpp"
-* trailing whitespace (line 65)
-cocoR/cp.cpp:65:    Sym = Scanner->Get();//aa
-* trailing whitespace (line 70)
-cocoR/cp.cpp:70:      	
-* indent SP followed by a TAB (line 70)
-cocoR/cp.cpp:70:      	
-* trailing whitespace (line 71)
-cocoR/cp.cpp:71:      	    // process #include                                 
-* indent SP followed by a TAB (line 71)
-cocoR/cp.cpp:71:      	    // process #include                                 
-* indent SP followed by a TAB (line 72)
-cocoR/cp.cpp:72:      	char str[256];
-* indent SP followed by a TAB (line 73)
-cocoR/cp.cpp:73:      	Scanner->GetName(&Scanner->NextSym, str, 255);
-* indent SP followed by a TAB (line 74)
-cocoR/cp.cpp:74:      	// get directive
-* indent SP followed by a TAB (line 75)
-cocoR/cp.cpp:75:      	char* p = strchr(str, ' ');
-* indent SP followed by a TAB (line 76)
-cocoR/cp.cpp:76:      	char* directive = NULL;
-* indent SP followed by a TAB (line 77)
-cocoR/cp.cpp:77:      	char* content = NULL;
-* indent SP followed by a TAB (line 78)
-cocoR/cp.cpp:78:      	if ( p != NULL ){
-* trailing whitespace (line 79)
-cocoR/cp.cpp:79:      	    *p=0; 
-* indent SP followed by a TAB (line 79)
-cocoR/cp.cpp:79:      	    *p=0; 
-* indent SP followed by a TAB (line 80)
-cocoR/cp.cpp:80:      	    directive = str + sizeof(char);
-* trailing whitespace (line 81)
-cocoR/cp.cpp:81:      	    // proce include 
-* indent SP followed by a TAB (line 81)
-cocoR/cp.cpp:81:      	    // proce include 
-* indent SP followed by a TAB (line 82)
-cocoR/cp.cpp:82:      	    if (strcmp(str, "include") == 0){
-* indent SP followed by a TAB (line 83)
-cocoR/cp.cpp:83:      	            // get content
-* indent SP followed by a TAB (line 84)
-cocoR/cp.cpp:84:      	            p += sizeof(char);
-* indent SP followed by a TAB (line 85)
-cocoR/cp.cpp:85:      	            while ( (*p == ' ' || *p == '\t' ) && *p != '\0' ){
-* trailing whitespace (line 86)
-cocoR/cp.cpp:86:      	                    p += sizeof(char);              
-* indent SP followed by a TAB (line 86)
-cocoR/cp.cpp:86:      	                    p += sizeof(char);              
-* indent SP followed by a TAB (line 87)
-cocoR/cp.cpp:87:      	            }
-* indent SP followed by a TAB (line 88)
-cocoR/cp.cpp:88:      	            if ( *p != '\0' )
-* indent SP followed by a TAB (line 89)
-cocoR/cp.cpp:89:      	                    content = p;
-* indent SP followed by a TAB (line 90)
-cocoR/cp.cpp:90:      	    }
-* trailing whitespace (line 91)
-cocoR/cp.cpp:91:      	
-* indent SP followed by a TAB (line 91)
-cocoR/cp.cpp:91:      	
-* indent SP followed by a TAB (line 92)
-cocoR/cp.cpp:92:      	}
-* trailing whitespace (line 93)
-cocoR/cp.cpp:93:      	    
-* indent SP followed by a TAB (line 93)
-cocoR/cp.cpp:93:      	    
-* indent SP followed by a TAB (line 94)
-cocoR/cp.cpp:94:      	    ;
-* trailing whitespace (line 126)
-cocoR/cp.cpp:126:	
-* trailing whitespace (line 127)
-cocoR/cp.cpp:127:	
-* trailing whitespace (line 132)
-cocoR/cp.cpp:132:	
-* trailing whitespace (line 150)
-cocoR/cp.cpp:150:	
-* trailing whitespace (line 158)
-cocoR/cp.cpp:158:	
-* trailing whitespace (line 166)
-cocoR/cp.cpp:166:	
-* trailing whitespace (line 167)
-cocoR/cp.cpp:167:	    
-* trailing whitespace (line 182)
-cocoR/cp.cpp:182:	
-* trailing whitespace (line 183)
-cocoR/cp.cpp:183:	    // load external library 
-* trailing whitespace (line 203)
-cocoR/cp.cpp:203:	
-* trailing whitespace (line 204)
-cocoR/cp.cpp:204:	
-* trailing whitespace (line 214)
-cocoR/cp.cpp:214:	                            CCompiler cc;                         
-* trailing whitespace (line 234)
-cocoR/cp.cpp:234:		
-* trailing whitespace (line 285)
-cocoR/cp.cpp:285:		case varSym: 
-* trailing whitespace (line 286)
-cocoR/cp.cpp:286:		case mixedSym:  
-* trailing whitespace (line 292)
-cocoR/cp.cpp:292:			
-* trailing whitespace (line 296)
-cocoR/cp.cpp:296:			                      Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//�õ�����                         
-* trailing whitespace (line 298)
-cocoR/cp.cpp:298:			                      type->objID = GetObjIDByName(szName); 
-* trailing whitespace (line 308)
-cocoR/cp.cpp:308:		case shortSym:  
-* trailing whitespace (line 313)
-cocoR/cp.cpp:313:			                         type->type = dtShort; type->refLevel = 0;      
-* trailing whitespace (line 315)
-cocoR/cp.cpp:315:		case longSym:  
-* trailing whitespace (line 327)
-cocoR/cp.cpp:327:		case unsignedSym:  
-* trailing whitespace (line 340)
-cocoR/cp.cpp:340:		case charSym:  
-* trailing whitespace (line 344)
-cocoR/cp.cpp:344:		case intSym:  
-* trailing whitespace (line 348)
-cocoR/cp.cpp:348:		case floatSym:  
-* trailing whitespace (line 352)
-cocoR/cp.cpp:352:		case doubleSym:  
-* trailing whitespace (line 355)
-cocoR/cp.cpp:355:		case voidSym:  
-* trailing whitespace (line 358)
-cocoR/cp.cpp:358:		case stringSym:  
-* trailing whitespace (line 368)
-cocoR/cp.cpp:368:	
-* trailing whitespace (line 374)
-cocoR/cp.cpp:374:	    
-* trailing whitespace (line 378)
-cocoR/cp.cpp:378:	
-* trailing whitespace (line 383)
-cocoR/cp.cpp:383:	            
-* trailing whitespace (line 384)
-cocoR/cp.cpp:384:	            
-* trailing whitespace (line 387)
-cocoR/cp.cpp:387:	
-* trailing whitespace (line 396)
-cocoR/cp.cpp:396:	            
-* trailing whitespace (line 398)
-cocoR/cp.cpp:398:	    SAFEDELETE( m_pMainFunction);   
-* trailing whitespace (line 410)
-cocoR/cp.cpp:410:		
-* trailing whitespace (line 411)
-cocoR/cp.cpp:411:		    if (!doAssign()) 
-* trailing whitespace (line 413)
-cocoR/cp.cpp:413:		
-* trailing whitespace (line 421)
-cocoR/cp.cpp:421:	
-* trailing whitespace (line 432)
-cocoR/cp.cpp:432:	
-* trailing whitespace (line 438)
-cocoR/cp.cpp:438:	
-* trailing whitespace (line 439)
-cocoR/cp.cpp:439:	
-* trailing whitespace (line 447)
-cocoR/cp.cpp:447:	
-* trailing whitespace (line 462)
-cocoR/cp.cpp:462:	                      if (!pClass->AddMember(function.m_SymbolTable.tableEntry[i].szName, 
-* trailing whitespace (line 470)
-cocoR/cp.cpp:470:	                              GenError(118);                                  
-* trailing whitespace (line 477)
-cocoR/cp.cpp:477:	              GenError(119);                          
-* trailing whitespace (line 492)
-cocoR/cp.cpp:492:	
-* trailing whitespace (line 503)
-cocoR/cp.cpp:503:		
-* trailing whitespace (line 506)
-cocoR/cp.cpp:506:		              
-* trailing whitespace (line 507)
-cocoR/cp.cpp:507:		
-* trailing whitespace (line 509)
-cocoR/cp.cpp:509:		
-* trailing whitespace (line 551)
-cocoR/cp.cpp:551:	        
-* trailing whitespace (line 552)
-cocoR/cp.cpp:552:	this->m_pMainFunction->m_iParamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
-* trailing whitespace (line 556)
-cocoR/cp.cpp:556:	           }               
-* trailing whitespace (line 623)
-cocoR/cp.cpp:623:	
-* trailing whitespace (line 628)
-cocoR/cp.cpp:628:	
-* trailing whitespace (line 632)
-cocoR/cp.cpp:632:	     
-* trailing whitespace (line 635)
-cocoR/cp.cpp:635:	
-* trailing whitespace (line 647)
-cocoR/cp.cpp:647:	             
-* trailing whitespace (line 653)
-cocoR/cp.cpp:653:	             
-* trailing whitespace (line 656)
-cocoR/cp.cpp:656:	                     dimsize[i] = op;                        
-* trailing whitespace (line 660)
-cocoR/cp.cpp:660:	
-* trailing whitespace (line 688)
-cocoR/cp.cpp:688:		case identifierSym: 
-* trailing whitespace (line 689)
-cocoR/cp.cpp:689:		case numberSym: 
-* trailing whitespace (line 690)
-cocoR/cp.cpp:690:		case stringD1Sym: 
-* trailing whitespace (line 691)
-cocoR/cp.cpp:691:		case charD1Sym: 
-* trailing whitespace (line 692)
-cocoR/cp.cpp:692:		case LbraceSym: 
-* trailing whitespace (line 693)
-cocoR/cp.cpp:693:		case LparenSym: 
-* trailing whitespace (line 694)
-cocoR/cp.cpp:694:		case StarSym: 
-* trailing whitespace (line 695)
-cocoR/cp.cpp:695:		case AndSym: 
-* trailing whitespace (line 696)
-cocoR/cp.cpp:696:		case PlusSym: 
-* trailing whitespace (line 697)
-cocoR/cp.cpp:697:		case MinusSym: 
-* trailing whitespace (line 698)
-cocoR/cp.cpp:698:		case PlusPlusSym: 
-* trailing whitespace (line 699)
-cocoR/cp.cpp:699:		case MinusMinusSym: 
-* trailing whitespace (line 700)
-cocoR/cp.cpp:700:		case newSym: 
-* trailing whitespace (line 701)
-cocoR/cp.cpp:701:		case BangSym: 
-* trailing whitespace (line 702)
-cocoR/cp.cpp:702:		case TildeSym:  
-* trailing whitespace (line 705)
-cocoR/cp.cpp:705:		case breakSym:  
-* trailing whitespace (line 708)
-cocoR/cp.cpp:708:		case continueSym:  
-* trailing whitespace (line 711)
-cocoR/cp.cpp:711:		case doSym:  
-* trailing whitespace (line 714)
-cocoR/cp.cpp:714:		case forSym:  
-* trailing whitespace (line 717)
-cocoR/cp.cpp:717:		case ifSym:  
-* trailing whitespace (line 720)
-cocoR/cp.cpp:720:		case SemicolonSym:  
-* trailing whitespace (line 723)
-cocoR/cp.cpp:723:		case returnSym:  
-* trailing whitespace (line 726)
-cocoR/cp.cpp:726:		case switchSym:  
-* trailing whitespace (line 729)
-cocoR/cp.cpp:729:		case whileSym:  
-* trailing whitespace (line 762)
-cocoR/cp.cpp:762:	   ADDCOMMAND1(__jmp, CC, 0);      
-* trailing whitespace (line 769)
-cocoR/cp.cpp:769:	
-* trailing whitespace (line 773)
-cocoR/cp.cpp:773:	    ADDCOMMAND1(__jmp, CC, 0);      
-* trailing whitespace (line 774)
-cocoR/cp.cpp:774:	
-* trailing whitespace (line 805)
-cocoR/cp.cpp:805:	
-* trailing whitespace (line 809)
-cocoR/cp.cpp:809:	    
-* trailing whitespace (line 813)
-cocoR/cp.cpp:813:	
-* trailing whitespace (line 827)
-cocoR/cp.cpp:827:	
-* trailing whitespace (line 833)
-cocoR/cp.cpp:833:	
-* trailing whitespace (line 837)
-cocoR/cp.cpp:837:	
-* trailing whitespace (line 838)
-cocoR/cp.cpp:838:	
-* trailing whitespace (line 849)
-cocoR/cp.cpp:849:		
-* trailing whitespace (line 852)
-cocoR/cp.cpp:852:		
-* trailing whitespace (line 854)
-cocoR/cp.cpp:854:		              cmd = new COMMAND[cmdnum];    
-* trailing whitespace (line 858)
-cocoR/cp.cpp:858:		              m_pMainFunction->m_nCurrentCmdNum = cmdsaved;           
-* trailing whitespace (line 859)
-cocoR/cp.cpp:859:		
-* trailing whitespace (line 863)
-cocoR/cp.cpp:863:	
-* trailing whitespace (line 867)
-cocoR/cp.cpp:867:	
-* trailing whitespace (line 876)
-cocoR/cp.cpp:876:	    ADDCOMMAND1(__jmp, CC, loopEntry);      
-* trailing whitespace (line 891)
-cocoR/cp.cpp:891:	
-* trailing whitespace (line 898)
-cocoR/cp.cpp:898:	            if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 914)
-cocoR/cp.cpp:914:	                            address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
-* trailing whitespace (line 917)
-cocoR/cp.cpp:917:	                            ADDCOMMAND3(__test, address_mode, op1, 0, 0)    
-* trailing whitespace (line 921)
-cocoR/cp.cpp:921:	
-* trailing whitespace (line 930)
-cocoR/cp.cpp:930:		
-* trailing whitespace (line 937)
-cocoR/cp.cpp:937:		
-* trailing whitespace (line 939)
-cocoR/cp.cpp:939:		
-* trailing whitespace (line 943)
-cocoR/cp.cpp:943:		
-* trailing whitespace (line 945)
-cocoR/cp.cpp:945:	
-* trailing whitespace (line 974)
-cocoR/cp.cpp:974:	
-* trailing whitespace (line 987)
-cocoR/cp.cpp:987:	    
-* trailing whitespace (line 993)
-cocoR/cp.cpp:993:	
-* trailing whitespace (line 1010)
-cocoR/cp.cpp:1010:	
-* trailing whitespace (line 1012)
-cocoR/cp.cpp:1012:	
-* trailing whitespace (line 1016)
-cocoR/cp.cpp:1016:	
-* trailing whitespace (line 1019)
-cocoR/cp.cpp:1019:	
-* trailing whitespace (line 1026)
-cocoR/cp.cpp:1026:	   if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 1042)
-cocoR/cp.cpp:1042:	                   address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
-* trailing whitespace (line 1045)
-cocoR/cp.cpp:1045:	                   ADDCOMMAND3(__test, address_mode, op1, 0, 0)    
-* trailing whitespace (line 1049)
-cocoR/cp.cpp:1049:	
-* trailing whitespace (line 1055)
-cocoR/cp.cpp:1055:	
-* trailing whitespace (line 1059)
-cocoR/cp.cpp:1059:	
-* trailing whitespace (line 1064)
-cocoR/cp.cpp:1064:	
-* trailing whitespace (line 1072)
-cocoR/cp.cpp:1072:	
-* trailing whitespace (line 1075)
-cocoR/cp.cpp:1075:	      
-* trailing whitespace (line 1076)
-cocoR/cp.cpp:1076:	
-* trailing whitespace (line 1086)
-cocoR/cp.cpp:1086:	        
-* trailing whitespace (line 1089)
-cocoR/cp.cpp:1089:	              
-* trailing whitespace (line 1103)
-cocoR/cp.cpp:1103:		case EqualSym:  
-* trailing whitespace (line 1106)
-cocoR/cp.cpp:1106:		case StarEqualSym:  
-* trailing whitespace (line 1109)
-cocoR/cp.cpp:1109:		case SlashEqualSym:  
-* trailing whitespace (line 1112)
-cocoR/cp.cpp:1112:		case PercentEqualSym:  
-* trailing whitespace (line 1115)
-cocoR/cp.cpp:1115:		case PlusEqualSym:  
-* trailing whitespace (line 1118)
-cocoR/cp.cpp:1118:		case MinusEqualSym:  
-* trailing whitespace (line 1121)
-cocoR/cp.cpp:1121:		case AndEqualSym:  
-* trailing whitespace (line 1124)
-cocoR/cp.cpp:1124:		case UparrowEqualSym:  
-* trailing whitespace (line 1127)
-cocoR/cp.cpp:1127:		case BarEqualSym:  
-* trailing whitespace (line 1130)
-cocoR/cp.cpp:1130:		case LessLessEqualSym:  
-* trailing whitespace (line 1133)
-cocoR/cp.cpp:1133:		case GreaterGreaterEqualSym:  
-* trailing whitespace (line 1146)
-cocoR/cp.cpp:1146:		
-* trailing whitespace (line 1149)
-cocoR/cp.cpp:1149:		
-* trailing whitespace (line 1168)
-cocoR/cp.cpp:1168:		                      ADDCOMMAND3(__test, address_mode, op1, op2, 7/*==*/)                                    
-* trailing whitespace (line 1175)
-cocoR/cp.cpp:1175:	
-* trailing whitespace (line 1183)
-cocoR/cp.cpp:1183:	              
-* trailing whitespace (line 1201)
-cocoR/cp.cpp:1201:	        
-* trailing whitespace (line 1211)
-cocoR/cp.cpp:1211:		
-* trailing whitespace (line 1227)
-cocoR/cp.cpp:1227:		                      ADDCOMMAND3(__test, address_mode, op1, op2, 6/*==*/)                                    
-* trailing whitespace (line 1235)
-cocoR/cp.cpp:1235:	
-* trailing whitespace (line 1242)
-cocoR/cp.cpp:1242:	              
-* trailing whitespace (line 1245)
-cocoR/cp.cpp:1245:	              {                       
-* trailing whitespace (line 1287)
-cocoR/cp.cpp:1287:	
-* trailing whitespace (line 1292)
-cocoR/cp.cpp:1292:	
-* trailing whitespace (line 1300)
-cocoR/cp.cpp:1300:			
-* trailing whitespace (line 1302)
-cocoR/cp.cpp:1302:			
-* trailing whitespace (line 1305)
-cocoR/cp.cpp:1305:		
-* trailing whitespace (line 1320)
-cocoR/cp.cpp:1320:		
-* trailing whitespace (line 1323)
-cocoR/cp.cpp:1323:		                      {       
-* trailing whitespace (line 1324)
-cocoR/cp.cpp:1324:		                              ADDCOMMAND3(__test, address_mode, op1, op2, 0/*==*/)                                    
-* trailing whitespace (line 1328)
-cocoR/cp.cpp:1328:		                              ADDCOMMAND3(__test, address_mode, op1, op2, 1/*==*/)    
-* trailing whitespace (line 1330)
-cocoR/cp.cpp:1330:		
-* trailing whitespace (line 1338)
-cocoR/cp.cpp:1338:	
-* trailing whitespace (line 1348)
-cocoR/cp.cpp:1348:	                      {                       
-* trailing whitespace (line 1364)
-cocoR/cp.cpp:1364:	
-* trailing whitespace (line 1369)
-cocoR/cp.cpp:1369:	
-* trailing whitespace (line 1373)
-cocoR/cp.cpp:1373:			case LessSym:  
-* trailing whitespace (line 1377)
-cocoR/cp.cpp:1377:			case GreaterSym:  
-* trailing whitespace (line 1381)
-cocoR/cp.cpp:1381:			case LessEqualSym:  
-* trailing whitespace (line 1385)
-cocoR/cp.cpp:1385:			case GreaterEqualSym:  
-* trailing whitespace (line 1392)
-cocoR/cp.cpp:1392:		
-* trailing whitespace (line 1407)
-cocoR/cp.cpp:1407:		
-* trailing whitespace (line 1409)
-cocoR/cp.cpp:1409:		                    ADDCOMMAND3(__test, address_mode, op1, op2, type)                                       
-* trailing whitespace (line 1410)
-cocoR/cp.cpp:1410:		
-* trailing whitespace (line 1416)
-cocoR/cp.cpp:1416:		
-* trailing whitespace (line 1419)
-cocoR/cp.cpp:1419:	
-* trailing whitespace (line 1427)
-cocoR/cp.cpp:1427:	
-* trailing whitespace (line 1431)
-cocoR/cp.cpp:1431:	            {                       
-* trailing whitespace (line 1470)
-cocoR/cp.cpp:1470:		
-* trailing whitespace (line 1484)
-cocoR/cp.cpp:1484:		
-* trailing whitespace (line 1490)
-cocoR/cp.cpp:1490:		
-* trailing whitespace (line 1491)
-cocoR/cp.cpp:1491:		                      
-* trailing whitespace (line 1506)
-cocoR/cp.cpp:1506:		                                      ADDCOMMAND2(__fsub, (type1<<8)|0x82, op1, _AX)  
-* trailing whitespace (line 1508)
-cocoR/cp.cpp:1508:		                                      ADDCOMMAND2(__fadd, (type1<<8)|0x82, op1, _AX)  
-* trailing whitespace (line 1513)
-cocoR/cp.cpp:1513:		                                      ADDCOMMAND2(__sub, (type1<<8)|0x82, op1, _AX)   
-* trailing whitespace (line 1515)
-cocoR/cp.cpp:1515:		                                      ADDCOMMAND2(__add, (type1<<8)|0x82, op1, _AX)   
-* trailing whitespace (line 1524)
-cocoR/cp.cpp:1524:		                                      ADDCOMMAND2(__fsub, address_mode, op1, op2)     
-* trailing whitespace (line 1526)
-cocoR/cp.cpp:1526:		                                      ADDCOMMAND2(__fadd, address_mode, op1, op2)     
-* trailing whitespace (line 1531)
-cocoR/cp.cpp:1531:		                                      ADDCOMMAND2(__sub, address_mode, op1, op2)      
-* trailing whitespace (line 1533)
-cocoR/cp.cpp:1533:		                                      ADDCOMMAND2(__add, address_mode, op1, op2)      
-* trailing whitespace (line 1535)
-cocoR/cp.cpp:1535:		                      }       
-* trailing whitespace (line 1538)
-cocoR/cp.cpp:1538:		                      {                       
-* trailing whitespace (line 1557)
-cocoR/cp.cpp:1557:	
-* trailing whitespace (line 1573)
-cocoR/cp.cpp:1573:		
-* trailing whitespace (line 1575)
-cocoR/cp.cpp:1575:		              
-* trailing whitespace (line 1580)
-cocoR/cp.cpp:1580:		
-* trailing whitespace (line 1597)
-cocoR/cp.cpp:1597:		                              if (type == 0) ADDCOMMAND2(__fmul, address_mode, op1, op2)                                      
-* trailing whitespace (line 1598)
-cocoR/cp.cpp:1598:		                                      else if (type == 1) ADDCOMMAND2(__fdiv, address_mode, op1, op2)                                 
-* trailing whitespace (line 1603)
-cocoR/cp.cpp:1603:		                              if (type == 0) ADDCOMMAND2(__mul, address_mode, op1, op2)                                       
-* trailing whitespace (line 1607)
-cocoR/cp.cpp:1607:		                      
-* trailing whitespace (line 1610)
-cocoR/cp.cpp:1610:		                      {                       
-* trailing whitespace (line 1628)
-cocoR/cp.cpp:1628:	
-* trailing whitespace (line 1634)
-cocoR/cp.cpp:1634:	
-* trailing whitespace (line 1636)
-cocoR/cp.cpp:1636:	
-* trailing whitespace (line 1639)
-cocoR/cp.cpp:1639:	    {               
-* trailing whitespace (line 1640)
-cocoR/cp.cpp:1640:	
-* trailing whitespace (line 1644)
-cocoR/cp.cpp:1644:	            TYPEDES dt1;    
-* trailing whitespace (line 1651)
-cocoR/cp.cpp:1651:	            
-* trailing whitespace (line 1655)
-cocoR/cp.cpp:1655:	            case PlusSym:                           
-* trailing whitespace (line 1658)
-cocoR/cp.cpp:1658:	            case MinusSym:                  
-* trailing whitespace (line 1677)
-cocoR/cp.cpp:1677:	            case StarSym:  
-* trailing whitespace (line 1685)
-cocoR/cp.cpp:1685:	                            type1 |= opsize; 
-* trailing whitespace (line 1686)
-cocoR/cp.cpp:1686:	
-* trailing whitespace (line 1702)
-cocoR/cp.cpp:1702:	*/                              
-* trailing whitespace (line 1703)
-cocoR/cp.cpp:1703:	/*                      
-* trailing whitespace (line 1711)
-cocoR/cp.cpp:1711:	            case BangSym: 
-* trailing whitespace (line 1721)
-cocoR/cp.cpp:1721:	            case AndSym:  
-* trailing whitespace (line 1755)
-cocoR/cp.cpp:1755:	            }               
-* trailing whitespace (line 1759)
-cocoR/cp.cpp:1759:	    m_pExpOpPt = pSavedStack;  
-* trailing whitespace (line 1794)
-cocoR/cp.cpp:1794:			case LbrackSym:  
-* trailing whitespace (line 1798)
-cocoR/cp.cpp:1798:				
-* trailing whitespace (line 1810)
-cocoR/cp.cpp:1810:				                                      
-* trailing whitespace (line 1813)
-cocoR/cp.cpp:1813:				                              {       
-* trailing whitespace (line 1816)
-cocoR/cp.cpp:1816:				                                      2. b*��λ����= offset 
-* trailing whitespace (line 1832)
-cocoR/cp.cpp:1832:				                                                      memcpy(dt1.dimsize, dt1.dimsize+1, sizeof(long)*(dt1.dim-1));                                   
-* trailing whitespace (line 1833)
-cocoR/cp.cpp:1833:				                                              dt1.dim--;                                                      
-* trailing whitespace (line 1845)
-cocoR/cp.cpp:1845:				                                                      GenError(101);                                          
-* trailing whitespace (line 1847)
-cocoR/cp.cpp:1847:				
-* trailing whitespace (line 1869)
-cocoR/cp.cpp:1869:			case LparenSym:  
-* trailing whitespace (line 1870)
-cocoR/cp.cpp:1870:				
-* trailing whitespace (line 1871)
-cocoR/cp.cpp:1871:				      
-* trailing whitespace (line 1884)
-cocoR/cp.cpp:1884:				                              {       
-* trailing whitespace (line 1896)
-cocoR/cp.cpp:1896:				
-* trailing whitespace (line 1902)
-cocoR/cp.cpp:1902:				                              fn.nType = 1;                           
-* trailing whitespace (line 1904)
-cocoR/cp.cpp:1904:				
-* trailing whitespace (line 1909)
-cocoR/cp.cpp:1909:			case PointSym:  
-* trailing whitespace (line 1912)
-cocoR/cp.cpp:1912:				
-* trailing whitespace (line 1919)
-cocoR/cp.cpp:1919:				
-* trailing whitespace (line 1938)
-cocoR/cp.cpp:1938:			case MinusGreaterSym:  
-* trailing whitespace (line 1943)
-cocoR/cp.cpp:1943:				
-* trailing whitespace (line 1944)
-cocoR/cp.cpp:1944:				                      {                               
-* trailing whitespace (line 1959)
-cocoR/cp.cpp:1959:				                                              Scanner->GetName(&Scanner->CurrSym, szName, MAX_IDENTIFIER_LENGTH-1);//�õ�����                                 
-* trailing whitespace (line 1960)
-cocoR/cp.cpp:1960:				                                              
-* trailing whitespace (line 1966)
-cocoR/cp.cpp:1966:				                                                      GenError(121);                                  
-* trailing whitespace (line 1969)
-cocoR/cp.cpp:1969:				                                              {       
-* trailing whitespace (line 1972)
-cocoR/cp.cpp:1972:				                                                      
-* trailing whitespace (line 1974)
-cocoR/cp.cpp:1974:				                                                      
-* trailing whitespace (line 1979)
-cocoR/cp.cpp:1979:				                                                      
-* trailing whitespace (line 1986)
-cocoR/cp.cpp:1986:				                                                                      
-* trailing whitespace (line 1995)
-cocoR/cp.cpp:1995:				                                                                      
-* trailing whitespace (line 1999)
-cocoR/cp.cpp:1999:				                                                                      
-* trailing whitespace (line 2002)
-cocoR/cp.cpp:2002:				                                                                      {                                                                       
-* trailing whitespace (line 2015)
-cocoR/cp.cpp:2015:				                                                              
-* trailing whitespace (line 2023)
-cocoR/cp.cpp:2023:			case identifierSym:  
-* trailing whitespace (line 2026)
-cocoR/cp.cpp:2026:			case PlusPlusSym:  
-* trailing whitespace (line 2028)
-cocoR/cp.cpp:2028:				
-* trailing whitespace (line 2034)
-cocoR/cp.cpp:2034:				                              if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 2039)
-cocoR/cp.cpp:2039:				
-* trailing whitespace (line 2051)
-cocoR/cp.cpp:2051:				                                              address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
-* trailing whitespace (line 2066)
-cocoR/cp.cpp:2066:				                                                      ADDCOMMAND2(__add, address_mode, op1, 1)        
-* trailing whitespace (line 2067)
-cocoR/cp.cpp:2067:				                                              }       
-* trailing whitespace (line 2068)
-cocoR/cp.cpp:2068:				                                              ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
-* trailing whitespace (line 2076)
-cocoR/cp.cpp:2076:			case MinusMinusSym:  
-* trailing whitespace (line 2078)
-cocoR/cp.cpp:2078:				
-* trailing whitespace (line 2084)
-cocoR/cp.cpp:2084:				                              if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 2089)
-cocoR/cp.cpp:2089:				
-* trailing whitespace (line 2101)
-cocoR/cp.cpp:2101:				                                              address_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);     
-* trailing whitespace (line 2116)
-cocoR/cp.cpp:2116:				                                                      ADDCOMMAND2(__sub, address_mode, op1, 1)        
-* trailing whitespace (line 2117)
-cocoR/cp.cpp:2117:				                                              }       
-* trailing whitespace (line 2118)
-cocoR/cp.cpp:2118:				                                              ADDCOMMAND2(__mov, address_mode|0x02, op1, _AX); 
-* trailing whitespace (line 2133)
-cocoR/cp.cpp:2133:		case PlusSym:  
-* trailing whitespace (line 2136)
-cocoR/cp.cpp:2136:		case MinusSym:  
-* trailing whitespace (line 2139)
-cocoR/cp.cpp:2139:		case StarSym:  
-* trailing whitespace (line 2142)
-cocoR/cp.cpp:2142:		case BangSym:  
-* trailing whitespace (line 2145)
-cocoR/cp.cpp:2145:		case AndSym:  
-* trailing whitespace (line 2148)
-cocoR/cp.cpp:2148:		case TildeSym:  
-* trailing whitespace (line 2157)
-cocoR/cp.cpp:2157:	
-* trailing whitespace (line 2161)
-cocoR/cp.cpp:2161:		case identifierSym:  
-* trailing whitespace (line 2163)
-cocoR/cp.cpp:2163:			
-* trailing whitespace (line 2164)
-cocoR/cp.cpp:2164:			
-* trailing whitespace (line 2166)
-cocoR/cp.cpp:2166:			  
-* trailing whitespace (line 2167)
-cocoR/cp.cpp:2167:			          
-* trailing whitespace (line 2169)
-cocoR/cp.cpp:2169:			          
-* trailing whitespace (line 2175)
-cocoR/cp.cpp:2175:			
-* trailing whitespace (line 2193)
-cocoR/cp.cpp:2193:			                            
-* trailing whitespace (line 2198)
-cocoR/cp.cpp:2198:			                                            if (dt.refLevel > 0) 
-* trailing whitespace (line 2214)
-cocoR/cp.cpp:2214:			                                                    
-* trailing whitespace (line 2230)
-cocoR/cp.cpp:2230:			                                    
-* trailing whitespace (line 2248)
-cocoR/cp.cpp:2248:		case newSym:  
-* trailing whitespace (line 2252)
-cocoR/cp.cpp:2252:		case stringD1Sym:  
-* trailing whitespace (line 2254)
-cocoR/cp.cpp:2254:			
-* trailing whitespace (line 2272)
-cocoR/cp.cpp:2272:			                                                GenError(100);                          
-* trailing whitespace (line 2276)
-cocoR/cp.cpp:2276:			                    
-* trailing whitespace (line 2279)
-cocoR/cp.cpp:2279:			                                        {       
-* trailing whitespace (line 2281)
-cocoR/cp.cpp:2281:			                                                
-* trailing whitespace (line 2287)
-cocoR/cp.cpp:2287:			                                                        m_pMainFunction->PushDigit(temp, AMODE_MEM, dt);                         
-* trailing whitespace (line 2294)
-cocoR/cp.cpp:2294:			                                            
-* trailing whitespace (line 2298)
-cocoR/cp.cpp:2298:			                                                delete pCh;         
-* trailing whitespace (line 2301)
-cocoR/cp.cpp:2301:		case charD1Sym:  
-* trailing whitespace (line 2303)
-cocoR/cp.cpp:2303:			
-* trailing whitespace (line 2311)
-cocoR/cp.cpp:2311:		case numberSym:  
-* trailing whitespace (line 2313)
-cocoR/cp.cpp:2313:			
-* trailing whitespace (line 2314)
-cocoR/cp.cpp:2314:			
-* trailing whitespace (line 2317)
-cocoR/cp.cpp:2317:			                     
-* trailing whitespace (line 2319)
-cocoR/cp.cpp:2319:			                     _typedes(dt, dtFloat);                  
-* trailing whitespace (line 2324)
-cocoR/cp.cpp:2324:			                     
-* trailing whitespace (line 2326)
-cocoR/cp.cpp:2326:			                     _typedes(dt, dtLong);                   
-* trailing whitespace (line 2331)
-cocoR/cp.cpp:2331:		case LparenSym:  
-* trailing whitespace (line 2336)
-cocoR/cp.cpp:2336:		case LbraceSym:  
-* trailing whitespace (line 2359)
-cocoR/cp.cpp:2359:	
-* trailing whitespace (line 2368)
-cocoR/cp.cpp:2368:	    {                       
-* trailing whitespace (line 2378)
-cocoR/cp.cpp:2378:	                            
-* trailing whitespace (line 2387)
-cocoR/cp.cpp:2387:	
-* trailing whitespace (line 2390)
-cocoR/cp.cpp:2390:	
-* trailing whitespace (line 2475)
-cocoR/cp.cpp:2475:	        
-* trailing whitespace (line 2483)
-cocoR/cp.cpp:2483:	                           CCompiler cc;                         
-* trailing whitespace (line 2492)
-cocoR/cp.cpp:2492:	   
-* trailing whitespace (line 2493)
-cocoR/cp.cpp:2493:	
-* trailing whitespace (line 2499)
-cocoR/cp.cpp:2499:	   {                       
-* trailing whitespace (line 2514)
-cocoR/cp.cpp:2514:	
-* trailing whitespace (line 2518)
-cocoR/cp.cpp:2518:	
-* trailing whitespace (line 2519)
-cocoR/cp.cpp:2519:	    char cParamNum = 0;     
-* trailing whitespace (line 2520)
-cocoR/cp.cpp:2520:	
-* trailing whitespace (line 2522)
-cocoR/cp.cpp:2522:	
-* trailing whitespace (line 2535)
-cocoR/cp.cpp:2535:	
-* trailing whitespace (line 2537)
-cocoR/cp.cpp:2537:	            ADDCOMMAND1(__parampub, address_mode, op1)                      
-* trailing whitespace (line 2540)
-cocoR/cp.cpp:2540:	
-* trailing whitespace (line 2541)
-cocoR/cp.cpp:2541:	    cParamNum++; 
-* trailing whitespace (line 2545)
-cocoR/cp.cpp:2545:		
-* trailing whitespace (line 2551)
-cocoR/cp.cpp:2551:		
-* trailing whitespace (line 2567)
-cocoR/cp.cpp:2567:		                            
-* trailing whitespace (line 2575)
-cocoR/cp.cpp:2575:		                            {                       
-* trailing whitespace (line 2582)
-cocoR/cp.cpp:2582:		
-* trailing whitespace (line 2583)
-cocoR/cp.cpp:2583:		                            ADDCOMMAND1(__parampub, size|0x100, temp)       
-* trailing whitespace (line 2585)
-cocoR/cp.cpp:2585:		                            else    
-* trailing whitespace (line 2586)
-cocoR/cp.cpp:2586:		                            */                      
-* trailing whitespace (line 2588)
-cocoR/cp.cpp:2588:		                            ADDCOMMAND1(__parampub, address_mode, op1)                      
-* trailing whitespace (line 2590)
-cocoR/cp.cpp:2590:		                            ADDCOMMAND1(__paramv, address_mode, op1)                
-* trailing whitespace (line 2591)
-cocoR/cp.cpp:2591:		                            cParamNum++; 
-* trailing whitespace (line 2592)
-cocoR/cp.cpp:2592:		                    }               
-* trailing whitespace (line 2595)
-cocoR/cp.cpp:2595:	
-* trailing whitespace (line 2599)
-cocoR/cp.cpp:2599:	
-* trailing whitespace (line 2679)
-cocoR/cp.cpp:2679:   函数名称     : cParser::PushExpOp
-* trailing whitespace (line 2680)
-cocoR/cp.cpp:2680:   函数功能	    : 一元运算符入栈
-* trailing whitespace (line 2681)
-cocoR/cp.cpp:2681:   变量说明     : 
-* trailing whitespace (line 2682)
-cocoR/cp.cpp:2682:   int op: 运算符
-* trailing whitespace (line 2683)
-cocoR/cp.cpp:2683:   返回值       : 
-* trailing whitespace (line 2684)
-cocoR/cp.cpp:2684:   编写人       : 居卫华
-* trailing whitespace (line 2685)
-cocoR/cp.cpp:2685:   完成日期     : 2001 - 6 - 6
-* trailing whitespace (line 2861)
-cocoR/cp.cpp:2861:函数名称     : cParser::NeedCast
-* trailing whitespace (line 2862)
-cocoR/cp.cpp:2862:函数功能	    : 判断是否需要类型转换, 并返回转换码和要转换的运算数
-* trailing whitespace (line 2863)
-cocoR/cp.cpp:2863:变量说明     : 
-* trailing whitespace (line 2864)
-cocoR/cp.cpp:2864:TYPEDES dt1 : 运算数1
-* trailing whitespace (line 2865)
-cocoR/cp.cpp:2865:TYPEDES dt2 : 运算数2
-* trailing whitespace (line 2866)
-cocoR/cp.cpp:2866:char &casted : [OUT]要被转换的运算数 
-* trailing whitespace (line 2867)
-cocoR/cp.cpp:2867:返回值       : 要进行的类型转换代号, -1表示不需要转换
-* trailing whitespace (line 2868)
-cocoR/cp.cpp:2868:编写人       : 居卫华
-* trailing whitespace (line 2869)
-cocoR/cp.cpp:2869:完成日期     : 2001 - 6 - 8
-* trailing whitespace (line 2880)
-cocoR/cp.cpp:2880:	//如果是指针, 则不能进行转换
-* trailing whitespace (line 2889)
-cocoR/cp.cpp:2889:	//指针都转换成long
-* trailing whitespace (line 2892)
-cocoR/cp.cpp:2892:		//指针不能同浮点进行运算 
-* trailing whitespace (line 2903)
-cocoR/cp.cpp:2903:		//指针不能同浮点进行运算 
-* trailing whitespace (line 2918)
-cocoR/cp.cpp:2918:	//如果类型相同, 不需要转换
-* trailing whitespace (line 3046)
-cocoR/cp.cpp:3046:	case 0:// 空操作数(dummy type)
-* trailing whitespace (line 3061)
-cocoR/cp.cpp:3061:   函数名称     : cParser::AllocTempVar
-* trailing whitespace (line 3062)
-cocoR/cp.cpp:3062:   函数功能	    : 分配一个临时变量
-* trailing whitespace (line 3063)
-cocoR/cp.cpp:3063:   变量说明     : 
-* trailing whitespace (line 3064)
-cocoR/cp.cpp:3064:   long type	: 变量的类型
-* trailing whitespace (line 3065)
-cocoR/cp.cpp:3065:   返回值       : 变量的地址, -1 表示失败
-* trailing whitespace (line 3066)
-cocoR/cp.cpp:3066:   编写人       : 居卫华
-* trailing whitespace (line 3067)
-cocoR/cp.cpp:3067:   完成日期     : 2001 - 6 - 8
-* trailing whitespace (line 3085)
-cocoR/cp.cpp:3085:   函数名称     : cParser::Cast
-* trailing whitespace (line 3086)
-cocoR/cp.cpp:3086:   函数功能	    : 自动类型转换
-* trailing whitespace (line 3087)
-cocoR/cp.cpp:3087:   变量说明     : 
-* trailing whitespace (line 3088)
-cocoR/cp.cpp:3088:   返回值       : 
-* trailing whitespace (line 3089)
-cocoR/cp.cpp:3089:   编写人       : 居卫华
-* trailing whitespace (line 3090)
-cocoR/cp.cpp:3090:   完成日期     : 2001 - 6 - 11
-* trailing whitespace (line 3094)
-cocoR/cp.cpp:3094:			long castcode = -1; //cast操作码
-* trailing whitespace (line 3095)
-cocoR/cp.cpp:3095:			char casted = 0;	//被转换类型的运算数
-* trailing whitespace (line 3099)
-cocoR/cp.cpp:3099:				//类型转换
-* trailing whitespace (line 3100)
-cocoR/cp.cpp:3100:				long temp;//临时变量地址, 存放转换后的变量
-* trailing whitespace (line 3101)
-cocoR/cp.cpp:3101:				long type;//目标类型
-* trailing whitespace (line 3102)
-cocoR/cp.cpp:3102:				long am;  //cast指令的寻址方式
-* trailing whitespace (line 3122)
-cocoR/cp.cpp:3122:					am = am << 8;//temp的寻址方式
-* trailing whitespace (line 3126)
-cocoR/cp.cpp:3126:						am |= (type1&0x00ff) /*| (((type2&0x30)<<8)&0xff00)*/;//整条指令的寻址方式
-* trailing whitespace (line 3128)
-cocoR/cp.cpp:3128:						//修改运算数
-* trailing whitespace (line 3136)
-cocoR/cp.cpp:3136:						am |= (type2&0xff) /*| (((type1&0x30)<<8)&0xff00)*/;//整条指令的寻址方式					
-* trailing whitespace (line 3138)
-cocoR/cp.cpp:3138:						//修改运算数
-* trailing whitespace (line 3351)
-cocoR/cp.cpp:3351:	              int dimsize[64];//数组最大维数64
-* trailing whitespace (line 3382)
-cocoR/cp.cpp:3382:	TYPEDES dt;//无效
-* trailing whitespace (line 3404)
-cocoR/cp.cpp:3404:            //类型转换
-* trailing whitespace (line 3405)
-cocoR/cp.cpp:3405:            long castcode = -1; //cast操作码
-* trailing whitespace (line 3406)
-cocoR/cp.cpp:3406:            char casted = 0;        //被转换类型的运算数
-* trailing whitespace (line 3407)
-cocoR/cp.cpp:3407:            //类型转换
-* trailing whitespace (line 3408)
-cocoR/cp.cpp:3408:            long temp;//临时变量地址, 存放转换后的变量
-* trailing whitespace (line 3409)
-cocoR/cp.cpp:3409:            long type;//目标类型
-* trailing whitespace (line 3412)
-cocoR/cp.cpp:3412:            long am;  //cast指令的寻址方式
-* trailing whitespace (line 3429)
-cocoR/cp.cpp:3429:                    if (DT1.refLevel > 0)//是指针
-* trailing whitespace (line 3431)
-cocoR/cp.cpp:3431:                            if (DT2.refLevel == 0 // 不是指针
-* trailing whitespace (line 3432)
-cocoR/cp.cpp:3432:                                    && DT2.type != dtLong //不是长整型
-* trailing whitespace (line 3517)
-cocoR/cp.cpp:3517:            {//需要转换
-* trailing whitespace (line 3520)
-cocoR/cp.cpp:3520:                    am = am << 8;//temp的寻址方式
-* trailing whitespace (line 3522)
-cocoR/cp.cpp:3522:                    am |= (type2&0xff) /*| (((type2&0x30)<<8)&0xff00)*/;//整条指令的寻址方式                                        
-* trailing whitespace (line 3524)
-cocoR/cp.cpp:3524:                    //修改运算数
-* In cocoR/cp.hpp
-* trailing whitespace (line 16)
-cocoR/cp.hpp:16:#include "clib.h"
-* trailing whitespace (line 56)
-cocoR/cp.hpp:56:}EXPRESSIONOP;//表达式栈使用的操作栈的节点
-* trailing whitespace (line 109)
-cocoR/cp.hpp:109:	int UnitSize(TYPEDES& type);                //实际数据类型的size
-* trailing whitespace (line 110)
-cocoR/cp.hpp:110:	//void Init(CClassTable *table, CPubFuncTable* ptf);                                       //初始化
-* trailing whitespace (line 111)
-cocoR/cp.hpp:111:	void SetPubFuncTable(CPubFuncTable* pTable);       //设置脚本将使用的基本函数表
-* trailing whitespace (line 122)
-cocoR/cp.hpp:122:		Scanner->GetName(&Scanner->CurrSym, szCurrSymName, MAX_IDENTIFIER_LENGTH-1);//得到名称;
-* trailing whitespace (line 127)
-cocoR/cp.hpp:127:		Scanner->GetName(&Scanner->CurrSym, szNextSymName, MAX_IDENTIFIER_LENGTH-1);//得到名称;
-* trailing whitespace (line 136)
-cocoR/cp.hpp:136:	// class 描述表
-* trailing whitespace (line 140)
-cocoR/cp.hpp:140:	long m_lClassDesNum;				//定义的class描述个数
-* trailing whitespace (line 141)
-cocoR/cp.hpp:141:	long m_lClassDesTableSize;		//列表大小
-* trailing whitespace (line 149)
-cocoR/cp.hpp:149:	//一元操作符栈
-* trailing whitespace (line 151)
-cocoR/cp.hpp:151:	EXPRESSIONOP* m_pExpOpPt;//栈指针
-* trailing whitespace (line 170)
-cocoR/cp.hpp:170:	BOOL PopOp(int* op);    //pop一元操作符
-* trailing whitespace (line 171)
-cocoR/cp.hpp:171:	void PushExpOp(int op); //push一元操作符
-* In cocoR/cs.cpp
-* indent SP followed by a TAB (line 42)
-cocoR/cs.cpp:42:  	case 'b':
-* indent SP followed by a TAB (line 43)
-cocoR/cs.cpp:43:  		if (EqualStr("break")) return breakSym;
-* indent SP followed by a TAB (line 44)
-cocoR/cs.cpp:44:  		break;
-* indent SP followed by a TAB (line 45)
-cocoR/cs.cpp:45:  	case 'c':
-* indent SP followed by a TAB (line 46)
-cocoR/cs.cpp:46:  		if (EqualStr("class")) return classSym;
-* indent SP followed by a TAB (line 47)
-cocoR/cs.cpp:47:  		if (EqualStr("char")) return charSym;
-* indent SP followed by a TAB (line 48)
-cocoR/cs.cpp:48:  		if (EqualStr("case")) return caseSym;
-* indent SP followed by a TAB (line 49)
-cocoR/cs.cpp:49:  		if (EqualStr("continue")) return continueSym;
-* indent SP followed by a TAB (line 50)
-cocoR/cs.cpp:50:  		break;
-* indent SP followed by a TAB (line 51)
-cocoR/cs.cpp:51:  	case 'd':
-* indent SP followed by a TAB (line 52)
-cocoR/cs.cpp:52:  		if (EqualStr("double")) return doubleSym;
-* indent SP followed by a TAB (line 53)
-cocoR/cs.cpp:53:  		if (EqualStr("default")) return defaultSym;
-* indent SP followed by a TAB (line 54)
-cocoR/cs.cpp:54:  		if (EqualStr("do")) return doSym;
-* indent SP followed by a TAB (line 55)
-cocoR/cs.cpp:55:  		break;
-* indent SP followed by a TAB (line 56)
-cocoR/cs.cpp:56:  	case 'e':
-* indent SP followed by a TAB (line 57)
-cocoR/cs.cpp:57:  		if (EqualStr("else")) return elseSym;
-* indent SP followed by a TAB (line 58)
-cocoR/cs.cpp:58:  		break;
-* indent SP followed by a TAB (line 59)
-cocoR/cs.cpp:59:  	case 'f':
-* indent SP followed by a TAB (line 60)
-cocoR/cs.cpp:60:  		if (EqualStr("function")) return functionSym;
-* indent SP followed by a TAB (line 61)
-cocoR/cs.cpp:61:  		if (EqualStr("float")) return floatSym;
-* indent SP followed by a TAB (line 62)
-cocoR/cs.cpp:62:  		if (EqualStr("for")) return forSym;
-* indent SP followed by a TAB (line 63)
-cocoR/cs.cpp:63:  		break;
-* indent SP followed by a TAB (line 64)
-cocoR/cs.cpp:64:  	case 'i':
-* indent SP followed by a TAB (line 65)
-cocoR/cs.cpp:65:  		if (EqualStr("inherit")) return inheritSym;
-* indent SP followed by a TAB (line 66)
-cocoR/cs.cpp:66:  		if (EqualStr("int")) return intSym;
-* indent SP followed by a TAB (line 67)
-cocoR/cs.cpp:67:  		if (EqualStr("if")) return ifSym;
-* indent SP followed by a TAB (line 68)
-cocoR/cs.cpp:68:  		break;
-* indent SP followed by a TAB (line 69)
-cocoR/cs.cpp:69:  	case 'l':
-* indent SP followed by a TAB (line 70)
-cocoR/cs.cpp:70:  		if (EqualStr("load")) return loadSym;
-* indent SP followed by a TAB (line 71)
-cocoR/cs.cpp:71:  		if (EqualStr("long")) return longSym;
-* indent SP followed by a TAB (line 72)
-cocoR/cs.cpp:72:  		break;
-* indent SP followed by a TAB (line 73)
-cocoR/cs.cpp:73:  	case 'm':
-* indent SP followed by a TAB (line 74)
-cocoR/cs.cpp:74:  		if (EqualStr("my")) return mySym;
-* indent SP followed by a TAB (line 75)
-cocoR/cs.cpp:75:  		if (EqualStr("mixed")) return mixedSym;
-* indent SP followed by a TAB (line 76)
-cocoR/cs.cpp:76:  		break;
-* indent SP followed by a TAB (line 77)
-cocoR/cs.cpp:77:  	case 'n':
-* indent SP followed by a TAB (line 78)
-cocoR/cs.cpp:78:  		if (EqualStr("new")) return newSym;
-* indent SP followed by a TAB (line 79)
-cocoR/cs.cpp:79:  		break;
-* indent SP followed by a TAB (line 80)
-cocoR/cs.cpp:80:  	case 'r':
-* indent SP followed by a TAB (line 81)
-cocoR/cs.cpp:81:  		if (EqualStr("return")) return returnSym;
-* indent SP followed by a TAB (line 82)
-cocoR/cs.cpp:82:  		break;
-* indent SP followed by a TAB (line 83)
-cocoR/cs.cpp:83:  	case 's':
-* indent SP followed by a TAB (line 84)
-cocoR/cs.cpp:84:  		if (EqualStr("static")) return staticSym;
-* indent SP followed by a TAB (line 85)
-cocoR/cs.cpp:85:  		if (EqualStr("short")) return shortSym;
-* indent SP followed by a TAB (line 86)
-cocoR/cs.cpp:86:  		if (EqualStr("string")) return stringSym;
-* indent SP followed by a TAB (line 87)
-cocoR/cs.cpp:87:  		if (EqualStr("switch")) return switchSym;
-* indent SP followed by a TAB (line 88)
-cocoR/cs.cpp:88:  		break;
-* indent SP followed by a TAB (line 89)
-cocoR/cs.cpp:89:  	case 'u':
-* indent SP followed by a TAB (line 90)
-cocoR/cs.cpp:90:  		if (EqualStr("use")) return useSym;
-* indent SP followed by a TAB (line 91)
-cocoR/cs.cpp:91:  		if (EqualStr("unsigned")) return unsignedSym;
-* indent SP followed by a TAB (line 92)
-cocoR/cs.cpp:92:  		break;
-* indent SP followed by a TAB (line 93)
-cocoR/cs.cpp:93:  	case 'v':
-* indent SP followed by a TAB (line 94)
-cocoR/cs.cpp:94:  		if (EqualStr("var")) return varSym;
-* indent SP followed by a TAB (line 95)
-cocoR/cs.cpp:95:  		if (EqualStr("void")) return voidSym;
-* indent SP followed by a TAB (line 96)
-cocoR/cs.cpp:96:  		break;
-* indent SP followed by a TAB (line 97)
-cocoR/cs.cpp:97:  	case 'w':
-* indent SP followed by a TAB (line 98)
-cocoR/cs.cpp:98:  		if (EqualStr("while")) return whileSym;
-* indent SP followed by a TAB (line 99)
-cocoR/cs.cpp:99:  		break;
-* indent SP followed by a TAB (line 112)
-cocoR/cs.cpp:112:  	Scan_NextCh();
-* indent SP followed by a TAB (line 113)
-cocoR/cs.cpp:113:  	if (Scan_Ch == '*') { /* 2 */
-* indent SP followed by a TAB (line 114)
-cocoR/cs.cpp:114:  		Scan_NextCh();
-* indent SP followed by a TAB (line 115)
-cocoR/cs.cpp:115:  		while (1) {
-* indent SP followed by a TAB (line 116)
-cocoR/cs.cpp:116:  			if (Scan_Ch== '*') { /* 5 */
-* indent SP followed by a TAB (line 117)
-cocoR/cs.cpp:117:  				Scan_NextCh();
-* indent SP followed by a TAB (line 118)
-cocoR/cs.cpp:118:  				if (Scan_Ch == '/') { /* 6 */
-* indent SP followed by a TAB (line 119)
-cocoR/cs.cpp:119:  					Level--; Scan_NextCh(); Scan_ComEols = Scan_CurrLine - StartLine;
-* indent SP followed by a TAB (line 120)
-cocoR/cs.cpp:120:  					if(Level == 0) return 1;
-* trailing whitespace (line 121)
-cocoR/cs.cpp:121:  				} /* 6 */ 
-* indent SP followed by a TAB (line 121)
-cocoR/cs.cpp:121:  				} /* 6 */ 
-* indent SP followed by a TAB (line 122)
-cocoR/cs.cpp:122:  			} else /* 5 */
-* indent SP followed by a TAB (line 123)
-cocoR/cs.cpp:123:  			if (Scan_Ch == EOF_CHAR) return 0;
-* indent SP followed by a TAB (line 124)
-cocoR/cs.cpp:124:  			else Scan_NextCh();
-* indent SP followed by a TAB (line 125)
-cocoR/cs.cpp:125:  		} /* while */
-* indent SP followed by a TAB (line 126)
-cocoR/cs.cpp:126:  	} else { /* 2 */
-* indent SP followed by a TAB (line 127)
-cocoR/cs.cpp:127:  		if (Scan_Ch == LF_CHAR) { Scan_CurrLine--; Scan_LineStart = OldLineStart; }
-* indent SP followed by a TAB (line 128)
-cocoR/cs.cpp:128:  		Scan_BuffPos -= 2; Scan_CurrCol = OldCol - 1; Scan_NextCh();
-* indent SP followed by a TAB (line 129)
-cocoR/cs.cpp:129:  	} /* 2 */
-* indent SP followed by a TAB (line 132)
-cocoR/cs.cpp:132:  	Scan_NextCh();
-* indent SP followed by a TAB (line 133)
-cocoR/cs.cpp:133:  	if (Scan_Ch == '/') { /* 2 */
-* indent SP followed by a TAB (line 134)
-cocoR/cs.cpp:134:  		Scan_NextCh();
-* indent SP followed by a TAB (line 135)
-cocoR/cs.cpp:135:  		while (1) {
-* indent SP followed by a TAB (line 136)
-cocoR/cs.cpp:136:  			if (Scan_Ch== 10) { /* 5 */
-* indent SP followed by a TAB (line 137)
-cocoR/cs.cpp:137:  				Level--; Scan_NextCh(); Scan_ComEols = Scan_CurrLine - StartLine;
-* indent SP followed by a TAB (line 138)
-cocoR/cs.cpp:138:  				if(Level == 0) return 1;
-* indent SP followed by a TAB (line 139)
-cocoR/cs.cpp:139:  			} else /* 5 */
-* indent SP followed by a TAB (line 140)
-cocoR/cs.cpp:140:  			if (Scan_Ch == EOF_CHAR) return 0;
-* indent SP followed by a TAB (line 141)
-cocoR/cs.cpp:141:  			else Scan_NextCh();
-* indent SP followed by a TAB (line 142)
-cocoR/cs.cpp:142:  		} /* while */
-* indent SP followed by a TAB (line 143)
-cocoR/cs.cpp:143:  	} else { /* 2 */
-* indent SP followed by a TAB (line 144)
-cocoR/cs.cpp:144:  		if (Scan_Ch == LF_CHAR) { Scan_CurrLine--; Scan_LineStart = OldLineStart; }
-* indent SP followed by a TAB (line 145)
-cocoR/cs.cpp:145:  		Scan_BuffPos -= 2; Scan_CurrCol = OldCol - 1; Scan_NextCh();
-* indent SP followed by a TAB (line 146)
-cocoR/cs.cpp:146:  	} /* 2 */
-* indent SP followed by a TAB (line 172)
-cocoR/cs.cpp:172:      	if (Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
-* indent SP followed by a TAB (line 175)
-cocoR/cs.cpp:175:      	if (Scan_Ch >= '1' && Scan_Ch <= '9') state = 2; else
-* indent SP followed by a TAB (line 176)
-cocoR/cs.cpp:176:      	if (Scan_Ch == '0') state = 35; else
-* indent SP followed by a TAB (line 177)
-cocoR/cs.cpp:177:      	if (Scan_Ch == '"') state = 24; else
-* indent SP followed by a TAB (line 178)
-cocoR/cs.cpp:178:      	if (Scan_Ch == 39) state = 26; else
-* indent SP followed by a TAB (line 179)
-cocoR/cs.cpp:179:      	if (Scan_Ch == '<') state = 30; else
-* indent SP followed by a TAB (line 180)
-cocoR/cs.cpp:180:      	if (Scan_Ch == '#') state = 33; else
-* indent SP followed by a TAB (line 181)
-cocoR/cs.cpp:181:      	if (Scan_Ch == ';') state = 37; else
-* indent SP followed by a TAB (line 182)
-cocoR/cs.cpp:182:      	if (Scan_Ch == '=') state = 38; else
-* indent SP followed by a TAB (line 183)
-cocoR/cs.cpp:183:      	if (Scan_Ch == '{') state = 39; else
-* indent SP followed by a TAB (line 184)
-cocoR/cs.cpp:184:      	if (Scan_Ch == '}') state = 40; else
-* indent SP followed by a TAB (line 185)
-cocoR/cs.cpp:185:      	if (Scan_Ch == ',') state = 41; else
-* indent SP followed by a TAB (line 186)
-cocoR/cs.cpp:186:      	if (Scan_Ch == '[') state = 42; else
-* indent SP followed by a TAB (line 187)
-cocoR/cs.cpp:187:      	if (Scan_Ch == ']') state = 43; else
-* indent SP followed by a TAB (line 188)
-cocoR/cs.cpp:188:      	if (Scan_Ch == '(') state = 44; else
-* indent SP followed by a TAB (line 189)
-cocoR/cs.cpp:189:      	if (Scan_Ch == ')') state = 45; else
-* indent SP followed by a TAB (line 190)
-cocoR/cs.cpp:190:      	if (Scan_Ch == '*') state = 46; else
-* indent SP followed by a TAB (line 191)
-cocoR/cs.cpp:191:      	if (Scan_Ch == ':') state = 47; else
-* indent SP followed by a TAB (line 192)
-cocoR/cs.cpp:192:      	if (Scan_Ch == '|') state = 48; else
-* indent SP followed by a TAB (line 193)
-cocoR/cs.cpp:193:      	if (Scan_Ch == '&') state = 50; else
-* indent SP followed by a TAB (line 194)
-cocoR/cs.cpp:194:      	if (Scan_Ch == '^') state = 52; else
-* indent SP followed by a TAB (line 195)
-cocoR/cs.cpp:195:      	if (Scan_Ch == '!') state = 54; else
-* indent SP followed by a TAB (line 196)
-cocoR/cs.cpp:196:      	if (Scan_Ch == '>') state = 56; else
-* indent SP followed by a TAB (line 197)
-cocoR/cs.cpp:197:      	if (Scan_Ch == '+') state = 61; else
-* indent SP followed by a TAB (line 198)
-cocoR/cs.cpp:198:      	if (Scan_Ch == '-') state = 62; else
-* indent SP followed by a TAB (line 199)
-cocoR/cs.cpp:199:      	if (Scan_Ch == '/') state = 63; else
-* indent SP followed by a TAB (line 200)
-cocoR/cs.cpp:200:      	if (Scan_Ch == '%') state = 64; else
-* indent SP followed by a TAB (line 201)
-cocoR/cs.cpp:201:      	if (Scan_Ch == '.') state = 67; else
-* indent SP followed by a TAB (line 202)
-cocoR/cs.cpp:202:      	if (Scan_Ch == '~') state = 80; else
-* indent SP followed by a TAB (line 203)
-cocoR/cs.cpp:203:      	return No_Sym;
-* indent SP followed by a TAB (line 204)
-cocoR/cs.cpp:204:      	break;
-* indent SP followed by a TAB (line 207)
-cocoR/cs.cpp:207:      	if (Scan_Ch >= '0' && Scan_Ch <= '9' ||
-* indent SP followed by a TAB (line 208)
-cocoR/cs.cpp:208:      	    Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
-* indent SP followed by a TAB (line 209)
-cocoR/cs.cpp:209:      	    Scan_Ch == '_' ||
-* indent SP followed by a TAB (line 210)
-cocoR/cs.cpp:210:      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') /*same state*/; else
-* indent SP followed by a TAB (line 211)
-cocoR/cs.cpp:211:      	return CheckLiteral(identifierSym);
-* indent SP followed by a TAB (line 212)
-cocoR/cs.cpp:212:      	break;
-* indent SP followed by a TAB (line 214)
-cocoR/cs.cpp:214:      	if (Scan_Ch == 'U') state = 5; else
-* indent SP followed by a TAB (line 215)
-cocoR/cs.cpp:215:      	if (Scan_Ch == 'u') state = 6; else
-* indent SP followed by a TAB (line 216)
-cocoR/cs.cpp:216:      	if (Scan_Ch == 'L') state = 7; else
-* indent SP followed by a TAB (line 217)
-cocoR/cs.cpp:217:      	if (Scan_Ch == 'l') state = 8; else
-* indent SP followed by a TAB (line 218)
-cocoR/cs.cpp:218:      	if (Scan_Ch == '.') state = 4; else
-* indent SP followed by a TAB (line 219)
-cocoR/cs.cpp:219:      	if (Scan_Ch >= '0' && Scan_Ch <= '9') /*same state*/; else
-* indent SP followed by a TAB (line 220)
-cocoR/cs.cpp:220:      	return numberSym;
-* indent SP followed by a TAB (line 221)
-cocoR/cs.cpp:221:      	break;
-* indent SP followed by a TAB (line 223)
-cocoR/cs.cpp:223:      	if (Scan_Ch == 'U') state = 13; else
-* indent SP followed by a TAB (line 224)
-cocoR/cs.cpp:224:      	if (Scan_Ch == 'u') state = 14; else
-* indent SP followed by a TAB (line 225)
-cocoR/cs.cpp:225:      	if (Scan_Ch == 'L') state = 15; else
-* indent SP followed by a TAB (line 226)
-cocoR/cs.cpp:226:      	if (Scan_Ch == 'l') state = 16; else
-* indent SP followed by a TAB (line 227)
-cocoR/cs.cpp:227:      	if (Scan_Ch >= '0' && Scan_Ch <= '9') /*same state*/; else
-* indent SP followed by a TAB (line 228)
-cocoR/cs.cpp:228:      	return numberSym;
-* indent SP followed by a TAB (line 229)
-cocoR/cs.cpp:229:      	break;
-* indent SP followed by a TAB (line 231)
-cocoR/cs.cpp:231:      	return numberSym;
-* indent SP followed by a TAB (line 233)
-cocoR/cs.cpp:233:      	return numberSym;
-* indent SP followed by a TAB (line 235)
-cocoR/cs.cpp:235:      	return numberSym;
-* indent SP followed by a TAB (line 237)
-cocoR/cs.cpp:237:      	return numberSym;
-* indent SP followed by a TAB (line 239)
-cocoR/cs.cpp:239:      	return numberSym;
-* indent SP followed by a TAB (line 241)
-cocoR/cs.cpp:241:      	return numberSym;
-* indent SP followed by a TAB (line 243)
-cocoR/cs.cpp:243:      	return numberSym;
-* indent SP followed by a TAB (line 245)
-cocoR/cs.cpp:245:      	return numberSym;
-* indent SP followed by a TAB (line 247)
-cocoR/cs.cpp:247:      	if (Scan_Ch >= '0' && Scan_Ch <= '9' ||
-* indent SP followed by a TAB (line 248)
-cocoR/cs.cpp:248:      	    Scan_Ch >= 'A' && Scan_Ch <= 'F' ||
-* indent SP followed by a TAB (line 249)
-cocoR/cs.cpp:249:      	    Scan_Ch >= 'a' && Scan_Ch <= 'f') state = 19; else
-* indent SP followed by a TAB (line 250)
-cocoR/cs.cpp:250:      	return No_Sym;
-* indent SP followed by a TAB (line 251)
-cocoR/cs.cpp:251:      	break;
-* indent SP followed by a TAB (line 253)
-cocoR/cs.cpp:253:      	if (Scan_Ch == 'U') state = 20; else
-* indent SP followed by a TAB (line 254)
-cocoR/cs.cpp:254:      	if (Scan_Ch == 'u') state = 21; else
-* indent SP followed by a TAB (line 255)
-cocoR/cs.cpp:255:      	if (Scan_Ch == 'L') state = 22; else
-* indent SP followed by a TAB (line 256)
-cocoR/cs.cpp:256:      	if (Scan_Ch == 'l') state = 23; else
-* indent SP followed by a TAB (line 257)
-cocoR/cs.cpp:257:      	if (Scan_Ch >= '0' && Scan_Ch <= '9' ||
-* indent SP followed by a TAB (line 258)
-cocoR/cs.cpp:258:      	    Scan_Ch >= 'A' && Scan_Ch <= 'F' ||
-* indent SP followed by a TAB (line 259)
-cocoR/cs.cpp:259:      	    Scan_Ch >= 'a' && Scan_Ch <= 'f') /*same state*/; else
-* indent SP followed by a TAB (line 260)
-cocoR/cs.cpp:260:      	return hexnumberSym;
-* indent SP followed by a TAB (line 261)
-cocoR/cs.cpp:261:      	break;
-* indent SP followed by a TAB (line 263)
-cocoR/cs.cpp:263:      	return hexnumberSym;
-* indent SP followed by a TAB (line 265)
-cocoR/cs.cpp:265:      	return hexnumberSym;
-* indent SP followed by a TAB (line 267)
-cocoR/cs.cpp:267:      	return hexnumberSym;
-* indent SP followed by a TAB (line 269)
-cocoR/cs.cpp:269:      	return hexnumberSym;
-* indent SP followed by a TAB (line 271)
-cocoR/cs.cpp:271:      	if (Scan_Ch == '"') state = 25; else
-* indent SP followed by a TAB (line 272)
-cocoR/cs.cpp:272:      	if (Scan_Ch >= ' ' && Scan_Ch <= '!' ||
-* indent SP followed by a TAB (line 273)
-cocoR/cs.cpp:273:      	    Scan_Ch >= '#' && Scan_Ch <= 255) /*same state*/; else
-* indent SP followed by a TAB (line 274)
-cocoR/cs.cpp:274:      	return No_Sym;
-* indent SP followed by a TAB (line 275)
-cocoR/cs.cpp:275:      	break;
-* indent SP followed by a TAB (line 277)
-cocoR/cs.cpp:277:      	return stringD1Sym;
-* indent SP followed by a TAB (line 279)
-cocoR/cs.cpp:279:      	if (Scan_Ch >= ' ' && Scan_Ch <= '&' ||
-* indent SP followed by a TAB (line 280)
-cocoR/cs.cpp:280:      	    Scan_Ch >= '(' && Scan_Ch <= '[' ||
-* indent SP followed by a TAB (line 281)
-cocoR/cs.cpp:281:      	    Scan_Ch >= ']' && Scan_Ch <= 255) state = 28; else
-* indent SP followed by a TAB (line 282)
-cocoR/cs.cpp:282:      	if (Scan_Ch == 92) state = 36; else
-* indent SP followed by a TAB (line 283)
-cocoR/cs.cpp:283:      	return No_Sym;
-* indent SP followed by a TAB (line 284)
-cocoR/cs.cpp:284:      	break;
-* indent SP followed by a TAB (line 286)
-cocoR/cs.cpp:286:      	if (Scan_Ch == 39) state = 29; else
-* indent SP followed by a TAB (line 287)
-cocoR/cs.cpp:287:      	return No_Sym;
-* indent SP followed by a TAB (line 288)
-cocoR/cs.cpp:288:      	break;
-* indent SP followed by a TAB (line 290)
-cocoR/cs.cpp:290:      	return charD1Sym;
-* indent SP followed by a TAB (line 292)
-cocoR/cs.cpp:292:      	if (Scan_Ch == '.' ||
-* indent SP followed by a TAB (line 293)
-cocoR/cs.cpp:293:      	    Scan_Ch >= '0' && Scan_Ch <= ':' ||
-* indent SP followed by a TAB (line 294)
-cocoR/cs.cpp:294:      	    Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
-* indent SP followed by a TAB (line 295)
-cocoR/cs.cpp:295:      	    Scan_Ch == 92 ||
-* indent SP followed by a TAB (line 296)
-cocoR/cs.cpp:296:      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') state = 31; else
-* indent SP followed by a TAB (line 297)
-cocoR/cs.cpp:297:      	if (Scan_Ch == '=') state = 57; else
-* indent SP followed by a TAB (line 298)
-cocoR/cs.cpp:298:      	if (Scan_Ch == '<') state = 59; else
-* indent SP followed by a TAB (line 299)
-cocoR/cs.cpp:299:      	return LessSym;
-* indent SP followed by a TAB (line 300)
-cocoR/cs.cpp:300:      	break;
-* indent SP followed by a TAB (line 302)
-cocoR/cs.cpp:302:      	if (Scan_Ch == '>') state = 32; else
-* indent SP followed by a TAB (line 303)
-cocoR/cs.cpp:303:      	if (Scan_Ch == '.' ||
-* indent SP followed by a TAB (line 304)
-cocoR/cs.cpp:304:      	    Scan_Ch >= '0' && Scan_Ch <= ':' ||
-* indent SP followed by a TAB (line 305)
-cocoR/cs.cpp:305:      	    Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
-* indent SP followed by a TAB (line 306)
-cocoR/cs.cpp:306:      	    Scan_Ch == 92 ||
-* indent SP followed by a TAB (line 307)
-cocoR/cs.cpp:307:      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') /*same state*/; else
-* indent SP followed by a TAB (line 308)
-cocoR/cs.cpp:308:      	return No_Sym;
-* indent SP followed by a TAB (line 309)
-cocoR/cs.cpp:309:      	break;
-* indent SP followed by a TAB (line 311)
-cocoR/cs.cpp:311:      	return librarySym;
-* indent SP followed by a TAB (line 313)
-cocoR/cs.cpp:313:      	if (Scan_Ch >= 'A' && Scan_Ch <= 'Z' ||
-* indent SP followed by a TAB (line 314)
-cocoR/cs.cpp:314:      	    Scan_Ch >= 'a' && Scan_Ch <= 'z') state = 34; else
-* indent SP followed by a TAB (line 315)
-cocoR/cs.cpp:315:      	return No_Sym;
-* indent SP followed by a TAB (line 316)
-cocoR/cs.cpp:316:      	break;
-* indent SP followed by a TAB (line 318)
-cocoR/cs.cpp:318:      	return PreProcessorSym;
-* indent SP followed by a TAB (line 320)
-cocoR/cs.cpp:320:      	if (Scan_Ch == 'U') state = 5; else
-* indent SP followed by a TAB (line 321)
-cocoR/cs.cpp:321:      	if (Scan_Ch == 'u') state = 6; else
-* indent SP followed by a TAB (line 322)
-cocoR/cs.cpp:322:      	if (Scan_Ch == 'L') state = 7; else
-* indent SP followed by a TAB (line 323)
-cocoR/cs.cpp:323:      	if (Scan_Ch == 'l') state = 8; else
-* indent SP followed by a TAB (line 324)
-cocoR/cs.cpp:324:      	if (Scan_Ch == '.') state = 4; else
-* indent SP followed by a TAB (line 325)
-cocoR/cs.cpp:325:      	if (Scan_Ch >= '0' && Scan_Ch <= '9') state = 2; else
-* indent SP followed by a TAB (line 326)
-cocoR/cs.cpp:326:      	if (Scan_Ch == 'X' ||
-* indent SP followed by a TAB (line 327)
-cocoR/cs.cpp:327:      	    Scan_Ch == 'x') state = 18; else
-* indent SP followed by a TAB (line 328)
-cocoR/cs.cpp:328:      	return numberSym;
-* indent SP followed by a TAB (line 329)
-cocoR/cs.cpp:329:      	break;
-* indent SP followed by a TAB (line 331)
-cocoR/cs.cpp:331:      	if (Scan_Ch >= ' ' && Scan_Ch <= '&' ||
-* indent SP followed by a TAB (line 332)
-cocoR/cs.cpp:332:      	    Scan_Ch >= '(' && Scan_Ch <= 255) state = 28; else
-* indent SP followed by a TAB (line 333)
-cocoR/cs.cpp:333:      	if (Scan_Ch == 39) state = 29; else
-* indent SP followed by a TAB (line 334)
-cocoR/cs.cpp:334:      	return No_Sym;
-* indent SP followed by a TAB (line 335)
-cocoR/cs.cpp:335:      	break;
-* indent SP followed by a TAB (line 337)
-cocoR/cs.cpp:337:      	return SemicolonSym;
-* indent SP followed by a TAB (line 339)
-cocoR/cs.cpp:339:      	if (Scan_Ch == '=') state = 53; else
-* indent SP followed by a TAB (line 340)
-cocoR/cs.cpp:340:      	return EqualSym;
-* indent SP followed by a TAB (line 341)
-cocoR/cs.cpp:341:      	break;
-* indent SP followed by a TAB (line 343)
-cocoR/cs.cpp:343:      	return LbraceSym;
-* indent SP followed by a TAB (line 345)
-cocoR/cs.cpp:345:      	return RbraceSym;
-* indent SP followed by a TAB (line 347)
-cocoR/cs.cpp:347:      	return CommaSym;
-* indent SP followed by a TAB (line 349)
-cocoR/cs.cpp:349:      	return LbrackSym;
-* indent SP followed by a TAB (line 351)
-cocoR/cs.cpp:351:      	return RbrackSym;
-* indent SP followed by a TAB (line 353)
-cocoR/cs.cpp:353:      	return LparenSym;
-* indent SP followed by a TAB (line 355)
-cocoR/cs.cpp:355:      	return RparenSym;
-* indent SP followed by a TAB (line 357)
-cocoR/cs.cpp:357:      	if (Scan_Ch == '=') state = 70; else
-* indent SP followed by a TAB (line 358)
-cocoR/cs.cpp:358:      	return StarSym;
-* indent SP followed by a TAB (line 359)
-cocoR/cs.cpp:359:      	break;
-* indent SP followed by a TAB (line 361)
-cocoR/cs.cpp:361:      	if (Scan_Ch == ':') state = 69; else
-* indent SP followed by a TAB (line 362)
-cocoR/cs.cpp:362:      	return ColonSym;
-* indent SP followed by a TAB (line 363)
-cocoR/cs.cpp:363:      	break;
-* indent SP followed by a TAB (line 365)
-cocoR/cs.cpp:365:      	if (Scan_Ch == '|') state = 49; else
-* indent SP followed by a TAB (line 366)
-cocoR/cs.cpp:366:      	if (Scan_Ch == '=') state = 77; else
-* indent SP followed by a TAB (line 367)
-cocoR/cs.cpp:367:      	return BarSym;
-* indent SP followed by a TAB (line 368)
-cocoR/cs.cpp:368:      	break;
-* indent SP followed by a TAB (line 370)
-cocoR/cs.cpp:370:      	return BarBarSym;
-* indent SP followed by a TAB (line 372)
-cocoR/cs.cpp:372:      	if (Scan_Ch == '&') state = 51; else
-* indent SP followed by a TAB (line 373)
-cocoR/cs.cpp:373:      	if (Scan_Ch == '=') state = 75; else
-* indent SP followed by a TAB (line 374)
-cocoR/cs.cpp:374:      	return AndSym;
-* indent SP followed by a TAB (line 375)
-cocoR/cs.cpp:375:      	break;
-* indent SP followed by a TAB (line 377)
-cocoR/cs.cpp:377:      	return AndAndSym;
-* indent SP followed by a TAB (line 379)
-cocoR/cs.cpp:379:      	if (Scan_Ch == '=') state = 76; else
-* indent SP followed by a TAB (line 380)
-cocoR/cs.cpp:380:      	return UparrowSym;
-* indent SP followed by a TAB (line 381)
-cocoR/cs.cpp:381:      	break;
-* indent SP followed by a TAB (line 383)
-cocoR/cs.cpp:383:      	return EqualEqualSym;
-* indent SP followed by a TAB (line 385)
-cocoR/cs.cpp:385:      	if (Scan_Ch == '=') state = 55; else
-* indent SP followed by a TAB (line 386)
-cocoR/cs.cpp:386:      	return BangSym;
-* indent SP followed by a TAB (line 387)
-cocoR/cs.cpp:387:      	break;
-* indent SP followed by a TAB (line 389)
-cocoR/cs.cpp:389:      	return BangEqualSym;
-* indent SP followed by a TAB (line 391)
-cocoR/cs.cpp:391:      	if (Scan_Ch == '=') state = 58; else
-* indent SP followed by a TAB (line 392)
-cocoR/cs.cpp:392:      	if (Scan_Ch == '>') state = 60; else
-* indent SP followed by a TAB (line 393)
-cocoR/cs.cpp:393:      	return GreaterSym;
-* indent SP followed by a TAB (line 394)
-cocoR/cs.cpp:394:      	break;
-* indent SP followed by a TAB (line 396)
-cocoR/cs.cpp:396:      	return LessEqualSym;
-* indent SP followed by a TAB (line 398)
-cocoR/cs.cpp:398:      	return GreaterEqualSym;
-* indent SP followed by a TAB (line 400)
-cocoR/cs.cpp:400:      	if (Scan_Ch == '=') state = 78; else
-* indent SP followed by a TAB (line 401)
-cocoR/cs.cpp:401:      	return LessLessSym;
-* indent SP followed by a TAB (line 402)
-cocoR/cs.cpp:402:      	break;
-* indent SP followed by a TAB (line 404)
-cocoR/cs.cpp:404:      	if (Scan_Ch == '=') state = 79; else
-* indent SP followed by a TAB (line 405)
-cocoR/cs.cpp:405:      	return GreaterGreaterSym;
-* indent SP followed by a TAB (line 406)
-cocoR/cs.cpp:406:      	break;
-* indent SP followed by a TAB (line 408)
-cocoR/cs.cpp:408:      	if (Scan_Ch == '+') state = 65; else
-* indent SP followed by a TAB (line 409)
-cocoR/cs.cpp:409:      	if (Scan_Ch == '=') state = 73; else
-* indent SP followed by a TAB (line 410)
-cocoR/cs.cpp:410:      	return PlusSym;
-* indent SP followed by a TAB (line 411)
-cocoR/cs.cpp:411:      	break;
-* indent SP followed by a TAB (line 413)
-cocoR/cs.cpp:413:      	if (Scan_Ch == '-') state = 66; else
-* indent SP followed by a TAB (line 414)
-cocoR/cs.cpp:414:      	if (Scan_Ch == '>') state = 68; else
-* indent SP followed by a TAB (line 415)
-cocoR/cs.cpp:415:      	if (Scan_Ch == '=') state = 74; else
-* indent SP followed by a TAB (line 416)
-cocoR/cs.cpp:416:      	return MinusSym;
-* indent SP followed by a TAB (line 417)
-cocoR/cs.cpp:417:      	break;
-* indent SP followed by a TAB (line 419)
-cocoR/cs.cpp:419:      	if (Scan_Ch == '=') state = 71; else
-* indent SP followed by a TAB (line 420)
-cocoR/cs.cpp:420:      	return SlashSym;
-* indent SP followed by a TAB (line 421)
-cocoR/cs.cpp:421:      	break;
-* indent SP followed by a TAB (line 423)
-cocoR/cs.cpp:423:      	if (Scan_Ch == '=') state = 72; else
-* indent SP followed by a TAB (line 424)
-cocoR/cs.cpp:424:      	return PercentSym;
-* indent SP followed by a TAB (line 425)
-cocoR/cs.cpp:425:      	break;
-* indent SP followed by a TAB (line 427)
-cocoR/cs.cpp:427:      	return PlusPlusSym;
-* indent SP followed by a TAB (line 429)
-cocoR/cs.cpp:429:      	return MinusMinusSym;
-* indent SP followed by a TAB (line 431)
-cocoR/cs.cpp:431:      	return PointSym;
-* indent SP followed by a TAB (line 433)
-cocoR/cs.cpp:433:      	return MinusGreaterSym;
-* indent SP followed by a TAB (line 435)
-cocoR/cs.cpp:435:      	return ColonColonSym;
-* indent SP followed by a TAB (line 437)
-cocoR/cs.cpp:437:      	return StarEqualSym;
-* indent SP followed by a TAB (line 439)
-cocoR/cs.cpp:439:      	return SlashEqualSym;
-* indent SP followed by a TAB (line 441)
-cocoR/cs.cpp:441:      	return PercentEqualSym;
-* indent SP followed by a TAB (line 443)
-cocoR/cs.cpp:443:      	return PlusEqualSym;
-* indent SP followed by a TAB (line 445)
-cocoR/cs.cpp:445:      	return MinusEqualSym;
-* indent SP followed by a TAB (line 447)
-cocoR/cs.cpp:447:      	return AndEqualSym;
-* indent SP followed by a TAB (line 449)
-cocoR/cs.cpp:449:      	return UparrowEqualSym;
-* indent SP followed by a TAB (line 451)
-cocoR/cs.cpp:451:      	return BarEqualSym;
-* indent SP followed by a TAB (line 453)
-cocoR/cs.cpp:453:      	return LessLessEqualSym;
-* indent SP followed by a TAB (line 455)
-cocoR/cs.cpp:455:      	return GreaterGreaterEqualSym;
-* indent SP followed by a TAB (line 457)
-cocoR/cs.cpp:457:      	return TildeSym;
-* In cocoR/gen_parse.sh
-* trailing whitespace (line 1)
-cocoR/gen_parse.sh:1:#CocoSourcesCPP/Coco -F -L -X -S -G -C mse.atg
-* trailing whitespace (line 2)
-cocoR/gen_parse.sh:2:#./cocor -A -F -X -S -G -C -D -L c.atg
-* trailing whitespace (line 3)
-cocoR/gen_parse.sh:3:./cocor -A -F -X -S -G -C -L c.atg
-* trailing whitespace (line 4)
-cocoR/gen_parse.sh:4:
-* In cocoR/msec.atg
-* trailing whitespace (line 61)
-cocoR/msec.atg:61:		 	// pocess #include       	    		    
-* indent SP followed by a TAB (line 61)
-cocoR/msec.atg:61:		 	// pocess #include       	    		    
-* trailing whitespace (line 69)
-cocoR/msec.atg:69:			*p=0; 
-* trailing whitespace (line 71)
-cocoR/msec.atg:71:			// poce include 
-* trailing whitespace (line 76)
-cocoR/msec.atg:76:					p += sizeof(cha);		
-* trailing whitespace (line 83)
-cocoR/msec.atg:83:			
-* trailing whitespace (line 92)
-cocoR/msec.atg:92:    C                    =      (. 
-* trailing whitespace (line 93)
-cocoR/msec.atg:93:	
-* trailing whitespace (line 98)
-cocoR/msec.atg:98:    
-* trailing whitespace (line 102)
-cocoR/msec.atg:102:    { Definition } EOF (. 
-* trailing whitespace (line 115)
-cocoR/msec.atg:115:	
-* trailing whitespace (line 124)
-cocoR/msec.atg:124:  
-* trailing whitespace (line 125)
-cocoR/msec.atg:125:  LoadLib = "load" identifie 
-* trailing whitespace (line 127)
-cocoR/msec.atg:127:   	// load extenal libay 
-* indent SP followed by a TAB (line 127)
-cocoR/msec.atg:127:   	// load extenal libay 
-* trailing whitespace (line 142)
-cocoR/msec.atg:142:  
-* trailing whitespace (line 144)
-cocoR/msec.atg:144:	
-* trailing whitespace (line 145)
-cocoR/msec.atg:145: 
-* trailing whitespace (line 148)
-cocoR/msec.atg:148:   [ StoageClass ] (. PTYPEDES type = new TYPEDES; .) 
-* trailing whitespace (line 150)
-cocoR/msec.atg:150:   
-* trailing whitespace (line 151)
-cocoR/msec.atg:151:   /*{ "*" } 
-* trailing whitespace (line 152)
-cocoR/msec.atg:152:(. 
-* trailing whitespace (line 157)
-cocoR/msec.atg:157:		
-* trailing whitespace (line 159)
-cocoR/msec.atg:159:		while (Sym == StaSym) 
-* trailing whitespace (line 180)
-cocoR/msec.atg:180:	   | ";" (.this->m_pCuClassDes->AddMembe(szName, *type);.) 
-* trailing whitespace (line 181)
-cocoR/msec.atg:181:    ) 
-* trailing whitespace (line 183)
-cocoR/msec.atg:183:   ) 
-* trailing whitespace (line 184)
-cocoR/msec.atg:184:   
-* trailing whitespace (line 186)
-cocoR/msec.atg:186:                            
-* trailing whitespace (line 188)
-cocoR/msec.atg:188:  
-* trailing whitespace (line 190)
-cocoR/msec.atg:190:  
-* trailing whitespace (line 192)
-cocoR/msec.atg:192:  
-* trailing whitespace (line 193)
-cocoR/msec.atg:193:  Inheitance              = "inheit" identifie 
-* trailing whitespace (line 195)
-cocoR/msec.atg:195:  
-* trailing whitespace (line 205)
-cocoR/msec.atg:205:				CCompile cc;                         
-* trailing whitespace (line 211)
-cocoR/msec.atg:211:  
-* trailing whitespace (line 213)
-cocoR/msec.atg:213:	ClassDef			= "class" identifie  
-* indent SP followed by a TAB (line 215)
-cocoR/msec.atg:215: 	// get name
-* trailing whitespace (line 221)
-cocoR/msec.atg:221:	ClassBody			 = 
-* trailing whitespace (line 228)
-cocoR/msec.atg:228:	
-* trailing whitespace (line 231)
-cocoR/msec.atg:231:	"{" { Definition} "}" 
-* trailing whitespace (line 232)
-cocoR/msec.atg:232:	
-* trailing whitespace (line 248)
-cocoR/msec.atg:248:				if (!pClass->AddMembe(function.m_SymbolTable.tableEnty[i].szName, 
-* trailing whitespace (line 256)
-cocoR/msec.atg:256:					GenEo(118);					
-* trailing whitespace (line 263)
-cocoR/msec.atg:263:			GenEo(119);				
-* trailing whitespace (line 277)
-cocoR/msec.atg:277:   "static" 
-* trailing whitespace (line 282)
-cocoR/msec.atg:282:  Type<PTYPEDES type>                 = 
-* indent SP followed by a TAB (line 284)
-cocoR/msec.atg:284:   	type = new TYPEDES;
-* trailing whitespace (line 285)
-cocoR/msec.atg:285:	memset(type, 0, sizeof(TYPEDES));	
-* trailing whitespace (line 293)
-cocoR/msec.atg:293:			Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称			
-* trailing whitespace (line 295)
-cocoR/msec.atg:295:			type->objID = GetObjIDByName(szName); 
-* trailing whitespace (line 313)
-cocoR/msec.atg:313:	| "int" 
-* trailing whitespace (line 314)
-cocoR/msec.atg:314:(.			 type->type = dtInt; type->efLevel = 0; .)	
-* trailing whitespace (line 315)
-cocoR/msec.atg:315:	| "float"		
-* trailing whitespace (line 322)
-cocoR/msec.atg:322:  VaList<PTYPEDES type, cha* szFistName>   = 
-* trailing whitespace (line 327)
-cocoR/msec.atg:327:.)    [ "=" Expession (. doAssign(); .)] 
-* trailing whitespace (line 332)
-cocoR/msec.atg:332:		
-* trailing whitespace (line 340)
-cocoR/msec.atg:340: [  "=" Expession (. 	doAssign(); .)] 
-* trailing whitespace (line 347)
-cocoR/msec.atg:347:  FunctionDefinition   = 
-* indent SP followed by a TAB (line 349)
-cocoR/msec.atg:349: 	this->m_pMainFunction = new CFunction;
-* trailing whitespace (line 354)
-cocoR/msec.atg:354:	
-* trailing whitespace (line 363)
-cocoR/msec.atg:363:		
-* trailing whitespace (line 364)
-cocoR/msec.atg:364:		
-* trailing whitespace (line 366)
-cocoR/msec.atg:366:  FunctionHeade FunctionBody  
-* indent SP followed by a TAB (line 368)
-cocoR/msec.atg:368: 	if (!this->Eo->Eos)
-* trailing whitespace (line 376)
-cocoR/msec.atg:376:		
-* trailing whitespace (line 378)
-cocoR/msec.atg:378:	SAFEDELETE( m_pMainFunction);	
-* trailing whitespace (line 383)
-cocoR/msec.atg:383:  FunctionHeade       = "(" [ FomalPaamList ] ")" 
-* trailing whitespace (line 384)
-cocoR/msec.atg:384:  (. 	
-* trailing whitespace (line 385)
-cocoR/msec.atg:385:  this->m_pMainFunction->m_iPaamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
-* trailing whitespace (line 389)
-cocoR/msec.atg:389:		}		
-* trailing whitespace (line 390)
-cocoR/msec.atg:390: 
-* trailing whitespace (line 397)
-cocoR/msec.atg:397:  }  identifie  
-* trailing whitespace (line 398)
-cocoR/msec.atg:398:  (. 
-* trailing whitespace (line 403)
-cocoR/msec.atg:403:  AaySize 
-* trailing whitespace (line 404)
-cocoR/msec.atg:404:(. 
-* trailing whitespace (line 408)
-cocoR/msec.atg:408:	
-* trailing whitespace (line 423)
-cocoR/msec.atg:423:		
-* trailing whitespace (line 429)
-cocoR/msec.atg:429:		
-* trailing whitespace (line 432)
-cocoR/msec.atg:432:			dimsize[i] = op;			
-* trailing whitespace (line 455)
-cocoR/msec.atg:455:.)  
-* trailing whitespace (line 461)
-cocoR/msec.atg:461:                         ( 
-* indent SP followed by a TAB (line 464)
-cocoR/msec.atg:464: 		cha szName[MAX_IDENTIFIER_LENGTH];
-* trailing whitespace (line 483)
-cocoR/msec.atg:483:  BeakStatement       = "beak" ";" 
-* trailing whitespace (line 487)
-cocoR/msec.atg:487:	ADDCOMMAND1(__jmp, CC, 0);	
-* trailing whitespace (line 490)
-cocoR/msec.atg:490: LocalDeclaation     = 
-* trailing whitespace (line 494)
-cocoR/msec.atg:494:								
-* trailing whitespace (line 497)
-cocoR/msec.atg:497:  
-* trailing whitespace (line 498)
-cocoR/msec.atg:498:							
-* trailing whitespace (line 501)
-cocoR/msec.atg:501:  
-* trailing whitespace (line 502)
-cocoR/msec.atg:502:  identifie				(.	
-* trailing whitespace (line 507)
-cocoR/msec.atg:507: . 
-* trailing whitespace (line 510)
-cocoR/msec.atg:510:  ContinueStatement    = "continue" ";" 
-* indent SP followed by a TAB (line 512)
-cocoR/msec.atg:512:  	//ecode this command fo wite back
-* trailing whitespace (line 515)
-cocoR/msec.atg:515:	ADDCOMMAND1(__jmp, CC, 0);	
-* trailing whitespace (line 522)
-cocoR/msec.atg:522:  FoStatement         = "fo"  "(" [ Expession ] ";" 
-* trailing whitespace (line 527)
-cocoR/msec.atg:527:	
-* trailing whitespace (line 534)
-cocoR/msec.atg:534:  
-* trailing whitespace (line 535)
-cocoR/msec.atg:535:  [ Expession ] 
-* indent SP followed by a TAB (line 537)
-cocoR/msec.atg:537: 		//add command jz
-* trailing whitespace (line 540)
-cocoR/msec.atg:540: 
-* trailing whitespace (line 542)
-cocoR/msec.atg:542:  ";" 
-* trailing whitespace (line 550)
-cocoR/msec.atg:550:  [ 
-* indent SP followed by a TAB (line 552)
-cocoR/msec.atg:552:  		cmdsaved = this->m_pMainFunction->m_nCuentCmdNum;
-* trailing whitespace (line 554)
-cocoR/msec.atg:554:	Expession 
-* trailing whitespace (line 557)
-cocoR/msec.atg:557:		cmd = new COMMAND[cmdnum];    
-* trailing whitespace (line 561)
-cocoR/msec.atg:561:		m_pMainFunction->m_nCuentCmdNum = cmdsaved;		
-* indent SP followed by a TAB (line 566)
-cocoR/msec.atg:566:  	long nContinue;//continue 语句的跳转目的地。
-* trailing whitespace (line 578)
-cocoR/msec.atg:578:	ADDCOMMAND1(__jmp, CC, loopEnty);	
-* trailing whitespace (line 587)
-cocoR/msec.atg:587:  IfStatement          = "if" "(" Expession ")" 
-* indent SP followed by a TAB (line 589)
-cocoR/msec.atg:589:  	//判断
-* trailing whitespace (line 595)
-cocoR/msec.atg:595:		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 611)
-cocoR/msec.atg:611:				addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
-* trailing whitespace (line 614)
-cocoR/msec.atg:614:				ADDCOMMAND3(__test, addess_mode, op1, 0, 0)	
-* trailing whitespace (line 625)
-cocoR/msec.atg:625: 
-* trailing whitespace (line 626)
-cocoR/msec.atg:626:   "else" 
-* indent SP followed by a TAB (line 629)
-cocoR/msec.atg:629:  		int jmpcmd = this->m_pMainFunction->m_nCuentCmdNum;
-* indent SP followed by a TAB (line 638)
-cocoR/msec.atg:638:  		nextcmd = this->m_pMainFunction->m_nCuentCmdNum;
-* indent SP followed by a TAB (line 647)
-cocoR/msec.atg:647:   		//补上jnz的跳转目标
-* trailing whitespace (line 656)
-cocoR/msec.atg:656:  RetunStatement      = "etun" [ Expession ] 
-* trailing whitespace (line 670)
-cocoR/msec.atg:670:	
-* trailing whitespace (line 683)
-cocoR/msec.atg:683:   Expession 
-* trailing whitespace (line 685)
-cocoR/msec.atg:685:   
-* trailing whitespace (line 686)
-cocoR/msec.atg:686:   ")" Statement 
-* trailing whitespace (line 690)
-cocoR/msec.atg:690:  WhileStatement       = "while" "(" 
-* trailing whitespace (line 700)
-cocoR/msec.atg:700:	Expession 
-* trailing whitespace (line 708)
-cocoR/msec.atg:708:		if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 724)
-cocoR/msec.atg:724:				addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
-* trailing whitespace (line 727)
-cocoR/msec.atg:727:				ADDCOMMAND3(__test, addess_mode, op1, 0, 0)	
-* trailing whitespace (line 736)
-cocoR/msec.atg:736:   ")" Statement 
-* trailing whitespace (line 737)
-cocoR/msec.atg:737:   
-* indent SP followed by a TAB (line 739)
-cocoR/msec.atg:739:   	long nContinue;//continue 语句的跳转目的地。
-* trailing whitespace (line 755)
-cocoR/msec.atg:755:/*  LocalDeclaation     = 
-* trailing whitespace (line 759)
-cocoR/msec.atg:759:								
-* trailing whitespace (line 762)
-cocoR/msec.atg:762:							
-* trailing whitespace (line 764)
-cocoR/msec.atg:764:  } 
-* trailing whitespace (line 765)
-cocoR/msec.atg:765:  
-* trailing whitespace (line 766)
-cocoR/msec.atg:766:  identifie				(.	
-* trailing whitespace (line 771)
-cocoR/msec.atg:771: . 
-* trailing whitespace (line 782)
-cocoR/msec.atg:782:	if (!doAssign()) 
-* trailing whitespace (line 791)
-cocoR/msec.atg:791:  
-* indent SP followed by a TAB (line 793)
-cocoR/msec.atg:793:   		type = 7;
-* trailing whitespace (line 795)
-cocoR/msec.atg:795:LogANDExp 
-* trailing whitespace (line 815)
-cocoR/msec.atg:815:			ADDCOMMAND3(__test, addess_mode, op1, op2, 7/*==*/)					
-* trailing whitespace (line 822)
-cocoR/msec.atg:822:} 
-* trailing whitespace (line 832)
-cocoR/msec.atg:832:		
-* trailing whitespace (line 850)
-cocoR/msec.atg:850: (. 	
-* trailing whitespace (line 857)
-cocoR/msec.atg:857:InclORExp   { "&&" 
-* trailing whitespace (line 861)
-cocoR/msec.atg:861:InclORExp 
-* trailing whitespace (line 879)
-cocoR/msec.atg:879:			ADDCOMMAND3(__test, addess_mode, op1, op2, 6/*==*/)					
-* trailing whitespace (line 895)
-cocoR/msec.atg:895:		
-* trailing whitespace (line 898)
-cocoR/msec.atg:898:		{			
-* trailing whitespace (line 918)
-cocoR/msec.atg:918:  EqualExp             = 
-* trailing whitespace (line 933)
-cocoR/msec.atg:933:.) ) RelationExp 
-* trailing whitespace (line 953)
-cocoR/msec.atg:953:			{	
-* trailing whitespace (line 954)
-cocoR/msec.atg:954:				ADDCOMMAND3(__test, addess_mode, op1, op2, 0/*==*/)					
-* trailing whitespace (line 958)
-cocoR/msec.atg:958:				ADDCOMMAND3(__test, addess_mode, op1, op2, 1/*==*/)	
-* trailing whitespace (line 968)
-cocoR/msec.atg:968:} 
-* trailing whitespace (line 980)
-cocoR/msec.atg:980:			{			
-* trailing whitespace (line 995)
-cocoR/msec.atg:995:  RelationExp          = 
-* indent SP followed by a TAB (line 997)
-cocoR/msec.atg:997:  	int type = -1;
-* trailing whitespace (line 1003)
-cocoR/msec.atg:1003:  ShiftExp    { ( "<" (. type = 5; .) | ">" (. type = 4; .)| "<=" (. type = 3; .)| ">=" (. type = 2; .)) 
-* trailing whitespace (line 1005)
-cocoR/msec.atg:1005:  
-* indent SP followed by a TAB (line 1007)
-cocoR/msec.atg:1007:  		//add command
-* trailing whitespace (line 1023)
-cocoR/msec.atg:1023:			ADDCOMMAND3(__test, addess_mode, op1, op2, type)					
-* trailing whitespace (line 1033)
-cocoR/msec.atg:1033:  
-* trailing whitespace (line 1034)
-cocoR/msec.atg:1034:  
-* indent SP followed by a TAB (line 1036)
-cocoR/msec.atg:1036:  	if (type >= 0)
-* trailing whitespace (line 1047)
-cocoR/msec.atg:1047:		{			
-* trailing whitespace (line 1064)
-cocoR/msec.atg:1064:MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp 
-* trailing whitespace (line 1087)
-cocoR/msec.atg:1087:			
-* trailing whitespace (line 1102)
-cocoR/msec.atg:1102:					ADDCOMMAND2(__fsub, (type1<<8)|0x82, op1, _AX)	
-* trailing whitespace (line 1104)
-cocoR/msec.atg:1104:					ADDCOMMAND2(__fadd, (type1<<8)|0x82, op1, _AX)	
-* trailing whitespace (line 1109)
-cocoR/msec.atg:1109:					ADDCOMMAND2(__sub, (type1<<8)|0x82, op1, _AX)	
-* trailing whitespace (line 1111)
-cocoR/msec.atg:1111:					ADDCOMMAND2(__add, (type1<<8)|0x82, op1, _AX)	
-* trailing whitespace (line 1120)
-cocoR/msec.atg:1120:					ADDCOMMAND2(__fsub, addess_mode, op1, op2)	
-* trailing whitespace (line 1122)
-cocoR/msec.atg:1122:					ADDCOMMAND2(__fadd, addess_mode, op1, op2)	
-* trailing whitespace (line 1127)
-cocoR/msec.atg:1127:					ADDCOMMAND2(__sub, addess_mode, op1, op2)	
-* trailing whitespace (line 1129)
-cocoR/msec.atg:1129:					ADDCOMMAND2(__add, addess_mode, op1, op2)	
-* trailing whitespace (line 1131)
-cocoR/msec.atg:1131:			}	
-* trailing whitespace (line 1134)
-cocoR/msec.atg:1134:			{			
-* trailing whitespace (line 1151)
-cocoR/msec.atg:1151:  CastExp  
-* trailing whitespace (line 1152)
-cocoR/msec.atg:1152:(. 
-* trailing whitespace (line 1155)
-cocoR/msec.atg:1155:.) { ( "*"  (.	type = 0; .) | "/"  (.	type = 1; .) | "%"  (.	type = 2; .) ) CastExp 
-* trailing whitespace (line 1158)
-cocoR/msec.atg:1158:		
-* trailing whitespace (line 1180)
-cocoR/msec.atg:1180:				if (type == 0) ADDCOMMAND2(__fmul, addess_mode, op1, op2)					
-* trailing whitespace (line 1181)
-cocoR/msec.atg:1181:					else if (type == 1) ADDCOMMAND2(__fdiv, addess_mode, op1, op2)				
-* trailing whitespace (line 1186)
-cocoR/msec.atg:1186:				if (type == 0) ADDCOMMAND2(__mul, addess_mode, op1, op2)					
-* trailing whitespace (line 1190)
-cocoR/msec.atg:1190:			
-* trailing whitespace (line 1193)
-cocoR/msec.atg:1193:			{			
-* trailing whitespace (line 1209)
-cocoR/msec.atg:1209:  CastExp              = 
-* indent SP followed by a TAB (line 1211)
-cocoR/msec.atg:1211:  	//保存一元操作符栈
-* trailing whitespace (line 1218)
-cocoR/msec.atg:1218:  UnayExp 
-* trailing whitespace (line 1219)
-cocoR/msec.atg:1219:  
-* trailing whitespace (line 1223)
-cocoR/msec.atg:1223:	{		
-* trailing whitespace (line 1228)
-cocoR/msec.atg:1228:		TYPEDES dt1;	
-* trailing whitespace (line 1235)
-cocoR/msec.atg:1235:		
-* trailing whitespace (line 1239)
-cocoR/msec.atg:1239:		case PlusSym:  			
-* trailing whitespace (line 1242)
-cocoR/msec.atg:1242:		case MinusSym:			
-* trailing whitespace (line 1261)
-cocoR/msec.atg:1261:		case StaSym:  
-* trailing whitespace (line 1269)
-cocoR/msec.atg:1269:				type1 |= opsize; 
-* trailing whitespace (line 1286)
-cocoR/msec.atg:1286:*/				
-* trailing whitespace (line 1287)
-cocoR/msec.atg:1287:/*			
-* trailing whitespace (line 1295)
-cocoR/msec.atg:1295:		case BangSym: 
-* trailing whitespace (line 1305)
-cocoR/msec.atg:1305:		case AndSym:  
-* trailing whitespace (line 1339)
-cocoR/msec.atg:1339:		}		
-* trailing whitespace (line 1343)
-cocoR/msec.atg:1343:	m_pExpOpPt = pSavedStack;  
-* trailing whitespace (line 1373)
-cocoR/msec.atg:1373:					
-* trailing whitespace (line 1376)
-cocoR/msec.atg:1376:				{	
-* trailing whitespace (line 1379)
-cocoR/msec.atg:1379:					2. b*单位长度= offset 
-* trailing whitespace (line 1395)
-cocoR/msec.atg:1395:							memcpy(dt1.dimsize, dt1.dimsize+1, sizeof(long)*(dt1.dim-1));					
-* trailing whitespace (line 1396)
-cocoR/msec.atg:1396:						dt1.dim--;							
-* trailing whitespace (line 1408)
-cocoR/msec.atg:1408:							GenEo(101);						
-* trailing whitespace (line 1432)
-cocoR/msec.atg:1432:                          | 
-* trailing whitespace (line 1434)
-cocoR/msec.atg:1434:	
-* trailing whitespace (line 1447)
-cocoR/msec.atg:1447:				{	
-* trailing whitespace (line 1465)
-cocoR/msec.atg:1465:				fn.nType = 1;				
-* trailing whitespace (line 1468)
-cocoR/msec.atg:1468:						  
-* trailing whitespace (line 1472)
-cocoR/msec.atg:1472:                          | ("." identifie)  
-* trailing whitespace (line 1480)
-cocoR/msec.atg:1480:		
-* indent SP followed by a TAB (line 1488)
-cocoR/msec.atg:1488:				    	 if (temp == -1)
-* trailing whitespace (line 1499)
-cocoR/msec.atg:1499:                          
-* trailing whitespace (line 1500)
-cocoR/msec.atg:1500:                          
-* trailing whitespace (line 1501)
-cocoR/msec.atg:1501:                          
-* trailing whitespace (line 1502)
-cocoR/msec.atg:1502:                          | ( "->" "{" identifie "}" 
-* trailing whitespace (line 1504)
-cocoR/msec.atg:1504:			{				
-* trailing whitespace (line 1519)
-cocoR/msec.atg:1519:						Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称				
-* trailing whitespace (line 1520)
-cocoR/msec.atg:1520:						
-* trailing whitespace (line 1526)
-cocoR/msec.atg:1526:							GenEo(121);					
-* trailing whitespace (line 1529)
-cocoR/msec.atg:1529:						{	
-* trailing whitespace (line 1532)
-cocoR/msec.atg:1532:							
-* trailing whitespace (line 1534)
-cocoR/msec.atg:1534:							
-* trailing whitespace (line 1539)
-cocoR/msec.atg:1539:							
-* trailing whitespace (line 1546)
-cocoR/msec.atg:1546:									
-* trailing whitespace (line 1555)
-cocoR/msec.atg:1555:									
-* trailing whitespace (line 1559)
-cocoR/msec.atg:1559:									
-* trailing whitespace (line 1562)
-cocoR/msec.atg:1562:									{									
-* trailing whitespace (line 1575)
-cocoR/msec.atg:1575:								
-* trailing whitespace (line 1581)
-cocoR/msec.atg:1581:			
-* trailing whitespace (line 1583)
-cocoR/msec.atg:1583:			)			  
-* trailing whitespace (line 1584)
-cocoR/msec.atg:1584:						  
-* trailing whitespace (line 1585)
-cocoR/msec.atg:1585:						  | identifie        
-* trailing whitespace (line 1595)
-cocoR/msec.atg:1595:				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 1612)
-cocoR/msec.atg:1612:						addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
-* trailing whitespace (line 1627)
-cocoR/msec.atg:1627:							ADDCOMMAND2(__add, addess_mode, op1, 1)	
-* trailing whitespace (line 1628)
-cocoR/msec.atg:1628:						}	
-* trailing whitespace (line 1629)
-cocoR/msec.atg:1629:						ADDCOMMAND2(__mov, addess_mode|0x02, op1, _AX); 
-* trailing whitespace (line 1635)
-cocoR/msec.atg:1635:		
-* trailing whitespace (line 1645)
-cocoR/msec.atg:1645:				if (!m_pMainFunction->PopDigit(&op1, &type1, &dt1) || type1 <FIRST_ADDRESS_MODE || type1 >LAST_ADDRESS_MODE) 
-* trailing whitespace (line 1662)
-cocoR/msec.atg:1662:						addess_mode |= (log2(UnitSize(dt1))<<14)|(log2(UnitSize(dt1))<<6);	
-* trailing whitespace (line 1677)
-cocoR/msec.atg:1677:							ADDCOMMAND2(__sub, addess_mode, op1, 1)	
-* trailing whitespace (line 1678)
-cocoR/msec.atg:1678:						}	
-* trailing whitespace (line 1679)
-cocoR/msec.atg:1679:						ADDCOMMAND2(__mov, addess_mode|0x02, op1, _AX); 
-* trailing whitespace (line 1685)
-cocoR/msec.atg:1685:.)						  
-* trailing whitespace (line 1687)
-cocoR/msec.atg:1687:                         
-* trailing whitespace (line 1688)
-cocoR/msec.atg:1688: HashItem  = (sting1 | identifie) ":" Expession . 
-* trailing whitespace (line 1690)
-cocoR/msec.atg:1690:  SetItems = SetItem { "," SetItem } .  
-* trailing whitespace (line 1692)
-cocoR/msec.atg:1692:  
-* trailing whitespace (line 1693)
-cocoR/msec.atg:1693:  Ceato = 
-* trailing whitespace (line 1695)
-cocoR/msec.atg:1695:  ClassFullName<szName> {"(" {FomalPaamList} ")"} 
-* trailing whitespace (line 1696)
-cocoR/msec.atg:1696:  (. 	
-* trailing whitespace (line 1704)
-cocoR/msec.atg:1704:				CCompile cc;                         
-* trailing whitespace (line 1713)
-cocoR/msec.atg:1713:	
-* trailing whitespace (line 1714)
-cocoR/msec.atg:1714:    
-* trailing whitespace (line 1720)
-cocoR/msec.atg:1720:	{                       
-* trailing whitespace (line 1733)
-cocoR/msec.atg:1733:  
-* trailing whitespace (line 1734)
-cocoR/msec.atg:1734:  ClassFullName<cha* szName> = 
-* trailing whitespace (line 1735)
-cocoR/msec.atg:1735:  identifie (. stcpy(szName, GetCuSym()); .) 
-* trailing whitespace (line 1739)
-cocoR/msec.atg:1739:  
-* trailing whitespace (line 1740)
-cocoR/msec.atg:1740:  Pimay              = 
-* trailing whitespace (line 1746)
-cocoR/msec.atg:1746: 
-* indent SP followed by a TAB (line 1747)
-cocoR/msec.atg:1747: 		{	Scanne->GetName(&Scanne->CuSym, szName, MAX_IDENTIFIER_LENGTH-1);//得到名称
-* trailing whitespace (line 1748)
-cocoR/msec.atg:1748: 		
-* indent SP followed by a TAB (line 1748)
-cocoR/msec.atg:1748: 		
-* trailing whitespace (line 1749)
-cocoR/msec.atg:1749: 			
-* indent SP followed by a TAB (line 1749)
-cocoR/msec.atg:1749: 			
-* trailing whitespace (line 1751)
-cocoR/msec.atg:1751:			
-* trailing whitespace (line 1775)
-cocoR/msec.atg:1775:			                  
-* trailing whitespace (line 1780)
-cocoR/msec.atg:1780:			                                  if (dt.efLevel > 0) 
-* trailing whitespace (line 1796)
-cocoR/msec.atg:1796:			                                          
-* trailing whitespace (line 1812)
-cocoR/msec.atg:1812:			                          
-* trailing whitespace (line 1831)
-cocoR/msec.atg:1831:  
-* trailing whitespace (line 1832)
-cocoR/msec.atg:1832:  
-* indent SP followed by a TAB (line 1835)
-cocoR/msec.atg:1835:  		 {
-* trailing whitespace (line 1852)
-cocoR/msec.atg:1852:			                            GenEo(100);                          
-* trailing whitespace (line 1856)
-cocoR/msec.atg:1856:			
-* trailing whitespace (line 1859)
-cocoR/msec.atg:1859:			                    {       
-* trailing whitespace (line 1861)
-cocoR/msec.atg:1861:			                            
-* trailing whitespace (line 1867)
-cocoR/msec.atg:1867:			                                    m_pMainFunction->PushDigit(temp, AMODE_MEM, dt);                         
-* trailing whitespace (line 1874)
-cocoR/msec.atg:1874:			                   	
-* indent SP followed by a TAB (line 1874)
-cocoR/msec.atg:1874:			                   	
-* trailing whitespace (line 1878)
-cocoR/msec.atg:1878:			                            delete pCh;	
-* trailing whitespace (line 1889)
-cocoR/msec.atg:1889:  | numbe 
-* trailing whitespace (line 1894)
-cocoR/msec.atg:1894:			
-* trailing whitespace (line 1896)
-cocoR/msec.atg:1896:			_typedes(dt, dtFloat);			
-* trailing whitespace (line 1901)
-cocoR/msec.atg:1901:			
-* trailing whitespace (line 1903)
-cocoR/msec.atg:1903:			_typedes(dt, dtLong);			
-* trailing whitespace (line 1908)
-cocoR/msec.atg:1908:  | "(" Expession ")" 
-* trailing whitespace (line 1912)
-cocoR/msec.atg:1912:  FunctionCall<FUNCCALL* pFuncEnty>         = "("   [ ActualPaametes<pFuncEnty> ] ")" 
-* indent SP followed by a TAB (line 1917)
-cocoR/msec.atg:1917:  	//addcommand
-* trailing whitespace (line 1922)
-cocoR/msec.atg:1922:	{			
-* trailing whitespace (line 1932)
-cocoR/msec.atg:1932:				
-* trailing whitespace (line 1961)
-cocoR/msec.atg:1961:  ActualPaametes<FUNCCALL* pFuncEnty>     = 
-* trailing whitespace (line 1967)
-cocoR/msec.atg:1967:	cha cPaamNum = 0;	
-* trailing whitespace (line 1969)
-cocoR/msec.atg:1969:  .)Expession 
-* indent SP followed by a TAB (line 1971)
-cocoR/msec.atg:1971: 	//pop
-* trailing whitespace (line 1985)
-cocoR/msec.atg:1985:		ADDCOMMAND1(__paampub, addess_mode, op1)			
-* trailing whitespace (line 1989)
-cocoR/msec.atg:1989:	cPaamNum++; 
-* trailing whitespace (line 1991)
-cocoR/msec.atg:1991:  { "," Expession 
-* trailing whitespace (line 1992)
-cocoR/msec.atg:1992:  
-* indent SP followed by a TAB (line 1994)
-cocoR/msec.atg:1994:  			// modified on 20030331 by weihua ju
-* trailing whitespace (line 2015)
-cocoR/msec.atg:2015:				
-* trailing whitespace (line 2023)
-cocoR/msec.atg:2023:				{			
-* trailing whitespace (line 2031)
-cocoR/msec.atg:2031:				ADDCOMMAND1(__paampub, size|0x100, temp)	
-* trailing whitespace (line 2033)
-cocoR/msec.atg:2033:				else	
-* trailing whitespace (line 2034)
-cocoR/msec.atg:2034:				*/			
-* trailing whitespace (line 2036)
-cocoR/msec.atg:2036:				ADDCOMMAND1(__paampub, addess_mode, op1)			
-* trailing whitespace (line 2038)
-cocoR/msec.atg:2038:				ADDCOMMAND1(__paamv, addess_mode, op1)		
-* trailing whitespace (line 2039)
-cocoR/msec.atg:2039:				cPaamNum++; 
-* trailing whitespace (line 2040)
-cocoR/msec.atg:2040:			}		
-* trailing whitespace (line 2043)
-cocoR/msec.atg:2043:  } 
-* indent SP followed by a TAB (line 2045)
-cocoR/msec.atg:2045:  		// code added on 20030331 weihua ju
-* In compiler.cpp
-* trailing whitespace (line 2)
-compiler.cpp:2://#include "io.h"
-* trailing whitespace (line 134)
-compiler.cpp:134:#ifdef _MACOS
-* trailing whitespace (line 135)
-compiler.cpp:135:	// binary and text files has no difference in unix
-* trailing whitespace (line 136)
-compiler.cpp:136:		if ((S_src = open(szFileName, O_RDONLY)) == -1) {
-* trailing whitespace (line 137)
-compiler.cpp:137:#else
-* trailing whitespace (line 139)
-compiler.cpp:139:#endif
-* trailing whitespace (line 218)
-compiler.cpp:218:}
-* In compiler.h
-* trailing whitespace (line 37)
-compiler.h:37:static  CScriptFuncTable functable[SCRIPTTABLE_NUM];
-* trailing whitespace (line 38)
-compiler.h:38:static long g_lActiveScriptTable;
-* In datatype.h
-* trailing whitespace (line 23)
-datatype.h:23:#ifdef __SUPPORT_OBJ
-* trailing whitespace (line 24)
-datatype.h:24:#define dtObject 12
-* trailing whitespace (line 25)
-datatype.h:25:#define dtLastType 12
-* trailing whitespace (line 26)
-datatype.h:26:#else
-* trailing whitespace (line 27)
-datatype.h:27:#define dtLastType 11
-* trailing whitespace (line 28)
-datatype.h:28:#endif
-* In makefile_linux
-* trailing whitespace (line 33)
-makefile_linux:33:	$(CC) -c cocoR/cp.cpp -o cp.o $(CFLAGS)
-* In makefile_macos
-* trailing whitespace (line 10)
-makefile_macos:10:OBJ  = VMManager.o compiler.o cp.o CR_ABS.o CR_ERROR.o CR_PARSE.o CR_SCAN.o cs.o Function.o LoopTree.o ObjDes.o PubFuncTable.o Request.o ScriptFuncTable.o StdAfx.o SymbolTable.o utility.o VirtualMachine.o VMException.o linuxlib/IsWanted.o os/os.o os/LogCache.o os/ostime.o os/socket.o os/str.o os/thread-pthread.o os/osutils.o os/log.o os/CSS_LOCKEX.o os/ConfigFile.o$(RES)
-* trailing whitespace (line 15)
-makefile_macos:15:CFLAGS = -D__SUPPORT_OBJ -g -fPIC  -D_VMMANAGER -O2 -fomit-frame-pointer -w -W -Wall -Iclib -Ios -D_MACOS -I./
-* trailing whitespace (line 16)
-makefile_macos:16:# -Wfatal-errors
-* trailing whitespace (line 28)
-makefile_macos:28:cocoR/cp.cpp: cocoR/msec.atg cocoR/PARSER_C.FRM cocoR/PARSER_H.FRM
-* trailing whitespace (line 29)
-makefile_macos:29:	cd cocoR && ./cocor -A -F -X -S -G -C -L c.atg
-* trailing whitespace (line 34)
-makefile_macos:34:cp.o: cocoR/cp.cpp
-* trailing whitespace (line 35)
-makefile_macos:35:	$(CC) -c cocoR/cp.cpp -o cp.o $(CFLAGS)
+COMPILER C
+
+
+
+/////////////////////////////////
+// add by jackie juju
+#include "clib.h"
+#include <string.h>
+#include <vector>
+#include <string>
+#include "datatype.h"
+#include "LoopTree.h"
+#include "opcode.h"
+#include "os/CSS_LOCKEX.h"
+#include "ScriptFuncTable.h"
+#include "log.h"
+#include "PubFuncTable.h"
+#include "ClassDes.h"
+#include "compiler.h"
+#include "utility.h"
+
+#define CAST Cast(op1, type1, dt1, op2, type2, dt2);
+
+
+// add by jackie juju
+/////////////////////////////////
+
+CHARACTERS
+  letter   = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz" .
+  digit    = "0123456789" .
+  hexdigit = digit + "ABCDEFabcdef" .
+  tab      = CHR(9) .
+  eol      = CHR(10) .
+  files    = letter + digit + ":\." .
+  chars    = CHR(32) .. CHR(255) - "'" .
+  strings  = CHR(32) .. CHR(255) - '"'.
+  macros   = ANY - eol .
+
+COMMENTS FROM ""
+COMMENTS FROM "//" TO eol
+
+IGNORE
+  tab + eol + CHR(13)
+
+TOKENS
+  identifier = ( "_" | letter) { "_" | letter | digit } .
+  number     = digit { digit } [ "." { digit }] [ "U" | "u" | "L" | "l" ] .
+  hexnumber  = "0" ( "x" | "X" ) hexdigit { hexdigit } [ "U" | "u" | "L" | "l" ] .
+  string1     = '"' { strings } '"' .
+  char1       = "'" [ "\\" ] chars "'" .
+  library    = "<" files { files } ">" .
+
+PRAGMAS
+
+  PreProcessor = "#" ( letter ) .
+		    
+
+
+
+
+
+PRODUCTIONS
+
+    C                    =      
+   { Import | LoadLib } [ Inheritance ]
+
+    { Definition } EOF .
+
+  Import = "use" ClassFullName<szName>
+  ";" .
+  
+  LoadLib = "load" identifier 
+  
+   ";" .
+  
+
+	
+ 
+  Definition           =
+   (
+   [ StorageClass ]  
+   [ Type<type> ]
+   
+   
+   identifier
+
+(
+   (
+		FunctionDefinition 
+	   
+	)
+	|
+	( 
+	   ("=" Expression ";")
+	   | ";"  
+    ) 
+   )
+   ) 
+   
+   | ClassDef  .
+                            
+  
+  
+  Inheritance              = "inherit" identifier 
+   ";" .
+  
+
+	ClassDef			= "class" identifier  
+
+ClassBody	";" .
+	ClassBody			 = 
+	
+
+	"{" { Definition} "}" 
+	
+	
+	.
+
+
+  StorageClass         = 
+   "static" 
+   | "my" 
+   | "function"
+   .
+
+  Type<PTYPEDES type>                 = 
+
+
+( "var" | "mixed" )
+
+	|
+	 "short" [ "int" ]
+
+    | "long"  [ "int" | "float" ]
+ 
+	| "unsigned" [ "char" | "int" | "long" ]
+	| "char"
+
+	| "int" 
+	
+	| "float"		
+
+
+	| "double" | "void"  | "string"
+
+	.
+
+  VarList<PTYPEDES type, char* szFirstName>   = 
+  ArraySize
+    [ "=" Expression ] 
+{ ","  identifier
+
+
+ArraySize
+
+ [  "=" Expression ] 
+  } .
+
+  ArraySize            = { "[" [ ConstExpression ] "]" } .
+
+
+
+  FunctionDefinition   = 
+  
+  FunctionHeader FunctionBody  
+  
+  .
+  FunctionHeader       = 
+  
+
+
+							"(" [ FormalParamList ] ")" 
+  .
+  FunctionBody         = CompoundStatement   .
+  FormalParamList      = FormalParameter { "," FormalParameter } .
+  FormalParameter      = 
+  Type<type> {  "*" 		
+
+  }  identifier  
+  
+  ArraySize 
+  
+  .
+
+
+
+  Statement            = { Label }
+                         ( 
+                         
+						 AssignmentStatement | BreakStatement
+                           | ContinueStatement
+                           | DoStatement | ForStatement
+                           | IfStatement  | NullStatement
+                           | ReturnStatement | SwitchStatement
+                           | WhileStatement ) 
+ .
+
+  Label                = ("case" ConstExpression ":")  | ( "default" ":") .
+
+
+
+  AssignmentStatement = Expression ";" .
+
+  BreakStatement       = "break" ";" 
+  
+ .
+ LocalDeclaration     = 
+							
+ ( Type<type> |  StorageClass  [Type<type>] )
+  
+							
+ 
+  
+  identifier				
+ VarList<type, szName>";"  
+ . 
+  CompoundStatement    = "{" { LocalDeclaration | Statement } "}" .
+
+  ContinueStatement    = "continue" ";" 
+  
+  .
+
+  DoStatement          = "do" Statement "while" "(" Expression ")" ";" .
+
+  ForStatement         = "for"  "(" [ Expression ] ";" 
+  
+  
+  [ Expression ] 
+  
+  ";" 
+  
+  [ 
+
+	Expression 
+
+  ] ")" Statement
+   .
+
+  IfStatement          = "if" "(" Expression ")" 
+  
+  Statement   [
+ 
+   "else" 
+  
+  Statement
+  
+   ]
+   
+ .
+
+  NullStatement        = ";" .
+
+  ReturnStatement      = "return" [ Expression ] 
+  
+  ";" .
+                         
+
+  SwitchStatement      = "switch" "("
+
+   Expression 
+
+   
+   ")" Statement 
+
+	.
+
+  WhileStatement       = "while" "(" 
+    
+	Expression 
+	   
+   ")" Statement 
+   
+     .
+
+
+
+
+
+
+
+  ConstExpression      = Expression .
+
+  Expression           = Conditional { AssignmentOperator Expression
+  
+   }.
+
+  Conditional          = LogORExp .
+
+  LogORExp             = LogANDExp   { "||"
+  
+  
+LogANDExp 
+
+} 
+
+
+.
+
+  LogANDExp            =
+ 
+
+InclORExp   { "&&" 
+
+
+
+InclORExp 
+
+
+}
+
+.
+
+  InclORExp            = ExclORExp   { "|" ExclORExp } .
+
+  ExclORExp            = ANDExp      { "^" ANDExp } .
+
+  ANDExp               = EqualExp    { "&" EqualExp } .
+
+  EqualExp             = 
+  
+
+  RelationExp { ( "=="
+   
+| "!="
+ ) RelationExp 
+
+
+} 
+
+
+.
+
+  RelationExp          = 
+  
+  ShiftExp    { ( "<"  | ">" | "<=" | ">=" ) 
+  ShiftExp
+  
+   }
+  
+  
+  
+  .
+
+  ShiftExp             = AddExp      { ( "<<" | ">>" ) AddExp } .
+
+  AddExp               = 
+MultExp     { ( "+"  | "-"  ) MultExp 
+
+
+
+} .
+
+  MultExp              = 
+  CastExp  
+ { ( "*"   | "/"   | "%"   ) CastExp 
+
+} .
+
+  CastExp              = 
+  
+  UnaryExp 
+  
+  
+  .
+
+
+
+  UnaryExp             = PostFixExp
+                         | ( "++" | "--" ) UnaryExp
+                         | UnaryOperator CastExp .
+
+
+
+  PostFixExp           = Primary
+                         { "[" Expression "]"
+
+                          | 
+FunctionCall<&fn>
+
+                          | ("." identifier)  
+                          
+                          
+                          
+                          
+                          | (  "->" {"{"} identifier {"}"} 
+
+			)			  
+		
+						  
+						  | identifier        
+						  
+                          | "++"
+
+
+                          | "--"
+
+						  
+                         } .
+                         
+ HashItem  = (string1 | identifier) ":" Expression . 
+ SetItem = HashItem | Expression .
+  SetItems = SetItem { "," SetItem } .  
+  SetDef = "{"  [ SetItems ] "}" .
+  
+  Creator = 
+  
+  ClassFullName<szName> {"(" {FormalParamList} ")"} 
+  
+   .
+  
+  ClassFullName<char* szName> = 
+  identifier  
+  {"::" 
+   identifier 
+   }  .
+  
+  Primary              = 
+
+ identifier 
+  | "new" Creator
+  
+  
+  | string1
+  | char1
+  
+  | number 
+ 
+  | "(" Expression ")" 
+  | SetDef
+  .
+
+  FunctionCall<FUNCCALL* pFuncEntry>         = "("  
+ 
+
+
+ [ ActualParameters<pFuncEntry> ] ")" 
+  .
+
+  ActualParameters<FUNCCALL* pFuncEntry>     = 
+  Expression 
+  
+  { "," Expression 
+  
+  
+  } 
+  
+  .
+
+  AssignmentOperator   =   "="  | "*=" | "/=" | "%=" | "+=" | "-=" | "&="
+                         | "^=" | "|=" | "<<=" | ">>=" .
+
+  UnaryOperator        = "+" | "-" | "*" | "!" | "&" | "~" .
+
+END C.
+
+
+
+

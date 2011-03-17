@@ -37,6 +37,7 @@ public:
 			printf("getClass [\"test/test\"]%x\n", tables["test/test"]);
 		return tables[szName];
 	}
+	void removeClass(char* szName);
 
 	void dump(){
 		printf("====== dump classdes table ======\n");

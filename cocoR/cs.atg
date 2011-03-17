@@ -2,6 +2,10 @@ COMPILER C
 
 /* An attempt to describe a subset of C */
 
+/************** NOTICE ***************
+You cannot use "'" in your comments
+**************************************/
+
 /////////////////////////////////
 // add by jackie juju
 #include "clib.h"
@@ -89,15 +93,21 @@ PRODUCTIONS
 	
 	 m_pCurClassDes = new CClassDes(this);
 	 std::string className = JUJU::getFileName(curFileName);
-	 m_pCurClassDes->SetName((char*)className.c_str());
+	 m_pCurClassDes->SetName((char*)className.c_str());	
+	
+	// add class def first because it maybe referenced by its own code
 	 m_classTable->addClass(m_pCurClassDes);
     
     .)
    { Import | LoadLib } [ Inheritance ]
 
     { Definition } EOF (. 
-	std::string name = m_pCurClassDes->GetFullName();
-	name += ".class";
+
+	if (Error->Errors){ // if compile failed, remove this class
+		m_classTable->removeClass((char*)className.c_str());
+	}
+//	std::string name = m_pCurClassDes->GetFullName();
+  //	name += ".class";
   //FILE* file = fopen(name.c_str(), "w");
   //std::string *s = m_pCurClassDes->output();
   //fprintf(file, "%s", s->c_str());
@@ -108,7 +118,7 @@ PRODUCTIONS
 
   Import = "use"(.char szName[_MAX_PATH]= ""; .) ClassFullName<szName>
   (.
-	
+	// load class by name, if not found, look for the source and compile it
 	CClassDes* cd = this->m_classTable->getClass(szName);
 	if (cd == NULL){
 		strcat(szName, SCRIPT_EXT);
@@ -135,17 +145,22 @@ PRODUCTIONS
 		std::string libfile = "lib"+lib+".so";
 	#endif
 	    std::string libintfile = lib+".int";
+	
+	int r=-1;
 #ifdef WIN32
-		m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
+		r = m_PubFuncTable->LoadLib((char*)libfile.c_str(), (char*)libintfile.c_str());
 #else
 	    char* c1 = (char*)(libfile).c_str();
 	    char* c2 = (char*)(libintfile).c_str();
-	m_PubFuncTable->LoadLib(c1, c2);
+		r = m_PubFuncTable->LoadLib(c1, c2);
 #endif
+		if (r){
+		 	GENERR(128);
+		}
 /* for the further if VM run in another process than compiler run
 	int address = m_pMainFunction->AddStaticData(lib.size()+1, (BYTE*)lib.c_str());
 	ADDCOMMAND1(__loadlib, DS, address);
-*/
+*/		
   .)
    ";" .
   
@@ -210,7 +225,7 @@ PRODUCTIONS
 		strcpy(szName, s.c_str());
 		cd = this->m_classTable->getClass(szName);
 		if (cd == NULL){
-				strcat(szName, ".c");
+				strcat(szName, SCRIPT_EXT);
 				CCompiler cc;                         
 	            cc.Compile(szName);
 	    }
@@ -356,6 +371,8 @@ ArraySize
   FunctionDefinition   = 
   (.
  	this->m_pMainFunction = new CFunction;
+	printf("--->m_pMainFunction1=%x", m_pMainFunction);
+
 	//for test
 	long t = sizeof(CFunction);
 	m_pMainFunction->m_SymbolTable.m_pParser = this;
@@ -370,6 +387,18 @@ ArraySize
 	else
 		strcpy(m_pMainFunction->m_szName, szName);
 		
+	// add "this" as first parameter to function if it belong to a class
+	if (m_pCurClassDes){
+		PTYPEDES type = new TYPEDES;
+		type->refLevel = 1;
+		type->type = dtObject;
+		if (!AllocVar(type, "this"))
+			GENERR(113);
+		else
+			m_pMainFunction->m_iParamTotalSize += this->UnitSize(*type);
+		delete type;
+	}
+	
 		
   .)
   FunctionHeader FunctionBody  
@@ -384,12 +413,21 @@ ArraySize
 	            m_pMainFunction->Output(path);
 		
 	}else{
-	SAFEDELETE( m_pMainFunction);	
+	printf("--->m_pMainFunction2=%x", m_pMainFunction);
+		SAFEDELETE( m_pMainFunction);	
 	 }
 	 m_pMainFunction = NULL;
   .)
   .
-  FunctionHeader       = "(" [ FormalParamList ] ")" 
+  FunctionHeader       = 
+  (.
+	
+
+
+  .)
+
+
+							"(" [ FormalParamList ] ")" 
   (. 	
   this->m_pMainFunction->m_iParamNum = this->m_pMainFunction->m_SymbolTable.m_nSymbolCount; 
   if 	(!m_pCurClassDes->getFuncTable()->AddFunction(this->m_pMainFunction))
@@ -1447,24 +1485,31 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			long index = m_PubFuncTable->FindFuncByName(szName);
 			FUNCCALL fn;
 			fn.name = szName;
-			if (index < 0) // cannot find function name in public function table, guess is was script function
+			if (index < 0) // cannot find function name in public function table, guess is was class method
 			{
-				// find in script function table
-				CFunction* pScript = m_pCurClassDes->getFuncTable()->GetFunction(szName, &index);
-				if (pScript == NULL)
-				{	
-					GENERR(97);
-					Get();
-					return;
+				if (m_pCurClassDes){ // if in class scope
+					// find in script function table
+					CFunction* pScript = m_pCurClassDes->getFuncTable()->GetFunction(szName, &index);
+					if (pScript == NULL)
+					{	
+						GENERR(97);
+						Get();
+						return;
+					}
+					else{
+						fn.pVF = pScript;
+						fn.nType = 0;
+						ADDCOMMAND1(__callv, CC, (long)pScript);
+						
+						// add "this" as first parameter
+						ADDCOMMAND1(__paramv, 0x5100, 0);
+						
+						m_pCurClassDes->getFuncTable()->ReleaseFunc();
+					}
 				}
-				else
-				{
-					fn.pVF = pScript;
-					fn.nType = 0;
-					ADDCOMMAND1(__callv, CC, (long)pScript);
-					m_pCurClassDes->getFuncTable()->ReleaseFunc();
+				else{
+					// TODO support non-class function
 				}
-
 			}
 			else
 			{
@@ -1710,7 +1755,7 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 		strcpy(szName, s.c_str());
 		cd = this->m_classTable->getClass(szName);
 		if (cd == NULL){
-				strcat(szName, ".c");
+				strcat(szName, SCRIPT_EXT);
 				CCompiler cc;                         
 	            cc.Compile(szName);
 	    }
@@ -1758,15 +1803,23 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
  		
  			
 			int address = -1;
-			bool bThis = false;
+	/*		
+			bool bThis = false;	
 			if (strcmp(szName, "this")==0){
-			// TODO: get address of current object
-			   bThis = true;
-				address = 0;
+			// check whether this is a class method
+				if (m_pCurClassDes){
+			   		bThis = true;
+					address = 0;
+				}else{
+					GENERR(127);
+				}
 			}else
-			    address = GetSymAddress(szName);
+			    address = GetSymAddress(szName); // return -1 if not found
+		*/
+			address = GetSymAddress(szName);
+			printf("address=%x", address);	
 
-			 //如果adress<0是函数名
+			 //如果address<0是函数名
 			          if (address >= 0 )//如果不是函数名， 是变量名。
 			          {
 			                  TYPEDES dt;
@@ -1824,14 +1877,18 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
 			                          
 			                  }
 			          }
-			else // address < 0
+			else // address < 0, not found in symbol table
 			{
 				//GENERR(126);
-				if (this->m_PubFuncTable->FindFuncByName(szName) < 0)
+				if (this->m_PubFuncTable->FindFuncByName(szName) < 0) // not found in pub function table
 				{
+					// find it in class methods
 					long index = 0;
-					if (m_pCurClassDes->getFuncTable()->GetFunction(szName, &index) == NULL)
+					if (m_pCurClassDes->getFuncTable()->GetFunction(szName, &index) == NULL){ // not found in class function table
+						// create an object variable ?
 						GENERR(104);
+					} 
+
 					else
 						m_pCurClassDes->getFuncTable()->ReleaseFunc();
 				}
@@ -1922,29 +1979,36 @@ MultExp     { ( "+" (. 	type = 1; .) | "-" (. type = 0; .) ) MultExp
   | SetDef
   .
 
-  FunctionCall<FUNCCALL* pFuncEntry>         = "("   [ ActualParameters<pFuncEntry> ] ")" 
+  FunctionCall<FUNCCALL* pFuncEntry>         = "("  
+ (.
+	// if this is object instance method, attach "this" fist.
+	
+ .)
+
+
+ [ ActualParameters<pFuncEntry> ] ")" 
   (.
     //long lParamNum = 0;
-	if (pFuncEntry->nType)
+	if (pFuncEntry->nType) // public function
 	{
-  	//addcommand
-	ADDCOMMAND0(__endcallpub);
-	//save return value
-	_typedes(dt, dtLong)
-	if (m_pMainFunction->AddVal(NULL, dt))
-	{			
-		long temp;
-		temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
-		ADDCOMMAND2(__mov, DR, temp , _AX);
-		m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
-	}
-	else
-	{
-		GENERR(98);
-	}
+  		//addcommand
+		ADDCOMMAND0(__endcallpub);
+		//save return value
+		_typedes(dt, dtLong)
+		if (m_pMainFunction->AddVal(NULL, dt))
+		{			
+			long temp;
+			temp = m_pMainFunction->m_SymbolTable.tableEntry[m_pMainFunction->m_SymbolTable.m_nSymbolCount-1].address;
+			ADDCOMMAND2(__mov, DR, temp , _AX);
+			m_pMainFunction->PushDigit(temp, AMODE_MEM|0x80, dt);
+		}
+		else
+		{
+			GENERR(98);
+		}
 				
 	}
-	else
+	else // virtual function
 	{
 	// check param number
 	//if (lParamNum != pFuncEntry->pVF->m_iParamNum)

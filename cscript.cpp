@@ -22,7 +22,8 @@
 		CClassDes* pc = NULL;
 		pc = CCompiler::classDesTable.getClass((char*)(s.c_str()));
 		if (pc == NULL){
-			 	BOOL ret = c.Compile("test/test.cs");
+			 //	BOOL ret = c.Compile("test/test.cs");
+				BOOL ret = c.Compile((char*)(s+".cs").c_str());
 				if (!ret){
 						printf("==== compile failed ===\n");
 				//		return "==== compiler error ===\n";
@@ -31,6 +32,7 @@
 				pc = CCompiler::classDesTable.getClass((char*)(s.c_str()));
 				printf("-->pc=%x",pc);
 		}
+		
 		vm.LoadObject(pc);
 		return;
 	};

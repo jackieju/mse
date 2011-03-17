@@ -109,6 +109,10 @@
 /*
 address mode have tow BYTES, the 1st(high) byte is the dest address and the 2nd(low) byte is
 the source address.
+
+| 7     | 6     | 5 | 4 | 3 | 2 | 1 | 0 |
+| operation size| level | address mode  |
+
 Every byte has the same format(high to low(right->left)):
 0, 1, 2, 3bit:	
 addressing mode, 0: Immediate 1: mem 2: register 3: static 4: preserved

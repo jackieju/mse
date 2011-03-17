@@ -75,14 +75,8 @@ public:
 #endif
 
 	void _log(char *msg,char* file, long line, int l, char *type);
-
-	static void Log(char* msg, char* file, long line, int l, char* type, char* category = ""){
-		if (category == NULL || strlen(category) == 0)
-			getDefInst()->_log(msg, file, line, l, type);
-		else{
-			getInst(category)->_log(msg, file, line, l, type);
-		}
-	}
+	static void debug2(char* fmt, char* file, int line, ...);
+	static void Log(char* msg, char* file, long line, int l, char* type, char* category, ...);
 
 
 	
@@ -221,8 +215,13 @@ void debug(char* fmt, ...);
 #define cLOG(m) JUJU::_log(m, __FILE__, __LINE__, 10, "LOG")
 
 // cached log
-#define LOG0(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "LOG")
-#define ERR(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR")
+#define LOG0(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "LOG", "")
+#define LOG1p(m, p1) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "LOG", "", p1)
+#define LOG2p(m, p1, p2) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "LOG", "", p1, p2)
+
+#define ERR(m) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR", "")
+#define ERR1p(m, p1) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR", "", p1)
+#define ERR2p(m, p1, p2) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR", "", p1, p2)
 #define ERR2(m, c) JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "ERR", c)
 #define LOG(m, category)  JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "LOG", category)
 #define nLOG(m, n)  JUJU::CLog::Log(m, __FILE__, __LINE__, n, "LOG", "")
@@ -232,5 +231,6 @@ void debug(char* fmt, ...);
 //#endif
 //#define TRACE(m)  JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "TRC")
 #define TRACE1(m, category)  JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "TRC", category)
+#define DEBUG(m, category)  JUJU::CLog::Log(m, __FILE__, __LINE__, 10, "DBG", category)
 using namespace JUJU;
 #endif

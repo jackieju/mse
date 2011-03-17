@@ -44,7 +44,7 @@ char *MyError::GetUserErrorMsg(int n)
 		 case 98: return "generate temp variable failed";
 		 case 99: return "undefined type";
 		 case 100: return "analyze string failed";
-		 case 101: return  "can not use [] with a no-array variable";
+		 case 101: return "can not use [] with a no-array variable";
 		 case 102: return "can not use * with a variable which is not a point"; 
 		 case 103: return "too many layer in indirect address mode";
 		 case 104: return "Undefined Symbol";
@@ -70,6 +70,8 @@ char *MyError::GetUserErrorMsg(int n)
 		 case 124: return "string use invalid escape character";
 		 case 125: return "Compiler internal error: push digit failed because the data type is invalid";
 		 case 126: return "not support function as value";
+		case 127: return "use 'this' in non-class method";
+		case 128: return "load native dynamic library failed";
 		 default:
 			 return "Unknown error or conflicting error numbers used";
 }

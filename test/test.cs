@@ -1,10 +1,16 @@
 // this source is to test the grammer and vm(interpretor)
 //#include "test.h"
 //
-use cgi;
+
+// import class def used by this class
+use cgi;  
 use object;
 use a::testobj;
-load baselib; // load dynamic link library
+
+// load dynamic link library
+load baselib; 
+
+
 //inherit object;
 int a;
 
@@ -18,13 +24,22 @@ void main(string j, string p)
 	//var t = new a::testobj();
 }
 
+
 void set(string name, var obj){
 	// instance member
-	this->{name} = obj;  // variable named by value of name
-	this->name = obj;   // variable named 'name'
+//	this->{name} = obj;  // variable named by value of name
+//	this->name = obj;   // variable named 'name'
 	// static variable
 //	::name = obj;       
 	var a;
+}
+
+void test0(){
+
+}
+
+void test1( var a){
+    putl(999);
 }
 
 void create()

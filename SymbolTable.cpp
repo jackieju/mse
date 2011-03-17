@@ -51,6 +51,7 @@ bool CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
 			size_t *= dt.dimsize[i];
 		}
 	}
+
 /*	int size16;//按16bit字对齐后的大小
 	size16 = size_t + (4 - size_t%4);
 */
@@ -67,6 +68,7 @@ bool CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
 			}
 		}
 	}
+
 	//如果数组不够长
 	if (this->m_nSymbolCount == this->m_nMaxCount)
 	{//if full
@@ -109,9 +111,11 @@ bool CSymbolTable::AddSymbol(char *szName, TYPEDES dt)
 **/
 int CSymbolTable::GetSymAddress(char *szName)
 {
-	if (szName == NULL)
-		return FALSE;
-
+	if (szName == NULL){
+		ERR("symbol name is null");
+		return -1;
+	}
+	
 	int i;
 	for ( i = 0; i< this->m_nSymbolCount; i++)
 	{
